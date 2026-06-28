@@ -13,6 +13,7 @@ app.use(express.json());
 const db = new sqlite3.Database('./jornadas.db');
 
 db.serialize(() => {
+  // Crear tabla de charlas
   db.run(`CREATE TABLE IF NOT EXISTS charlas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo TEXT,
@@ -23,33 +24,68 @@ db.serialize(() => {
     inscritos INTEGER DEFAULT 0
   )`);
 
-  db.run(`
-  CREATE TABLE IF NOT EXISTS inscripciones (
+  // Crear tabla de inscripciones
+  db.run(`CREATE TABLE IF NOT EXISTS inscripciones (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT,
     email TEXT,
     charla_id INTEGER,
     codigo_unico TEXT UNIQUE,
     fecha_inscripcion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    escaneado BOOLEAN DEFAULT 0,
-    fecha_escaneo DATETIME,
     FOREIGN KEY (charla_id) REFERENCES charlas(id)
-  )
-`);
+  )`);
 
-// Insertar charlas de ejemplo
-db.get("SELECT COUNT(*) as count FROM charlas", (err, row) => {
-  if (row.count === 0) {
-    const charlas = [
-      ['Biomecánica del movimiento', 'Lunes 15/06', '10:00', 'Dr. Pérez', 40],
-      ['Fisioterapia deportiva', 'Martes 16/06', '12:00', 'Lic. Gómez', 35],
-      ['Rehabilitación neurológica', 'Miércoles 17/06', '09:00', 'Dra. López', 40],
-      ['Kinesiología en pediatría', 'Jueves 18/06', '11:00', 'Lic. Martínez', 35],
-    ];
-    const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
-    charlas.forEach(c => stmt.run(c));
-    stmt.finalize();
-  }
+  // Agregar columnas nuevas (solo si no existen) - SEGURO
+  db.get("PRAGMA table_info(inscripciones)", (err, rows) => {
+    if (err) {
+      console.error("Error al obtener información de la tabla:", err.message);
+      return;
+    }
+    // Verificar si la columna 'escaneado' existe
+    const columnExists = (colName) => rows.some(row => row.name === colName);
+    
+    if (!columnExists('escaneado')) {
+      db.run("ALTER TABLE inscripciones ADD COLUMN escaneado BOOLEAN DEFAULT 0", (err) => {
+        if (err) console.error("Error agregando columna escaneado:", err.message);
+        else console.log("✅ Columna 'escaneado' agregada correctamente");
+      });
+    }
+    
+    if (!columnExists('fecha_escaneo')) {
+      db.run("ALTER TABLE inscripciones ADD COLUMN fecha_escaneo DATETIME", (err) => {
+        if (err) console.error("Error agregando columna fecha_escaneo:", err.message);
+        else console.log("✅ Columna 'fecha_escaneo' agregada correctamente");
+      });
+    }
+  });
+
+  // RESETEAR CUPOS A 40 Y LIMPIAR INSCRIPCIONES (para empezar de cero)
+  db.run("UPDATE charlas SET inscritos = 0", (err) => {
+    if (err) console.error("Error al resetear cupos:", err.message);
+    else console.log("✅ Cupos reseteados a 0");
+  });
+
+  // Opcional: Limpiar todas las inscripciones (si quieres empezar de cero)
+  db.run("DELETE FROM inscripciones", (err) => {
+    if (err) console.error("Error al limpiar inscripciones:", err.message);
+    else console.log("✅ Inscripciones eliminadas");
+  });
+
+  // Insertar charlas de ejemplo si no existen
+  db.get("SELECT COUNT(*) as count FROM charlas", (err, row) => {
+    if (row.count === 0) {
+      const charlas = [
+        ['Biomecánica del movimiento', 'Lunes 15/06', '10:00', 'Dr. Pérez', 40],
+        ['Fisioterapia deportiva', 'Martes 16/06', '12:00', 'Lic. Gómez', 35],
+        ['Rehabilitación neurológica', 'Miércoles 17/06', '09:00', 'Dra. López', 40],
+        ['Kinesiología en pediatría', 'Jueves 18/06', '11:00', 'Lic. Martínez', 35],
+      ];
+      const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
+      charlas.forEach(c => stmt.run(c));
+      stmt.finalize();
+      console.log("✅ Charlas de ejemplo insertadas");
+    }
+  });
 });
 
 // API endpoints
