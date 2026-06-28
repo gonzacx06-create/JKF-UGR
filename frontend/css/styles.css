@@ -1,0 +1,212 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f7fc;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  background: #003366;
+  color: white;
+  padding: 25px 0;
+  text-align: center;
+  border-bottom: 6px solid #d52333;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;  /* Fuerza una altura mínima */
+}
+
+.logo-img {
+  max-height: 200px;   /* Aumenta este valor a 150px o más */
+  width: auto;         /* Mantiene la proporción */
+  margin-bottom: 10px;
+}
+
+.logo-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-ugr {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: white;
+}
+
+.logo-jornadas {
+  font-size: 1.2rem;
+  font-weight: 300;
+  opacity: 0.9;
+  margin-top: 5px;
+}
+
+section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+h2 {
+  color: #003366;
+  border-bottom: 3px solid #d52333;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+#charlas-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.charla-card {
+  background: #f9f9f9;
+  border-left: 5px solid #003366;
+  padding: 15px;
+  border-radius: 6px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.charla-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.charla-card h3 {
+  color: #003366;
+  margin-bottom: 8px;
+}
+
+.charla-card p {
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+.charla-card .cupo {
+  font-weight: bold;
+  color: #d52333;
+}
+.charla-card .cupo.lleno {
+  color: #b91c1c;
+  background: #fee2e2;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #003366;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+  border-color: #003366;
+  outline: none;
+}
+
+button {
+  background: #d52333;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+}
+
+button:hover {
+  background: #b01a28;
+  transform: scale(1.02);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+#mensaje-inscripcion {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+#qr-container {
+  margin-top: 20px;
+  text-align: center;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #003366;
+}
+
+#qr-imagen {
+  max-width: 200px;
+  border: 3px solid #003366;
+  border-radius: 8px;
+  padding: 5px;
+  background: white;
+}
+
+#qr-container button {
+  background: #003366;
+}
+
+#qr-container button:hover {
+  background: #002244;
+}
+
+footer {
+  background: #003366;
+  color: #ddd;
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 30px;
+  border-top: 4px solid #d52333;
+}
+
+footer .container p {
+  margin: 5px 0;
+}
+
+@media (max-width: 600px) {
+  .logo-ugr { font-size: 1.6rem; }
+  .logo-jornadas { font-size: 1rem; }
+  .logo-img { max-height: 120px; }
+  #charlas-container { grid-template-columns: 1fr; }
+  header { padding: 15px 0; }
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jornadas Kinesiología UGR 2026</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="logo-container">
+        <!-- Logo con fallback a texto si no se carga la imagen -->
+        <img src="assets/logo-ugr.png" alt="Logo Universidad del Gran Rosario" class="logo-img" onerror="this.style.display='none'" />
+        <div class="logo-texto">
+          <span class="logo-ugr">UNIVERSIDAD DEL GRAN ROSARIO</span>
+          <span class="logo-jornadas">Jornadas de Kinesiología y Fisiatría 2026</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="bienvenida">
+      <h2>Bienvenidos</h2>
+      <p>Inscríbete en los talleres y sé parte de este encuentro académico. Cupos limitados (35‑40 personas).</p>
+    </section>
+
+    <section id="cronograma">
+      <h2>Cronograma de Charlas</h2>
+      <div id="charlas-container"></div>
+    </section>
+
+    <section id="inscripcion">
+      <h2>Inscripción</h2>
+      <form id="form-inscripcion">
+        <div class="form-group">
+          <label for="nombre">Nombre completo:</label>
+          <input type="text" id="nombre" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Correo electrónico:</label>
+          <input type="email" id="email" required />
+        </div>
+        <div class="form-group">
+          <label for="charla">Selecciona una charla:</label>
+          <select id="charla" required>
+            <option value="">-- Elige --</option>
+          </select>
+          <span id="cupo-disponible"></span>
+        </div>
+        <button type="submit">Inscribirme</button>
+      </form>
+      <div id="mensaje-inscripcion"></div>
+      <div id="qr-container" style="display:none;">
+        <h3>¡Inscripción exitosa!</h3>
+        <p>Guarda este código QR para verificar tu asistencia el día del evento.</p>
+        <img id="qr-imagen" src="" alt="QR de inscripción" />
+        <p><a id="qr-enlace" href="#" target="_blank">Enlace de verificación</a></p>
+        <button id="descargar-qr" style="margin-top:10px;">Descargar QR</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 Universidad del Gran Rosario - Jornadas de Kinesiología y Fisiatría</p>
+      <p style="font-size:0.8rem; opacity:0.7;">Contacto: eventos@ugr.edu.ar</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
