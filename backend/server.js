@@ -35,29 +35,35 @@ db.serialize(() => {
     FOREIGN KEY (charla_id) REFERENCES charlas(id)
   )`);
 
-  // Agregar columnas nuevas (solo si no existen) - SEGURO
-  db.get("PRAGMA table_info(inscripciones)", (err, rows) => {
+  // ========== MIGRACIÓN SEGURA: Agregar columnas si no existen ==========
+db.serialize(() => {
+  // Verificar y agregar columna 'escaneado' si no existe
+  db.all("PRAGMA table_info(inscripciones)", (err, rows) => {
     if (err) {
-      console.error("Error al obtener información de la tabla:", err.message);
+      console.error('Error al verificar columnas:', err.message);
       return;
     }
-    // Verificar si la columna 'escaneado' existe
-    const columnExists = (colName) => rows.some(row => row.name === colName);
     
-    if (!columnExists('escaneado')) {
+    // Asegurarse de que rows sea un array
+    const columns = Array.isArray(rows) ? rows : [];
+    const columnNames = columns.map(row => row.name);
+    
+    if (!columnNames.includes('escaneado')) {
       db.run("ALTER TABLE inscripciones ADD COLUMN escaneado BOOLEAN DEFAULT 0", (err) => {
-        if (err) console.error("Error agregando columna escaneado:", err.message);
-        else console.log("✅ Columna 'escaneado' agregada correctamente");
+        if (err) console.error('Error al agregar columna escaneado:', err.message);
+        else console.log('✅ Columna escaneado agregada correctamente');
       });
     }
     
-    if (!columnExists('fecha_escaneo')) {
+    if (!columnNames.includes('fecha_escaneo')) {
       db.run("ALTER TABLE inscripciones ADD COLUMN fecha_escaneo DATETIME", (err) => {
-        if (err) console.error("Error agregando columna fecha_escaneo:", err.message);
-        else console.log("✅ Columna 'fecha_escaneo' agregada correctamente");
+        if (err) console.error('Error al agregar columna fecha_escaneo:', err.message);
+        else console.log('✅ Columna fecha_escaneo agregada correctamente');
       });
     }
   });
+});
+// ============================================================
 
   // RESETEAR CUPOS A 40 Y LIMPIAR INSCRIPCIONES (para empezar de cero)
   db.run("UPDATE charlas SET inscritos = 0", (err) => {
