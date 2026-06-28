@@ -23,16 +23,19 @@ db.serialize(() => {
     inscritos INTEGER DEFAULT 0
   )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS inscripciones (
+  db.run(`
+  CREATE TABLE IF NOT EXISTS inscripciones (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT,
     email TEXT,
     charla_id INTEGER,
     codigo_unico TEXT UNIQUE,
     fecha_inscripcion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    escaneado BOOLEAN DEFAULT 0,
+    fecha_escaneo DATETIME,
     FOREIGN KEY (charla_id) REFERENCES charlas(id)
-  )`);
-});
+  )
+`);
 
 // Insertar charlas de ejemplo
 db.get("SELECT COUNT(*) as count FROM charlas", (err, row) => {
@@ -125,8 +128,11 @@ app.get('/api/verificar/:codigo', (req, res) => {
 // Página de verificación
 app.get('/verificar/:codigo', (req, res) => {
   const codigo = req.params.codigo;
+  
+  // 1. Buscar la inscripción
   db.get(`
-    SELECT i.nombre, i.email, i.fecha_inscripcion, c.titulo, c.dia, c.hora
+    SELECT i.nombre, i.email, i.fecha_inscripcion, i.escaneado, i.fecha_escaneo,
+           c.titulo, c.dia, c.hora
     FROM inscripciones i
     JOIN charlas c ON i.charla_id = c.id
     WHERE i.codigo_unico = ?
@@ -139,41 +145,86 @@ app.get('/verificar/:codigo', (req, res) => {
         </body></html>
       `);
     }
-    res.send(`
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Verificación de inscripción</title>
-        <style>
-          body { font-family: 'Segoe UI', sans-serif; background: #f4f7fc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-          .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 500px; text-align: center; }
-          .header { color: #003366; border-bottom: 3px solid #d52333; padding-bottom: 10px; }
-          .datos { text-align: left; margin: 20px 0; }
-          .confirmado { color: #d52333; font-weight: bold; font-size: 1.2rem; }
-          .btn { display: inline-block; background: #003366; color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; margin-top: 10px; }
-        </style>
-      </head>
-      <body>
-        <div class="card">
-          <h1 class="header">✅ Inscripción confirmada</h1>
-          <div class="datos">
-            <p><strong>Nombre:</strong> ${row.nombre}</p>
-            <p><strong>Email:</strong> ${row.email}</p>
-            <p><strong>Charla:</strong> ${row.titulo}</p>
-            <p><strong>Día:</strong> ${row.dia} - ${row.hora}</p>
-            <p><strong>Fecha de inscripción:</strong> ${row.fecha_inscripcion}</p>
+
+    // 2. Verificar si ya fue escaneado
+    if (row.escaneado === 1) {
+      return res.send(`
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>QR ya utilizado</title>
+          <style>
+            body { font-family: 'Segoe UI', sans-serif; background: #f4f7fc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+            .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 500px; text-align: center; }
+            .header { color: #d52333; border-bottom: 3px solid #d52333; padding-bottom: 10px; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1 class="header">⛔ QR ya utilizado</h1>
+            <p>Este código QR ya fue escaneado el <strong>${row.fecha_escaneo}</strong>.</p>
+            <p style="color:#666;font-size:0.9rem;">No se permite el reingreso con el mismo código.</p>
           </div>
-          <p class="confirmado">Este QR es válido para el acceso.</p>
-          <p style="color:#666;font-size:0.9rem;">Presenta este código en el evento.</p>
-          <a href="/" class="btn">Volver al inicio</a>
-        </div>
-      </body>
-      </html>
-    `);
+        </body>
+        </html>
+      `);
+    }
+
+    // 3. Primera vez: marcar como escaneado y guardar fecha/hora
+    const ahora = new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
+    db.run(
+      "UPDATE inscripciones SET escaneado = 1, fecha_escaneo = ? WHERE codigo_unico = ?",
+      [ahora, codigo],
+      function(err) {
+        if (err) {
+          console.error('Error al actualizar escaneo:', err);
+          return res.send(`
+            <html><body style="font-family:sans-serif;text-align:center;padding:50px;">
+              <h1 style="color:#d52333;">❌ Error</h1>
+              <p>Ocurrió un error al procesar el escaneo.</p>
+            </body></html>
+          `);
+        }
+
+        // 4. Mostrar confirmación con el horario de escaneo
+        res.send(`
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>✅ Inscripción confirmada</title>
+            <style>
+              body { font-family: 'Segoe UI', sans-serif; background: #f4f7fc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+              .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 500px; text-align: center; }
+              .header { color: #003366; border-bottom: 3px solid #d52333; padding-bottom: 10px; }
+              .datos { text-align: left; margin: 20px 0; }
+              .confirmado { color: #16a34a; font-weight: bold; font-size: 1.2rem; }
+              .escaneo { color: #d52333; font-weight: bold; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h1 class="header">✅ Inscripción confirmada</h1>
+              <div class="datos">
+                <p><strong>Nombre:</strong> ${row.nombre}</p>
+                <p><strong>Email:</strong> ${row.email}</p>
+                <p><strong>Charla:</strong> ${row.titulo}</p>
+                <p><strong>Día:</strong> ${row.dia} - ${row.hora}</p>
+                <p><strong>Fecha de inscripción:</strong> ${row.fecha_inscripcion}</p>
+              </div>
+              <p class="confirmado">✅ QR válido para el acceso</p>
+              <p class="escaneo">🕒 Escaneado el: ${ahora}</p>
+              <p style="color:#666;font-size:0.9rem;">Presenta este código en el evento.</p>
+              <a href="/" class="btn" style="display:inline-block;background:#003366;color:white;padding:10px 20px;border-radius:30px;text-decoration:none;margin-top:10px;">Volver al inicio</a>
+            </div>
+          </body>
+          </html>
+        `);
+      }
+    );
   });
 });
-
 // Servir el frontend
 const frontendPath = path.join(__dirname, '../frontend');
 app.use(express.static(frontendPath));
