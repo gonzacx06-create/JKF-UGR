@@ -257,13 +257,14 @@ body {
 
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(4, 1fr);  /* 4 columnas fijas */
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  margin-top: 32px;
+  margin: 32px auto 0;   /* centrado horizontal */
+  max-width: 600px;      /* ancho máximo para que no se estire demasiado */
 }
 .stat-cell {
   background: var(--surface);
