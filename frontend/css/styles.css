@@ -709,3 +709,62 @@ body {
   .ex-dose { grid-column: 2; }
   .form-inscripcion { padding: 18px; }
 }
+
+.btn-inscribir-cronograma {
+  background: var(--accent);
+  color: #0d1117;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+.btn-inscribir-cronograma:hover {
+  opacity: 0.85;
+}
+.btn-inscribir-cronograma:active {
+  transform: scale(0.95);
+}
+
+/* Colores para filas de charlas en el cronograma */
+.charla-rojo {
+  background-color: rgba(211, 47, 47, 0.12); /* rojo UGR con transparencia */
+}
+.charla-azul {
+  background-color: rgba(21, 101, 192, 0.12); /* azul UGR con transparencia */
+}
+/* Opcional: para filas neutras (recepción, almuerzo, etc.) */
+.fila-neutra {
+  background-color: rgba(48, 54, 61, 0.2); /* gris muy suave */
+}
+/* Mejorar contraste del texto en filas coloreadas */
+.charla-rojo td,
+.charla-azul td {
+  color: var(--text); /* asegura legibilidad */
+}
+
+/* ===== FILAS ALTERNADAS EN EL CRONOGRAMA ===== */
+/* Las filas que contienen charlas (con botón) tendrán colores alternados */
+.data-table tbody tr.fila-charla-1 {
+  background-color: rgba(211, 47, 47, 0.08); /* Rojo UGR */
+  border-left: 3px solid var(--rojo-ugr);
+}
+
+.data-table tbody tr.fila-charla-2 {
+  background-color: rgba(21, 101, 192, 0.08); /* Azul UGR */
+  border-left: 3px solid var(--azul-ugr);
+}
+
+/* Efecto hover para todas las filas */
+.data-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Ajuste para la columna del botón */
+.data-table td:last-child {
+  text-align: center;
+  vertical-align: middle;
+}

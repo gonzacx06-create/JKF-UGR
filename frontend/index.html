@@ -65,29 +65,98 @@
 
     <!-- CUERPO PRINCIPAL (mismo contenido de antes) -->
     <div class="page-body">
-      <!-- ===== SECCIÓN 01: CRONOGRAMA ===== -->
+    <!-- ===== SECCIÓN 01: CRONOGRAMA ===== -->
 <div id="cronograma-section">
   <div class="section-header">
     <span class="section-num">Sección 01</span>
     <h2 class="section-title">🗓️ Cronograma</h2>
   </div>
-  <p class="prose">El cronograma detallado con todas las actividades. Cada charla tiene una duración de 1 hora y 30 minutos, y se desarrollan de manera secuencial sin superposición.Los horarios y ponentes están sujetos a cambios menores hasta la confirmación definitiva.</p>
+  <p class="prose">Selecciona una actividad y haz clic en <strong>"Inscribirse"</strong> para reservar tu lugar. Todas las actividades tienen cupo limitado.</p>
 
   <!-- Día 1: Miércoles 2 -->
   <div class="sub-title">📆 Miércoles 2 de septiembre</div>
   <table class="data-table">
     <thead>
-      <tr><th>Hora</th><th>Actividad</th><th>Ponente / Responsable</th></tr>
+      <tr>
+        <th>Hora</th>
+        <th>Actividad</th>
+        <th>Ponente / Responsable</th>
+        <th style="text-align:center;">Inscribirse</th>
+      </tr>
     </thead>
     <tbody>
-      <tr><td>08:30 - 10:00</td><td>Recepción y acreditación</td><td>Secretaría Técnica</td></tr>
-      <tr><td>10:00 - 11:30</td><td><strong>Conferencia Inaugural</strong>: "Actualización en Dolor Crónico"</td><td>Dr. Luis Miguel Torres</td></tr>
-      <tr><td>11:30 - 13:00</td><td>Mesa Redonda: "Abordaje Multidisciplinar de la Tendinopatía"</td><td>Dra. María López / Dr. Javier Pérez</td></tr>
-      <tr><td>13:00 - 14:30</td><td>Pausa - Almuerzo</td><td>—</td></tr>
-      <tr><td>14:30 - 16:00</td><td>Taller Práctico 1: "Ecografía para Fisioterapeutas"</td><td>Dr. Carlos García (SERAM)</td></tr>
-      <tr><td>16:00 - 17:30</td><td>Comunicaciones Orales Libres</td><td>Varios autores</td></tr>
-      <tr><td>17:30 - 19:00</td><td>Conferencia: "Nuevas tendencias en neurorrehabilitación"</td><td>Dra. Elena Muñoz (UGR)</td></tr>
-      <tr><td>19:00 - 20:30</td><td>Cóctel de bienvenida y networking</td><td>Comité Organizador</td></tr>
+      <!-- Fila 1: Rojo -->
+      <tr class="fila-charla-1">
+        <td>08:30 - 10:00</td>
+        <td>Recepción y acreditación</td>
+        <td>Secretaría Técnica</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="1" data-titulo="Recepción y acreditación" data-dia="Miércoles 2" data-hora="08:30 - 10:00" data-ponente="Secretaría Técnica">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 2: Azul -->
+      <tr class="fila-charla-2">
+        <td>10:00 - 11:30</td>
+        <td><strong>Conferencia Inaugural</strong>: "Actualización en Dolor Crónico"</td>
+        <td>Dr. Luis Miguel Torres</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="2" data-titulo="Conferencia Inaugural: Actualización en Dolor Crónico" data-dia="Miércoles 2" data-hora="10:00 - 11:30" data-ponente="Dr. Luis Miguel Torres">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 3: Rojo -->
+      <tr class="fila-charla-1">
+        <td>11:30 - 13:00</td>
+        <td>Mesa Redonda: "Abordaje Multidisciplinar de la Tendinopatía"</td>
+        <td>Dra. María López / Dr. Javier Pérez</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="3" data-titulo="Mesa Redonda: Abordaje Multidisciplinar de la Tendinopatía" data-dia="Miércoles 2" data-hora="11:30 - 13:00" data-ponente="Dra. María López / Dr. Javier Pérez">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 4: Azul -->
+      <tr class="fila-charla-2">
+        <td>13:00 - 14:30</td>
+        <td>Pausa - Almuerzo</td>
+        <td>—</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="4" data-titulo="Pausa - Almuerzo" data-dia="Miércoles 2" data-hora="13:00 - 14:30" data-ponente="Organización">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 5: Rojo -->
+      <tr class="fila-charla-1">
+        <td>14:30 - 16:00</td>
+        <td><strong>Taller Práctico 1:</strong> "Ecografía para Fisioterapeutas"</td>
+        <td>Dr. Carlos García (SERAM)</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="5" data-titulo="Taller Práctico 1: Ecografía para Fisioterapeutas" data-dia="Miércoles 2" data-hora="14:30 - 16:00" data-ponente="Dr. Carlos García (SERAM)">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 6: Azul -->
+      <tr class="fila-charla-2">
+        <td>16:00 - 17:30</td>
+        <td>Comunicaciones Orales Libres</td>
+        <td>Varios autores</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="6" data-titulo="Comunicaciones Orales Libres" data-dia="Miércoles 2" data-hora="16:00 - 17:30" data-ponente="Varios autores">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 7: Rojo -->
+      <tr class="fila-charla-1">
+        <td>17:30 - 19:00</td>
+        <td>Conferencia: "Nuevas tendencias en neurorrehabilitación"</td>
+        <td>Dra. Elena Muñoz (UGR)</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="7" data-titulo="Conferencia: Nuevas tendencias en neurorrehabilitación" data-dia="Miércoles 2" data-hora="17:30 - 19:00" data-ponente="Dra. Elena Muñoz (UGR)">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 8: Azul -->
+      <tr class="fila-charla-2">
+        <td>19:00 - 20:30</td>
+        <td>Cóctel de bienvenida y networking</td>
+        <td>Comité Organizador</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="8" data-titulo="Cóctel de bienvenida y networking" data-dia="Miércoles 2" data-hora="19:00 - 20:30" data-ponente="Comité Organizador">Inscribirse</button>
+        </td>
+      </tr>
     </tbody>
   </table>
 
@@ -95,17 +164,86 @@
   <div class="sub-title">📆 Jueves 3 de septiembre</div>
   <table class="data-table">
     <thead>
-      <tr><th>Hora</th><th>Actividad</th><th>Ponente / Responsable</th></tr>
+      <tr>
+        <th>Hora</th>
+        <th>Actividad</th>
+        <th>Ponente / Responsable</th>
+        <th style="text-align:center;">Inscribirse</th>
+      </tr>
     </thead>
     <tbody>
-      <tr><td>08:30 - 10:00</td><td>Recepción y entrega de materiales</td><td>Secretaría Técnica</td></tr>
-      <tr><td>10:00 - 11:30</td><td>Conferencia: "Rehabilitación en el Deportista de Élite"</td><td>Dr. Pedro Martínez (Real Madrid)</td></tr>
-      <tr><td>11:30 - 13:00</td><td>Mesa Redonda: "Infiltraciones guiadas por ecografía"</td><td>Dra. Ana Belén Rodríguez</td></tr>
-      <tr><td>13:00 - 14:30</td><td>Pausa - Almuerzo</td><td>—</td></tr>
-      <tr><td>14:30 - 16:00</td><td>Taller Práctico 2: "Punción Seca y Neuromodulación"</td><td>Dr. Fernando Ramos</td></tr>
-      <tr><td>16:00 - 17:30</td><td>Conferencia: "Innovación en fisioterapia respiratoria"</td><td>Dra. Laura Fernández</td></tr>
-      <tr><td>17:30 - 19:00</td><td>Conferencia de Clausura</td><td>Dr. Ricardo Gómez (UGR)</td></tr>
-      <tr><td>19:00 - 20:30</td><td>Entrega de premios y cierre oficial</td><td>Comité Organizador</td></tr>
+      <!-- Fila 9: Rojo (continúa la secuencia, la 9 es rojo porque 1,3,5,7,9 son impares) -->
+      <tr class="fila-charla-1">
+        <td>08:30 - 10:00</td>
+        <td>Recepción y entrega de materiales</td>
+        <td>Secretaría Técnica</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="9" data-titulo="Recepción y entrega de materiales" data-dia="Jueves 3" data-hora="08:30 - 10:00" data-ponente="Secretaría Técnica">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 10: Azul -->
+      <tr class="fila-charla-2">
+        <td>10:00 - 11:30</td>
+        <td>Conferencia: "Rehabilitación en el Deportista de Élite"</td>
+        <td>Dr. Pedro Martínez (Real Madrid)</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="10" data-titulo="Conferencia: Rehabilitación en el Deportista de Élite" data-dia="Jueves 3" data-hora="10:00 - 11:30" data-ponente="Dr. Pedro Martínez (Real Madrid)">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 11: Rojo -->
+      <tr class="fila-charla-1">
+        <td>11:30 - 13:00</td>
+        <td>Mesa Redonda: "Infiltraciones guiadas por ecografía"</td>
+        <td>Dra. Ana Belén Rodríguez</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="11" data-titulo="Mesa Redonda: Infiltraciones guiadas por ecografía" data-dia="Jueves 3" data-hora="11:30 - 13:00" data-ponente="Dra. Ana Belén Rodríguez">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 12: Azul -->
+      <tr class="fila-charla-2">
+        <td>13:00 - 14:30</td>
+        <td>Pausa - Almuerzo</td>
+        <td>—</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="12" data-titulo="Pausa - Almuerzo (Jueves)" data-dia="Jueves 3" data-hora="13:00 - 14:30" data-ponente="Organización">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 13: Rojo -->
+      <tr class="fila-charla-1">
+        <td>14:30 - 16:00</td>
+        <td><strong>Taller Práctico 2:</strong> "Punción Seca y Neuromodulación"</td>
+        <td>Dr. Fernando Ramos</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="13" data-titulo="Taller Práctico 2: Punción Seca y Neuromodulación" data-dia="Jueves 3" data-hora="14:30 - 16:00" data-ponente="Dr. Fernando Ramos">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 14: Azul -->
+      <tr class="fila-charla-2">
+        <td>16:00 - 17:30</td>
+        <td>Conferencia: "Innovación en fisioterapia respiratoria"</td>
+        <td>Dra. Laura Fernández</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="14" data-titulo="Conferencia: Innovación en fisioterapia respiratoria" data-dia="Jueves 3" data-hora="16:00 - 17:30" data-ponente="Dra. Laura Fernández">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 15: Rojo -->
+      <tr class="fila-charla-1">
+        <td>17:30 - 19:00</td>
+        <td>Conferencia de Clausura</td>
+        <td>Dr. Ricardo Gómez (UGR)</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="15" data-titulo="Conferencia de Clausura" data-dia="Jueves 3" data-hora="17:30 - 19:00" data-ponente="Dr. Ricardo Gómez (UGR)">Inscribirse</button>
+        </td>
+      </tr>
+      <!-- Fila 16: Azul -->
+      <tr class="fila-charla-2">
+        <td>19:00 - 20:30</td>
+        <td>Entrega de premios y cierre oficial</td>
+        <td>Comité Organizador</td>
+        <td style="text-align:center;">
+          <button class="btn-inscribir-cronograma" data-id="16" data-titulo="Entrega de premios y cierre oficial" data-dia="Jueves 3" data-hora="19:00 - 20:30" data-ponente="Comité Organizador">Inscribirse</button>
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>
