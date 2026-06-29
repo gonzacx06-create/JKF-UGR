@@ -102,6 +102,14 @@ app.get('/api/charlas', (req, res) => {
   });
 });
 
+// ENDPOINT TEMPORAL PARA VERIFICAR INSCRIPCIONES EN PRODUCCIÓN
+app.get('/api/ver-inscripciones', (req, res) => {
+  db.all("SELECT * FROM inscripciones", (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
 app.post('/api/inscribir', (req, res) => {
   const { nombre, email, charla_id } = req.body;
   if (!nombre || !email || !charla_id) {
@@ -167,11 +175,12 @@ app.get('/api/verificar/:codigo', (req, res) => {
   });
 });
 
-// Página de verificación
+// ============================================
+// PÁGINA DE VERIFICACIÓN (con el mismo diseño)
+// ============================================
 app.get('/verificar/:codigo', (req, res) => {
   const codigo = req.params.codigo;
-  
-  // 1. Buscar la inscripción
+
   db.get(`
     SELECT i.nombre, i.email, i.fecha_inscripcion, i.escaneado, i.fecha_escaneo,
            c.titulo, c.dia, c.hora
@@ -180,40 +189,176 @@ app.get('/verificar/:codigo', (req, res) => {
     WHERE i.codigo_unico = ?
   `, [codigo], (err, row) => {
     if (err || !row) {
+      // Página de error con el mismo diseño
       return res.send(`
-        <html><body style="font-family:sans-serif;text-align:center;padding:50px;">
-          <h1 style="color:#d52333;">❌ Código no válido</h1>
-          <p>No se encontró ninguna inscripción con este código.</p>
-        </body></html>
-      `);
-    }
-
-    // 2. Verificar si ya fue escaneado
-    if (row.escaneado === 1) {
-      return res.send(`
-        <html>
+        <!DOCTYPE html>
+        <html lang="es">
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>QR ya utilizado</title>
+          <title>QR no válido - Jornadas UGR</title>
           <style>
-            body { font-family: 'Segoe UI', sans-serif; background: #f4f7fc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-            .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 500px; text-align: center; }
-            .header { color: #d52333; border-bottom: 3px solid #d52333; padding-bottom: 10px; }
+            :root {
+              --bg: #0d1117;
+              --surface: #161b22;
+              --border: #30363d;
+              --accent: #e8a838;
+              --text: #e6edf3;
+              --text-dim: #8b949e;
+              --azul-ugr: #1565C0;
+              --rojo-ugr: #D32F2F;
+              --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            }
+            * { margin:0; padding:0; box-sizing:border-box; }
+            body {
+              background: var(--bg);
+              color: var(--text);
+              font-family: var(--font-body);
+              min-height: 100vh;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              padding: 20px;
+            }
+            .card {
+              background: var(--surface);
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              padding: 40px;
+              max-width: 480px;
+              width: 100%;
+              text-align: center;
+            }
+            .card .icon { font-size: 48px; margin-bottom: 16px; }
+            .card h1 {
+              font-family: 'Georgia', serif;
+              font-size: 24px;
+              color: #fff;
+              margin-bottom: 12px;
+            }
+            .card h1 .error { color: var(--rojo-ugr); }
+            .card p {
+              color: var(--text-dim);
+              font-size: 14px;
+              line-height: 1.7;
+              margin-bottom: 8px;
+            }
+            .card .btn {
+              display: inline-block;
+              margin-top: 20px;
+              padding: 10px 28px;
+              background: var(--accent);
+              color: #0d1117;
+              border-radius: 6px;
+              text-decoration: none;
+              font-weight: 700;
+              font-size: 14px;
+            }
+            .card .btn:hover { opacity: 0.85; }
           </style>
         </head>
         <body>
           <div class="card">
-            <h1 class="header">⛔ QR ya utilizado</h1>
-            <p>Este código QR ya fue escaneado el <strong>${row.fecha_escaneo}</strong>.</p>
-            <p style="color:#666;font-size:0.9rem;">No se permite el reingreso con el mismo código.</p>
+            <div class="icon">❌</div>
+            <h1><span class="error">Código no válido</span></h1>
+            <p>No se encontró ninguna inscripción con este código.</p>
+            <p style="font-size:12px;color:var(--text-dim);">Verifica que el QR sea correcto o contacta al organizador.</p>
+            <a href="/" class="btn">Volver al inicio</a>
           </div>
         </body>
         </html>
       `);
     }
 
-    // 3. Primera vez: marcar como escaneado y guardar fecha/hora
+    // Si el QR ya fue escaneado antes
+    if (row.escaneado === 1) {
+      return res.send(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>QR ya utilizado - Jornadas UGR</title>
+          <style>
+            :root {
+              --bg: #0d1117;
+              --surface: #161b22;
+              --border: #30363d;
+              --accent: #e8a838;
+              --text: #e6edf3;
+              --text-dim: #8b949e;
+              --azul-ugr: #1565C0;
+              --rojo-ugr: #D32F2F;
+              --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            }
+            * { margin:0; padding:0; box-sizing:border-box; }
+            body {
+              background: var(--bg);
+              color: var(--text);
+              font-family: var(--font-body);
+              min-height: 100vh;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              padding: 20px;
+            }
+            .card {
+              background: var(--surface);
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              padding: 40px;
+              max-width: 480px;
+              width: 100%;
+              text-align: center;
+            }
+            .card .icon { font-size: 48px; margin-bottom: 16px; }
+            .card h1 {
+              font-family: 'Georgia', serif;
+              font-size: 24px;
+              color: #fff;
+              margin-bottom: 12px;
+            }
+            .card h1 .warning { color: var(--accent); }
+            .card p {
+              color: var(--text-dim);
+              font-size: 14px;
+              line-height: 1.7;
+              margin-bottom: 8px;
+            }
+            .card .highlight {
+              color: var(--azul-ugr);
+              font-weight: 600;
+            }
+            .card .btn {
+              display: inline-block;
+              margin-top: 20px;
+              padding: 10px 28px;
+              background: var(--accent);
+              color: #0d1117;
+              border-radius: 6px;
+              text-decoration: none;
+              font-weight: 700;
+              font-size: 14px;
+            }
+            .card .btn:hover { opacity: 0.85; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="icon">⛔</div>
+            <h1><span class="warning">QR ya utilizado</span></h1>
+            <p>Este código QR ya fue escaneado el <strong>${row.fecha_escaneo}</strong>.</p>
+            <p style="font-size:13px;color:var(--text-dimmer);">No se permite el reingreso con el mismo código.</p>
+            <a href="/" class="btn">Volver al inicio</a>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+
+    // ============================================
+    // PRIMERA VEZ: Marcar como escaneado y mostrar datos
+    // ============================================
     const ahora = new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
     db.run(
       "UPDATE inscripciones SET escaneado = 1, fecha_escaneo = ? WHERE codigo_unico = ?",
@@ -222,43 +367,245 @@ app.get('/verificar/:codigo', (req, res) => {
         if (err) {
           console.error('Error al actualizar escaneo:', err);
           return res.send(`
-            <html><body style="font-family:sans-serif;text-align:center;padding:50px;">
-              <h1 style="color:#d52333;">❌ Error</h1>
-              <p>Ocurrió un error al procesar el escaneo.</p>
-            </body></html>
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Error - Jornadas UGR</title>
+              <style>
+                :root {
+                  --bg: #0d1117;
+                  --surface: #161b22;
+                  --border: #30363d;
+                  --accent: #e8a838;
+                  --text: #e6edf3;
+                  --text-dim: #8b949e;
+                  --rojo-ugr: #D32F2F;
+                  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                }
+                * { margin:0; padding:0; box-sizing:border-box; }
+                body {
+                  background: var(--bg);
+                  color: var(--text);
+                  font-family: var(--font-body);
+                  min-height: 100vh;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  padding: 20px;
+                }
+                .card {
+                  background: var(--surface);
+                  border: 1px solid var(--border);
+                  border-radius: 12px;
+                  padding: 40px;
+                  max-width: 480px;
+                  width: 100%;
+                  text-align: center;
+                }
+                .card .icon { font-size: 48px; margin-bottom: 16px; }
+                .card h1 {
+                  font-family: 'Georgia', serif;
+                  font-size: 24px;
+                  color: #fff;
+                  margin-bottom: 12px;
+                }
+                .card h1 .error { color: var(--rojo-ugr); }
+                .card p {
+                  color: var(--text-dim);
+                  font-size: 14px;
+                  line-height: 1.7;
+                  margin-bottom: 8px;
+                }
+                .card .btn {
+                  display: inline-block;
+                  margin-top: 20px;
+                  padding: 10px 28px;
+                  background: var(--accent);
+                  color: #0d1117;
+                  border-radius: 6px;
+                  text-decoration: none;
+                  font-weight: 700;
+                  font-size: 14px;
+                }
+                .card .btn:hover { opacity: 0.85; }
+              </style>
+            </head>
+            <body>
+              <div class="card">
+                <div class="icon">⚠️</div>
+                <h1><span class="error">Error al procesar</span></h1>
+                <p>Ocurrió un error al verificar tu inscripción.</p>
+                <p style="font-size:12px;color:var(--text-dimmer);">Intenta nuevamente o contacta al organizador.</p>
+                <a href="/" class="btn">Volver al inicio</a>
+              </div>
+            </body>
+            </html>
           `);
         }
 
-        // 4. Mostrar confirmación con el horario de escaneo
+        // ✅ ÉXITO: Mostrar los datos con el diseño UGR
         res.send(`
-          <html>
+          <!DOCTYPE html>
+          <html lang="es">
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>✅ Inscripción confirmada</title>
+            <title>✅ Inscripción confirmada - Jornadas UGR</title>
             <style>
-              body { font-family: 'Segoe UI', sans-serif; background: #f4f7fc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-              .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 500px; text-align: center; }
-              .header { color: #003366; border-bottom: 3px solid #d52333; padding-bottom: 10px; }
-              .datos { text-align: left; margin: 20px 0; }
-              .confirmado { color: #16a34a; font-weight: bold; font-size: 1.2rem; }
-              .escaneo { color: #d52333; font-weight: bold; }
+              :root {
+                --bg: #0d1117;
+                --surface: #161b22;
+                --surface2: #1c2330;
+                --border: #30363d;
+                --accent: #e8a838;
+                --text: #e6edf3;
+                --text-dim: #8b949e;
+                --azul-ugr: #1565C0;
+                --azul-ugr-claro: #42A5F5;
+                --verde: #81c784;
+                --font-display: 'Georgia', serif;
+                --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+              }
+              * { margin:0; padding:0; box-sizing:border-box; }
+              body {
+                background: var(--bg);
+                color: var(--text);
+                font-family: var(--font-body);
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 24px;
+              }
+              .card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 40px 36px;
+                max-width: 520px;
+                width: 100%;
+              }
+              .card .header-icon {
+                font-size: 48px;
+                text-align: center;
+                margin-bottom: 12px;
+              }
+              .card h1 {
+                font-family: var(--font-display);
+                font-size: 26px;
+                color: var(--verde);
+                text-align: center;
+                margin-bottom: 6px;
+              }
+              .card .subtitle {
+                text-align: center;
+                color: var(--text-dim);
+                font-size: 14px;
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 16px;
+                margin-bottom: 20px;
+              }
+              .card .datos {
+                display: grid;
+                grid-template-columns: 100px 1fr;
+                gap: 8px 16px;
+                font-size: 14px;
+                margin-bottom: 20px;
+              }
+              .card .datos .label {
+                color: var(--text-dim);
+                font-weight: 600;
+              }
+              .card .datos .value {
+                color: var(--text);
+                word-break: break-word;
+              }
+              .card .datos .value .destacado {
+                color: var(--azul-ugr-claro);
+                font-weight: 600;
+              }
+              .card .badge {
+                background: rgba(129,199,132,0.12);
+                border: 1px solid rgba(129,199,132,0.2);
+                border-radius: 6px;
+                padding: 12px 16px;
+                text-align: center;
+                margin: 16px 0 20px;
+                font-size: 14px;
+                color: var(--verde);
+                font-weight: 600;
+              }
+              .card .badge small {
+                display: block;
+                font-weight: 400;
+                color: var(--text-dim);
+                font-size: 12px;
+                margin-top: 4px;
+              }
+              .card .footer-info {
+                text-align: center;
+                color: var(--text-dimmer);
+                font-size: 12px;
+                border-top: 1px solid var(--border);
+                padding-top: 16px;
+                margin-top: 8px;
+              }
+              .card .btn {
+                display: inline-block;
+                margin-top: 8px;
+                padding: 10px 28px;
+                background: var(--accent);
+                color: #0d1117;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: 700;
+                font-size: 14px;
+                text-align: center;
+                width: 100%;
+                transition: opacity 0.2s;
+              }
+              .card .btn:hover { opacity: 0.85; }
+              @media (max-width: 480px) {
+                .card { padding: 24px 18px; }
+                .card .datos { grid-template-columns: 1fr; gap: 2px; }
+                .card .datos .label { font-weight: 700; }
+              }
             </style>
           </head>
           <body>
             <div class="card">
-              <h1 class="header">✅ Inscripción confirmada</h1>
+              <div class="header-icon">✅</div>
+              <h1>Inscripción confirmada</h1>
+              <p class="subtitle">QR válido para el acceso al evento</p>
+
               <div class="datos">
-                <p><strong>Nombre:</strong> ${row.nombre}</p>
-                <p><strong>Email:</strong> ${row.email}</p>
-                <p><strong>Charla:</strong> ${row.titulo}</p>
-                <p><strong>Día:</strong> ${row.dia} - ${row.hora}</p>
-                <p><strong>Fecha de inscripción:</strong> ${row.fecha_inscripcion}</p>
+                <span class="label">👤 Nombre</span>
+                <span class="value">${row.nombre}</span>
+
+                <span class="label">📧 Email</span>
+                <span class="value">${row.email}</span>
+
+                <span class="label">🎤 Charla</span>
+                <span class="value"><span class="destacado">${row.titulo}</span></span>
+
+                <span class="label">📅 Día y hora</span>
+                <span class="value">${row.dia} - ${row.hora}</span>
+
+                <span class="label">📝 Inscripción</span>
+                <span class="value">${row.fecha_inscripcion}</span>
               </div>
-              <p class="confirmado">✅ QR válido para el acceso</p>
-              <p class="escaneo">🕒 Escaneado el: ${ahora}</p>
-              <p style="color:#666;font-size:0.9rem;">Presenta este código en el evento.</p>
-              <a href="/" class="btn" style="display:inline-block;background:#003366;color:white;padding:10px 20px;border-radius:30px;text-decoration:none;margin-top:10px;">Volver al inicio</a>
+
+              <div class="badge">
+                🟢 Acceso permitido
+                <small>Escaneado el: ${ahora}</small>
+              </div>
+
+              <a href="/" class="btn">Volver al inicio</a>
+              <div class="footer-info">
+                Presenta este código en el evento · IX Jornadas UGR 2026
+              </div>
             </div>
           </body>
           </html>

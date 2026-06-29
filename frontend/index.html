@@ -3,72 +3,232 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jornadas Kinesiología UGR 2026</title>
+  <title>IX Jornadas de Kinesiología UGR 2026</title>
+  <!-- Ruta relativa a la carpeta frontend/ -->
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <header>
-    <div class="container">
-      <div class="logo-container">
-        <!-- Logo con fallback a texto si no se carga la imagen -->
-        <img src="assets/logo-ugr.png" alt="Logo Universidad del Gran Rosario" class="logo-img" onerror="this.style.display='none'" />
-        <div class="logo-texto">
-          <span class="logo-ugr">UNIVERSIDAD DEL GRAN ROSARIO</span>
-          <span class="logo-jornadas">Jornadas de Kinesiología y Fisiatría 2026</span>
-        </div>
-      </div>
+
+  <!-- ===== HEADER (común) ===== -->
+  <header class="site-header">
+    <div class="header-left">
+      <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
+      <!-- Ruta relativa a assets/ -->
+      <img src="assets/logo-ugr.png" alt="UGR" class="logo-ugr" />
+      <span class="brand">JKF-UGR <small>· IX Jornadas</small></span>
+    </div>
+    <div class="header-right">
+      <span class="patient-tag">2 y 3 sep · Santa Fe</span>
     </div>
   </header>
 
-  <main class="container">
-    <section id="bienvenida">
-      <h2>Bienvenidos</h2>
-      <p>Inscríbete en los talleres y sé parte de este encuentro académico. Cupos limitados (35‑40 personas).</p>
-    </section>
-
-    <section id="cronograma">
-      <h2>Cronograma de Charlas</h2>
-      <div id="charlas-container"></div>
-    </section>
-
-    <section id="inscripcion">
-      <h2>Inscripción</h2>
-      <form id="form-inscripcion">
-        <div class="form-group">
-          <label for="nombre">Nombre completo:</label>
-          <input type="text" id="nombre" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Correo electrónico:</label>
-          <input type="email" id="email" required />
-        </div>
-        <div class="form-group">
-          <label for="charla">Selecciona una charla:</label>
-          <select id="charla" required>
-            <option value="">-- Elige --</option>
-          </select>
-          <span id="cupo-disponible"></span>
-        </div>
-        <button type="submit">Inscribirme</button>
-      </form>
-      <div id="mensaje-inscripcion"></div>
-      <div id="qr-container" style="display:none;">
-        <h3>¡Inscripción exitosa!</h3>
-        <p>Guarda este código QR para verificar tu asistencia el día del evento.</p>
-        <img id="qr-imagen" src="" alt="QR de inscripción" />
-        <p><a id="qr-enlace" href="#" target="_blank">Enlace de verificación</a></p>
-        <button id="descargar-qr" style="margin-top:10px;">Descargar QR</button>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>© 2026 Universidad del Gran Rosario - Jornadas de Kinesiología y Fisiatría</p>
-      <p style="font-size:0.8rem; opacity:0.7;">Contacto: eventos@ugr.edu.ar</p>
+  <!-- ===== SIDEBAR (menú lateral) ===== -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <button class="sidebar-close" id="closeSidebar">✕</button>
+    <div class="sidebar-brand">
+      JKF-UGR
+      <small>Universidad del Gran Rosario</small>
     </div>
-  </footer>
+    <nav>
+      <a data-view="main" data-scroll="hero">🏠 Inicio</a>
+      <a data-view="main" data-scroll="cronograma-section">📅 Cronograma</a>
+      <a data-view="inscripciones" id="linkInscribirse">✍️ Inscribirse a charlas</a>
+    </nav>
+  </aside>
 
+  <!-- ============================================= -->
+  <!-- VISTA 1: PÁGINA PRINCIPAL (Jornadas) -->
+  <!-- ============================================= -->
+  <div class="page-view active" id="view-main">
+    <!-- HERO (igual que antes) -->
+    <div class="hero" id="hero">
+      <p class="hero-eyebrow">Congreso Académico · 2 y 3 de septiembre · Santa Fe, Argentina</p>
+      <h1>IX Jornadas de <em>Kinesiología y Fisiatría</em><br>UGR · Santa Fe 2026</h1>
+      <p class="hero-subtitle">Un espacio de encuentro para profesionales de la Kinesiología y la Fisiatría, con ponencias de vanguardia, talleres prácticos y mesas redondas que marcarán la actualidad de la disciplina.</p>
+      <div class="hero-meta">
+        <div class="meta-item"><span class="meta-label">Fechas</span><span class="meta-value">2 y 3 de septiembre</span></div>
+        <div class="meta-item"><span class="meta-label">Sede Santa Fe</span><span class="meta-value">Facultad de Kinesiología y Fisiatría</span></div>
+        <div class="meta-item"><span class="meta-label">Modalidad</span><span class="meta-value">Presencial</span></div>
+        <div class="meta-item"><span class="meta-label">Ponentes</span><span class="meta-value">+35 Expertos</span></div>
+        <div class="meta-item"><span class="meta-label">Inscripción</span><span class="meta-value">Hasta el 31 de agosto</span></div>
+      </div>
+      <div class="alert-box-ugr">
+        <strong>¡Inscripciones abiertas!</strong> Cupos limitados para los talleres prácticos. ¡Asegura tu lugar ahora!
+      </div>
+      <div class="stats-row">
+        <div class="stat-cell"><span class="val">2</span><span class="lbl">Días</span></div>
+        <div class="stat-cell"><span class="val">+35</span><span class="lbl">Disertantes</span></div>
+        <div class="stat-cell"><span class="val">+20</span><span class="lbl">Talleres</span></div>
+        <div class="stat-cell"><span class="val">35-40</span><span class="lbl">Cupos por charla</span></div>
+        <div class="stat-cell"><span class="val">3</span><span class="lbl">ECTS Solicitados</span></div>
+      </div>
+    </div>
+
+    <!-- CUERPO PRINCIPAL (mismo contenido de antes) -->
+    <div class="page-body">
+      <!-- Sección 01 -->
+      <div class="section-header"><span class="section-num">Sección 01</span><h2 class="section-title">🧠 Ejes Temáticos del Congreso</h2></div>
+      <p class="prose">Las <strong>IX Jornadas de Kinesiología y Fisiatría</strong> abordarán los avances más recientes en el manejo del dolor, la rehabilitación deportiva y las técnicas intervencionistas, con un enfoque multidisciplinar e integrador.</p>
+      <div class="highlight-box"><strong>Lema 2026:</strong> "Integrando la evidencia científica en la práctica clínica diaria para optimizar la recuperación funcional del paciente."</div>
+      <div class="card-grid">
+        <div class="card-item"><span class="ci-icon">🦵</span><div class="ci-title">Dolor y Neurociencia</div><div class="ci-body">Abordaje del dolor crónico desde la neurociencia, sensibilización central y estrategias de <strong>Pain Neuroscience Education (PNE)</strong>.</div></div>
+        <div class="card-item"><span class="ci-icon">🏀</span><div class="ci-title">Rehabilitación Deportiva</div><div class="ci-body">Tendinopatías, lesiones musculares, control motor y estrategias de <strong>retorno al deporte (RTS)</strong> basadas en la evidencia.</div></div>
+        <div class="card-item"><span class="ci-icon">💉</span><div class="ci-title">Fisiatría Intervencionista</div><div class="ci-body">Actualización en ecografía musculoesquelética, infiltraciones guiadas, PRP y toxina botulínica en patología del sistema locomotor.</div></div>
+        <div class="card-item"><span class="ci-icon">🧩</span><div class="ci-title">Neurología y Rehabilitación</div><div class="ci-body">Nuevas tendencias en neurorrehabilitación, robótica, realidad virtual y estimulación magnética transcraneal (TMS).</div></div>
+      </div>
+      <div class="sub-title">📌 Áreas de Interés para el Envío de Comunicaciones</div>
+      <ul class="dot-list">
+        <li><strong>Dolor musculoesquelético crónico:</strong> Abordaje desde la terapia manual y el ejercicio terapéutico.</li>
+        <li><strong>Ecografía en el punto de atención:</strong> Uso de la ecografía para el diagnóstico y guía de procedimientos.</li>
+        <li><strong>Rehabilitación en el paciente geriátrico:</strong> Estrategias para la prevención de caídas y mejora de la marcha.</li>
+        <li><strong>Nuevas tecnologías en fisioterapia:</strong> Exoesqueletos, biofeedback y aplicaciones móviles para la adherencia al tratamiento.</li>
+      </ul>
+      <div class="info-block"><strong>📅 Plazo para envío de comunicaciones:</strong> Los interesados en presentar pósters o comunicaciones orales deberán enviar su resumen antes del <strong>15 de agosto de 2026</strong>.</div>
+
+      <!-- Sección 02: Programa (cronograma) -->
+      <div id="cronograma-section">
+        <div class="section-header"><span class="section-num">Sección 02</span><h2 class="section-title">🗓️ Programa Preliminar (Día a Día)</h2></div>
+        <p class="prose">A continuación se detalla el programa científico preliminar. Los horarios y ponentes están sujetos a cambios menores hasta la confirmación definitiva.</p>
+        <div class="sub-title">📆 Viernes 2 de septiembre</div>
+        <table class="data-table">
+          <thead><tr><th>Hora</th><th>Actividad</th><th>Ponente / Responsable</th></tr></thead>
+          <tbody>
+            <tr><td>08:30 - 09:00</td><td>Recepción y entrega de documentación</td><td>Secretaría Técnica</td></tr>
+            <tr><td>09:00 - 09:30</td><td><strong>Inauguración Oficial</strong></td><td>Decano de la Facultad de Medicina</td></tr>
+            <tr><td>09:30 - 10:30</td><td>Conferencia Inaugural: "Actualización en Dolor Crónico"</td><td>Dr. Luis Miguel Torres</td></tr>
+            <tr><td>10:30 - 11:15</td><td>Mesa Redonda: "Abordaje Multidisciplinar de la Tendinopatía"</td><td>Dra. María López / Dr. Javier Pérez</td></tr>
+            <tr><td>11:15 - 11:45</td><td>Pausa Café - Exposición de Pósters</td><td>—</td></tr>
+            <tr><td>11:45 - 13:15</td><td>Taller Práctico 1: "Ecografía para Fisioterapeutas"</td><td>Dr. Carlos García (SERAM)</td></tr>
+            <tr><td>13:15 - 14:15</td><td>Comunicaciones Orales Libres</td><td>Varios autores</td></tr>
+          </tbody>
+        </table>
+        <div class="sub-title">📆 Sábado 3 de septiembre</div>
+        <table class="data-table">
+          <thead><tr><th>Hora</th><th>Actividad</th><th>Ponente / Responsable</th></tr></thead>
+          <tbody>
+            <tr><td>09:00 - 10:00</td><td>Conferencia: "Rehabilitación en el Deportista de Élite"</td><td>Dr. Pedro Martínez (Real Madrid)</td></tr>
+            <tr><td>10:00 - 11:00</td><td>Mesa Redonda: "Infiltraciones guiadas por ecografía"</td><td>Dra. Ana Belén Rodríguez</td></tr>
+            <tr><td>11:00 - 11:30</td><td>Pausa Café</td><td>—</td></tr>
+            <tr><td>11:30 - 13:00</td><td>Taller Práctico 2: "Punción Seca y Neuromodulación"</td><td>Dr. Fernando Ramos</td></tr>
+            <tr><td>13:00 - 14:00</td><td>Conferencia de Clausura</td><td>Dra. Elena Muñoz (UGR)</td></tr>
+            <tr><td>14:00 - 14:30</td><td>Entrega de Premios y Clausura Oficial</td><td>Comité Organizador</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sección 03: Ponencias -->
+      <div class="section-header"><span class="section-num">Sección 03</span><h2 class="section-title">🎤 Ponencias y Talleres Destacados</h2></div>
+      <p class="prose">Inscríbete en los talleres prácticos al realizar la inscripción general. Las plazas son limitadas y se asignarán por orden de inscripción.</p>
+      <div class="phase-block p1">
+        <div class="phase-header"><div class="ph-left"><span class="phase-badge badge-azul">Día 1</span><div><div class="phase-title">Viernes 2 de septiembre</div><div class="phase-subtitle">💡 Dolor, Neurociencia y Ecografía</div></div></div><span class="phase-duration">09:00 - 14:00 h</span></div>
+        <div class="phase-body">
+          <div class="sub-title">Talleres Prácticos del Viernes</div>
+          <div class="ex-grid">
+            <div class="ex-card"><div class="ex-num">T1</div><div class="ex-content"><div class="ex-title">Ecografía Musculoesquelética: Exploración de Rodilla y Hombro</div><div class="ex-desc">Taller teórico-práctico de 2 horas con equipos de ecografía de alta resolución.</div><div class="ex-evidence">📌 Ponente: Dr. Carlos García (SERAM)</div></div><div class="ex-dose"><div class="dose-main">⏰ 11:45 h</div><div class="dose-detail">Plazas: 25</div><div class="dose-detail">Aula 1</div></div></div>
+            <div class="ex-card"><div class="ex-num">T2</div><div class="ex-content"><div class="ex-title">Punción Seca y Terapia Manual en el Paciente Deportista</div><div class="ex-desc">Abordaje práctico de la punción seca en puntos gatillo miofasciales combinado con movilización neural.</div><div class="ex-evidence">📌 Ponente: Dr. Fernando Ramos</div></div><div class="ex-dose"><div class="dose-main">⏰ 12:30 h</div><div class="dose-detail">Plazas: 20</div><div class="dose-detail">Aula 2</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phase-block p2">
+        <div class="phase-header"><div class="ph-left"><span class="phase-badge badge-rojo">Día 2</span><div><div class="phase-title">Sábado 3 de septiembre</div><div class="phase-subtitle">🏅 Deporte de Élite y Rehabilitación Avanzada</div></div></div><span class="phase-duration">09:00 - 14:00 h</span></div>
+        <div class="phase-body">
+          <div class="sub-title">Talleres Prácticos del Sábado</div>
+          <div class="ex-grid">
+            <div class="ex-card"><div class="ex-num">T3</div><div class="ex-content"><div class="ex-title">Estrategias de Retorno al Deporte (RTS) en Ligamentoplastias</div><div class="ex-desc">Protocolos de carga progresiva, tests funcionales y toma de decisiones clínicas para el alta deportiva segura.</div><div class="ex-evidence">📌 Ponente: Dr. Pedro Martínez (Real Madrid)</div></div><div class="ex-dose"><div class="dose-main">⏰ 10:00 h</div><div class="dose-detail">Plazas: 30</div><div class="dose-detail">Sala Audiovisual</div></div></div>
+            <div class="ex-card"><div class="ex-num">T4</div><div class="ex-content"><div class="ex-title">Estimulación Magnética Transcraneal (TMS) en Neurorehabilitación</div><div class="ex-desc">Introducción práctica al uso de la TMS en pacientes con ictus y dolor neuropático.</div><div class="ex-evidence">📌 Ponente: Dra. Elena Muñoz (UGR)</div></div><div class="ex-dose"><div class="dose-main">⏰ 11:30 h</div><div class="dose-detail">Plazas: 15</div><div class="dose-detail">Lab. Neurociencia</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 04: Precios -->
+      <div class="section-header"><span class="section-num">Sección 04</span><h2 class="section-title">💶 Cuotas de Inscripción</h2></div>
+      <p class="prose">La inscripción incluye la asistencia a todas las ponencias y mesas redondas, la documentación oficial, los certificados de asistencia y el coffee break durante las pausas.</p>
+      <table class="data-table">
+        <thead><tr><th>Categoría</th><th>Precio (Hasta 31/08)</th><th>Precio (Septiembre)</th><th>Incluye talleres</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Profesionales</strong></td><td>80 €</td><td>100 €</td><td>No (50€ extra)</td></tr>
+          <tr><td><strong>Docentes UGR</strong></td><td>60 €</td><td>80 €</td><td>No (40€ extra)</td></tr>
+          <tr><td><strong>Estudiantes de Grado</strong></td><td>45 €</td><td>60 €</td><td>No (30€ extra)</td></tr>
+          <tr><td><strong>Residentes (MIR/EIR)</strong></td><td>50 €</td><td>70 €</td><td>No (35€ extra)</td></tr>
+        </tbody>
+      </table>
+      <div class="info-block"><strong>📌 Bonificación especial:</strong> Los socios de la Sociedad Argentina de Kinesiología (SAK) disfrutan de un <strong>10% de descuento adicional</strong> sobre la tarifa de inscripción temprana.</div>
+
+      <!-- Sección 05: FAQ -->
+      <div class="section-header"><span class="section-num">Sección 05</span><h2 class="section-title">❓ Preguntas Frecuentes (FAQ)</h2></div>
+      <ul class="dot-list">
+        <li><strong>¿Dónde será el evento?</strong> El congreso se celebrará en el <strong>Salón de Actos de la Facultad de Kinesiología y Fisiatría</strong> (Santa Fe, Argentina). El acceso está señalizado desde la entrada principal.</li>
+        <li><strong>¿Se emitirá certificado de asistencia?</strong> Sí, se entregará un certificado digital con las horas lectivas a todos los inscritos que asistan al menos al 80% de las sesiones.</li>
+        <li><strong>¿Hay opción de asistencia online?</strong> No, esta edición será <strong>100% presencial</strong> para fomentar el networking y la práctica en talleres.</li>
+        <li><strong>¿Cómo puedo enviar mi comunicación científica?</strong> Debes enviar un resumen de máximo 300 palabras al correo <strong>comunicaciones@jornadasugr.ar</strong> antes del 15 de agosto de 2026.</li>
+        <li><strong>¿Puedo anular mi inscripción?</strong> Sí, se devolverá el 100% del importe si se solicita antes del 20 de agosto. Pasada esa fecha, no se realizarán reembolsos.</li>
+      </ul>
+      <div class="highlight-box" style="margin-top:32px;">
+        🏛️ <strong>¡Te esperamos en Santa Fe!</strong><br>
+        La ciudad te abre sus puertas para compartir conocimiento, experiencia y pasión por la Kinesiología y la Fisiatría.<br>
+        <span style="font-size:11px;color:var(--text-dimmer);font-style:normal;margin-top:8px;display:block;">
+        📧 info@jornadasugr.ar · 📞 +54 342 123 456 · <strong>#JornadasKineUGR2026</strong>
+        </span>
+      </div>
+    </div>
+    <footer class="site-footer">
+      <strong>Universidad del Gran Rosario (UGR)</strong> – Kinesiología y Fisiatría<br>
+      Facultad de Kinesiología y Fisiatría · Santa Fe, Argentina<br>
+      Organiza: Departamento de Kinesiología y Departamento de Fisiatría<br>
+      <span style="margin-top:6px;display:block;">© 2026 · Todos los derechos reservados · Diseñado con ❤️ por el Comité Organizador</span>
+    </footer>
+  </div>
+
+  <!-- ============================================= -->
+  <!-- VISTA 2: PÁGINA DE INSCRIPCIONES (conectada a la API) -->
+  <!-- ============================================= -->
+  <div class="page-view" id="view-inscripciones">
+    <div class="inscripcion-wrapper">
+      <h2>✍️ Inscripción a Charlas</h2>
+      <p class="subtitle">Selecciona una charla, completa tus datos y obtén tu código QR de acceso.</p>
+
+      <!-- Lista de charlas (se llena dinámicamente desde la API) -->
+      <div id="charlas-container" class="charla-grid"></div>
+
+      <!-- Formulario -->
+      <form id="form-inscripcion" class="form-inscripcion">
+        <div class="form-group">
+          <label for="nombre">Nombre completo *</label>
+          <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Correo electrónico *</label>
+          <input type="email" id="email" placeholder="tucorreo@ejemplo.com" required />
+        </div>
+        <div class="form-group">
+          <label for="charla-select">Selecciona una charla *</label>
+          <select id="charla-select" required>
+            <option value="">— Elige una charla —</option>
+          </select>
+          <span class="cupo-info" id="cupo-disponible">Cupos disponibles: <strong>—</strong></span>
+        </div>
+        <button type="submit" class="btn-primary">Inscribirme</button>
+      </form>
+
+      <div id="mensaje-inscripcion"></div>
+
+      <!-- QR generado por el servidor -->
+      <div id="qr-container" class="qr-container" style="display:none;">
+        <h3>✅ ¡Inscripción exitosa!</h3>
+        <p>Guarda este código QR para verificar tu asistencia el día del evento.</p>
+        <div class="qr-imagen-wrapper">
+          <img id="qr-imagen" src="" alt="Código QR de inscripción" />
+        </div>
+        <div>
+          <a id="qr-enlace" href="#" target="_blank" class="qr-enlace">🔗 Enlace de verificación</a>
+        </div>
+        <button id="descargar-qr" class="btn-secundario">⬇️ Descargar QR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== JavaScript ===== -->
   <script src="js/main.js"></script>
 </body>
 </html>
