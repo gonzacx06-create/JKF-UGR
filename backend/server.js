@@ -265,12 +265,14 @@ app.get('/api/verificar/:codigo', async (req, res) => {
 });
 
 // ============================================
-// PÁGINA DE VERIFICACIÓN (DISEÑO PROFESIONAL)
+// PÁGINA DE VERIFICACIÓN (CON LOGS Y FECHA CORREGIDA)
 // ============================================
 app.get('/verificar/:codigo', async (req, res) => {
   const codigo = req.params.codigo;
+  console.log(`🔍 Verificando código: ${codigo}`);
 
   try {
+    console.log('📡 Intentando consultar la base de datos...');
     const result = await pool.query(`
       SELECT i.nombre, i.email, i.fecha_inscripcion, i.escaneado, i.fecha_escaneo,
              c.titulo, c.dia, c.hora
@@ -279,27 +281,39 @@ app.get('/verificar/:codigo', async (req, res) => {
       WHERE i.codigo_unico = $1
     `, [codigo]);
 
+    console.log(`✅ Resultados obtenidos: ${result.rows.length} filas`);
+
     if (result.rows.length === 0) {
+      console.warn('⚠️ Código no encontrado en la base de datos.');
       return res.send(generateErrorPage('❌', 'Código no válido', 'No se encontró ninguna inscripción con este código.'));
     }
 
     const row = result.rows[0];
+    console.log(`👤 Inscripción encontrada para: ${row.nombre}`);
 
     if (row.escaneado === true) {
+      console.warn(`⛔ QR ya escaneado el ${row.fecha_escaneo}`);
       return res.send(generateErrorPage('⛔', 'QR ya utilizado', `Este código QR ya fue escaneado el <strong>${row.fecha_escaneo}</strong>. No se permite el reingreso.`));
     }
 
-    const ahora = new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
+    // ===== CORRECCIÓN DE FECHA =====
+    const ahora = new Date().toISOString(); // Formato ISO: YYYY-MM-DDTHH:MM:SS.MMMZ
+    console.log(`🕒 Escaneando por primera vez a las ${ahora}`);
+    
     await pool.query(
       'UPDATE inscripciones SET escaneado = TRUE, fecha_escaneo = $1 WHERE codigo_unico = $2',
       [ahora, codigo]
     );
+    console.log('✅ Registro marcado como escaneado');
 
-    res.send(generateSuccessPage(row, ahora));
+    // Formatear fecha para mostrar en la página (más legible)
+    const fechaLegible = new Date(ahora).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
+    res.send(generateSuccessPage(row, fechaLegible));
 
   } catch (err) {
-    console.error('Error en verificación:', err.message);
-    res.status(500).send(generateErrorPage('⚠️', 'Error interno', 'Ocurrió un problema al verificar tu inscripción. Intenta de nuevo.'));
+    console.error('❌ Error en verificación:', err.message);
+    console.error('📄 Stack trace:', err.stack);
+    res.status(500).send(generateErrorPage('⚠️', 'Error interno', `Ocurrió un problema al verificar tu inscripción. Detalle técnico: ${err.message}`));
   }
 });
 
