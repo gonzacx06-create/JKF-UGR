@@ -4,339 +4,410 @@
   // ============================================
   // 1. MENÚ LATERAL Y NAVEGACIÓN
   // ============================================
-  const menuBtn = document.getElementById('menuBtn');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-  const closeSidebar = document.getElementById('closeSidebar');
+  function initApp() {
+    console.log('🔥 Inicializando Jornadas UGR...');
 
-  function openSidebar() {
-    sidebar.classList.add('open');
-    overlay.classList.add('active');
-  }
-  function closeSidebarFunc() {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('active');
-  }
-  menuBtn.addEventListener('click', openSidebar);
-  closeSidebar.addEventListener('click', closeSidebarFunc);
-  overlay.addEventListener('click', closeSidebarFunc);
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const closeSidebar = document.getElementById('closeSidebar');
 
-  const views = {
-    main: document.getElementById('view-main'),
-    misInscripciones: document.getElementById('view-mis-inscripciones')
-  };
-
-  function showView(viewId) {
-    Object.keys(views).forEach(key => {
-      views[key].classList.remove('active');
-    });
-    if (views[viewId]) {
-      views[viewId].classList.add('active');
+    if (!menuBtn || !sidebar || !overlay || !closeSidebar) {
+      console.error('❌ Error: Elementos del menú no encontrados.');
+      return;
     }
-    closeSidebarFunc();
-    if (viewId === 'mis-inscripciones') {
-      // Al abrir la vista, si hay email guardado, buscar automáticamente
-      const savedEmail = localStorage.getItem('miEmail');
-      if (savedEmail) {
-        document.getElementById('email-buscador').value = savedEmail;
-        buscarInscripciones(savedEmail);
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('active');
+    }
+    function closeSidebarFunc() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    }
+    menuBtn.addEventListener('click', openSidebar);
+    closeSidebar.addEventListener('click', closeSidebarFunc);
+    overlay.addEventListener('click', closeSidebarFunc);
+
+    const views = {
+      main: document.getElementById('view-main'),
+      misInscripciones: document.getElementById('view-mis-inscripciones')
+    };
+
+    if (!views.main || !views.misInscripciones) {
+      console.error('❌ Error: Vistas no encontradas.');
+      return;
+    }
+
+    // ============================================
+    // 2. FUNCIÓN PARA BUSCAR INSCRIPCIONES (por email)
+    // ============================================
+    function buscarInscripciones(email) {
+      const contenedor = document.getElementById('lista-mis-inscripciones');
+      if (!contenedor) {
+        console.error('❌ Contenedor "lista-mis-inscripciones" no encontrado.');
+        return;
+      }
+      contenedor.innerHTML = '<p style="color: var(--text-dim); text-align: center; padding: 20px;">Cargando...</p>';
+
+      fetch(`/api/mis-inscripciones?email=${encodeURIComponent(email)}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Error al obtener inscripciones');
+          return res.json();
+        })
+        .then(data => {
+          if (data.length === 0) {
+            contenedor.innerHTML = `
+              <p style="color: var(--text-dim); font-size: 14px; grid-column: 1/-1; text-align: center; padding: 20px 0;">
+                No tienes inscripciones con este email. Inscríbete a una charla desde el cronograma.
+              </p>
+            `;
+            return;
+          }
+
+          localStorage.setItem('miEmail', email);
+
+          contenedor.innerHTML = '';
+          data.forEach(ins => {
+            const card = document.createElement('div');
+            card.className = 'charla-card';
+            const baseUrl = window.location.origin;
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${baseUrl}/verificar/${ins.codigo}`)}`;
+
+            card.innerHTML = `
+              <div class="ch-titulo">${ins.titulo}</div>
+              <div class="ch-meta">
+                <span>📅 ${ins.dia}</span>
+                <span>⏰ ${ins.hora}</span>
+              </div>
+              <div class="ch-disertante">🎤 ${ins.ponente}</div>
+              <div style="margin-top: 12px; text-align: center;">
+                <img src="${qrImageUrl}" alt="QR" style="max-width: 120px; border-radius: 6px; background: white; padding: 6px;" />
+              </div>
+              <div style="margin-top: 8px; font-size: 11px; color: var(--text-dimmer); display: flex; justify-content: space-between; align-items: center;">
+                <span>Código: ${ins.codigo}</span>
+                <button class="btn-descargar-qr-local" data-codigo="${ins.codigo}" style="background: transparent; border: none; color: var(--azul-ugr-claro); cursor: pointer; text-decoration: underline; font-size: 12px;">Descargar QR</button>
+              </div>
+            `;
+            contenedor.appendChild(card);
+          });
+
+          document.querySelectorAll('.btn-descargar-qr-local').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+              const codigo = this.dataset.codigo;
+              const baseUrl = window.location.origin;
+              const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`${baseUrl}/verificar/${codigo}`)}`;
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `qr-${codigo}.png`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            });
+          });
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          contenedor.innerHTML = `
+            <p style="color: var(--accent4); text-align: center; padding: 20px;">
+              ⚠️ Error al cargar las inscripciones. Intenta de nuevo.
+            </p>
+          `;
+        });
+    }
+
+    // ============================================
+    // 3. FUNCIÓN PARA CAMBIAR DE VISTA
+    // ============================================
+    function showView(viewId) {
+      Object.keys(views).forEach(key => {
+        views[key].classList.remove('active');
+      });
+      if (views[viewId]) {
+        views[viewId].classList.add('active');
+        console.log(`✅ Vista activada: ${viewId}`);
+      } else {
+        console.error(`❌ Vista no encontrada: ${viewId}`);
+      }
+      closeSidebarFunc();
+
+      if (viewId === 'mis-inscripciones') {
+        const emailBuscador = document.getElementById('email-buscador');
+        const savedEmail = localStorage.getItem('miEmail');
+        if (savedEmail && emailBuscador) {
+          emailBuscador.value = savedEmail;
+          buscarInscripciones(savedEmail);
+        } else if (!emailBuscador) {
+          console.error('❌ Elemento "email-buscador" no encontrado.');
+        }
       }
     }
-  }
 
-  document.querySelectorAll('.sidebar nav a').forEach(link => {
-    link.addEventListener('click', function(e) {
-      const view = this.dataset.view;
-      const scrollTarget = this.dataset.scroll;
-      if (view) {
-        showView(view);
-        if (view === 'main' && scrollTarget) {
-          setTimeout(() => {
-            const el = document.getElementById(scrollTarget);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 200);
+    // ============================================
+    // 4. ASIGNAR EVENTOS DEL MENÚ (SOLUCIÓN DEFINITIVA)
+    // ============================================
+    // Usar un enfoque híbrido: tanto por ID como por selector
+    const linkMisInscripciones = document.getElementById('linkMisInscripciones');
+    if (linkMisInscripciones) {
+      // Eliminar eventos anteriores (por si acaso)
+      linkMisInscripciones.replaceWith(linkMisInscripciones.cloneNode(true));
+      // Obtener el nuevo elemento clonado
+      const newLink = document.getElementById('linkMisInscripciones');
+      if (newLink) {
+        newLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🔗 Clic en "Mis inscripciones" (por ID)');
+          showView('mis-inscripciones');
+        });
+        console.log('✅ Evento asignado a linkMisInscripciones por ID');
+      }
+    } else {
+      console.error('❌ linkMisInscripciones no encontrado en el DOM');
+    }
+
+    // También asignar a todos los enlaces del sidebar (fallback)
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+      // Evitar duplicar el evento en el enlace ya asignado
+      if (link.id === 'linkMisInscripciones') return;
+      link.addEventListener('click', function(e) {
+        const view = this.dataset.view;
+        const scrollTarget = this.dataset.scroll;
+        if (view) {
+          e.preventDefault();
+          console.log(`🔗 Clic en enlace (data-view=${view})`);
+          showView(view);
+          if (view === 'main' && scrollTarget) {
+            setTimeout(() => {
+              const el = document.getElementById(scrollTarget);
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 200);
+          }
+        }
+      });
+    });
+
+    // ============================================
+    // 5. INSCRIBIR DESDE EL CRONOGRAMA
+    // ============================================
+    function inscribirDesdeCronograma(charlaId) {
+      const select = document.getElementById('charla-select');
+      if (select) {
+        select.value = charlaId;
+        select.dispatchEvent(new Event('change'));
+        const form = document.getElementById('form-inscripcion');
+        if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        console.warn('⚠️ Select de charlas no encontrado.');
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('.btn-inscribir-cronograma');
+      if (btn) {
+        e.preventDefault();
+        const id = parseInt(btn.dataset.id);
+        if (!isNaN(id)) {
+          inscribirDesdeCronograma(id);
         }
       }
     });
-  });
 
-  // ============================================
-  // 2. INSCRIBIR DESDE EL CRONOGRAMA
-  // ============================================
-  function inscribirDesdeCronograma(charlaId) {
-    const select = document.getElementById('charla-select');
-    if (select) {
-      select.value = charlaId;
-      select.dispatchEvent(new Event('change'));
-      const form = document.getElementById('form-inscripcion');
-      if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // ============================================
+    // 6. GESTIÓN DE CHARLAS (API)
+    // ============================================
+    const selectCharla = document.getElementById('charla-select');
+    const cupoInfo = document.getElementById('cupo-disponible');
+    let charlas = [];
+
+    function cargarCharlas() {
+      if (charlas.length > 0) return;
+      fetch('/api/charlas')
+        .then(res => {
+          if (!res.ok) throw new Error('Error al obtener charlas');
+          return res.json();
+        })
+        .then(data => {
+          charlas = data;
+          populateSelect();
+          console.log('✅ Charlas cargadas correctamente.');
+        })
+        .catch(err => console.error('❌ Error cargando charlas:', err));
     }
-  }
 
-  document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.btn-inscribir-cronograma');
-    if (btn) {
-      e.preventDefault();
-      const id = parseInt(btn.dataset.id);
-      inscribirDesdeCronograma(id);
-    }
-  });
-
-  // ============================================
-  // 3. GESTIÓN DE CHARLAS (API)
-  // ============================================
-  const selectCharla = document.getElementById('charla-select');
-  const cupoInfo = document.getElementById('cupo-disponible');
-  let charlas = [];
-
-  function cargarCharlas() {
-    if (charlas.length > 0) return;
-    fetch('/api/charlas')
-      .then(res => {
-        if (!res.ok) throw new Error('Error al obtener charlas');
-        return res.json();
-      })
-      .then(data => {
-        charlas = data;
-        populateSelect();
-      })
-      .catch(err => {
-        console.error('❌ Error cargando charlas:', err);
+    function populateSelect() {
+      if (!selectCharla) return;
+      selectCharla.innerHTML = '<option value="">— Elige una charla —</option>';
+      charlas.forEach(ch => {
+        const opt = document.createElement('option');
+        opt.value = ch.id;
+        opt.textContent = `${ch.titulo} (${ch.dia} ${ch.hora}) - Cupos: ${ch.disponibles}`;
+        selectCharla.appendChild(opt);
       });
-  }
-
-  function populateSelect() {
-    selectCharla.innerHTML = '<option value="">— Elige una charla —</option>';
-    charlas.forEach(ch => {
-      const opt = document.createElement('option');
-      opt.value = ch.id;
-      opt.textContent = `${ch.titulo} (${ch.dia} ${ch.hora}) - Cupos: ${ch.disponibles}`;
-      selectCharla.appendChild(opt);
-    });
-    selectCharla.addEventListener('change', actualizarCupo);
-  }
-
-  function actualizarCupo() {
-    const id = parseInt(selectCharla.value);
-    const ch = charlas.find(c => c.id === id);
-    if (ch) {
-      cupoInfo.innerHTML = `Cupos disponibles: <strong>${ch.disponibles}</strong>`;
-    } else {
-      cupoInfo.innerHTML = 'Cupos disponibles: <strong>—</strong>';
-    }
-  }
-
-  // ============================================
-  // 4. INSCRIPCIÓN (formulario)
-  // ============================================
-  const form = document.getElementById('form-inscripcion');
-  const mensajeDiv = document.getElementById('mensaje-inscripcion');
-  const qrContainer = document.getElementById('qr-container');
-  const qrImagen = document.getElementById('qr-imagen');
-  const qrEnlace = document.getElementById('qr-enlace');
-  const descargarBtn = document.getElementById('descargar-qr');
-
-  let ultimoQrDataUrl = '';
-
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const nombre = document.getElementById('nombre').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const charlaId = parseInt(selectCharla.value);
-
-    if (!nombre || !email || !charlaId) {
-      mensajeDiv.innerHTML = `<div class="mensaje-exito" style="border-left-color: var(--accent4);"><strong>⚠️</strong> Completa todos los campos.</div>`;
-      return;
+      selectCharla.addEventListener('change', actualizarCupo);
     }
 
-    const btn = form.querySelector('.btn-primary');
-    btn.disabled = true;
-    btn.textContent = 'Enviando...';
-
-    fetch('/api/inscribir', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, email, charla_id: charlaId })
-    })
-    .then(res => {
-      if (!res.ok) {
-        return res.json().then(errData => {
-          throw new Error(errData.error || 'Error en la inscripción');
-        });
-      }
-      return res.json();
-    })
-    .then(data => {
-      mensajeDiv.innerHTML = `<div class="mensaje-exito"><strong>✅ ¡Inscripción confirmada!</strong> Se agregó a "Mis inscripciones".</div>`;
-
-      qrImagen.src = data.qr;
-      qrImagen.alt = `QR para ${nombre}`;
-      qrEnlace.href = data.url;
-      qrEnlace.textContent = `🔗 Enlace de verificación (código: ${data.codigo})`;
-      ultimoQrDataUrl = data.qr;
-      qrContainer.style.display = 'block';
-
-      // Guardar email para futuras consultas en "Mis inscripciones"
-      localStorage.setItem('miEmail', email);
-
-      // Actualizar cupos localmente
-      const ch = charlas.find(c => c.id === charlaId);
+    function actualizarCupo() {
+      if (!selectCharla || !cupoInfo) return;
+      const id = parseInt(selectCharla.value);
+      const ch = charlas.find(c => c.id === id);
       if (ch) {
-        ch.disponibles = Math.max(0, ch.disponibles - 1);
-        populateSelect();
+        cupoInfo.innerHTML = `Cupos disponibles: <strong>${ch.disponibles}</strong>`;
+      } else {
+        cupoInfo.innerHTML = 'Cupos disponibles: <strong>—</strong>';
       }
-
-      // Resetear campos
-      document.getElementById('nombre').value = '';
-      document.getElementById('email').value = '';
-      selectCharla.value = '';
-      cupoInfo.innerHTML = 'Cupos disponibles: <strong>—</strong>';
-
-      setTimeout(() => {
-        qrContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
-    })
-    .catch(err => {
-      mensajeDiv.innerHTML = `<div class="mensaje-exito" style="border-left-color: var(--accent4);"><strong>⚠️</strong> ${err.message}</div>`;
-    })
-    .finally(() => {
-      btn.disabled = false;
-      btn.textContent = 'Inscribirme';
-    });
-  });
-
-  // ============================================
-  // 5. DESCARGAR QR (desde el contenedor actual)
-  // ============================================
-  descargarBtn.addEventListener('click', function() {
-    if (!ultimoQrDataUrl) {
-      alert('Primero inscríbete para generar un QR.');
-      return;
     }
-    if (ultimoQrDataUrl.startsWith('data:image')) {
-      const link = document.createElement('a');
-      link.href = ultimoQrDataUrl;
-      link.download = `qr-inscripcion-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      fetch(ultimoQrDataUrl)
-        .then(res => res.blob())
-        .then(blob => {
+
+    // ============================================
+    // 7. FORMULARIO DE INSCRIPCIÓN
+    // ============================================
+    const form = document.getElementById('form-inscripcion');
+    const mensajeDiv = document.getElementById('mensaje-inscripcion');
+    const qrContainer = document.getElementById('qr-container');
+    const qrImagen = document.getElementById('qr-imagen');
+    const qrEnlace = document.getElementById('qr-enlace');
+    const descargarBtn = document.getElementById('descargar-qr');
+
+    let ultimoQrDataUrl = '';
+
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const nombre = document.getElementById('nombre').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const charlaId = parseInt(selectCharla ? selectCharla.value : '');
+
+        if (!nombre || !email || !charlaId) {
+          mensajeDiv.innerHTML = `<div class="mensaje-exito" style="border-left-color: var(--accent4);"><strong>⚠️</strong> Completa todos los campos.</div>`;
+          return;
+        }
+
+        const btn = form.querySelector('.btn-primary');
+        btn.disabled = true;
+        btn.textContent = 'Enviando...';
+
+        fetch('/api/inscribir', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, email, charla_id: charlaId })
+        })
+        .then(res => {
+          if (!res.ok) {
+            return res.json().then(errData => {
+              throw new Error(errData.error || 'Error en la inscripción');
+            });
+          }
+          return res.json();
+        })
+        .then(data => {
+          mensajeDiv.innerHTML = `<div class="mensaje-exito"><strong>✅ ¡Inscripción confirmada!</strong> Se agregó a "Mis inscripciones".</div>`;
+
+          qrImagen.src = data.qr;
+          qrImagen.alt = `QR para ${nombre}`;
+          qrEnlace.href = data.url;
+          qrEnlace.textContent = `🔗 Enlace de verificación (código: ${data.codigo})`;
+          ultimoQrDataUrl = data.qr;
+          qrContainer.style.display = 'block';
+
+          localStorage.setItem('miEmail', email);
+
+          const ch = charlas.find(c => c.id === charlaId);
+          if (ch) {
+            ch.disponibles = Math.max(0, ch.disponibles - 1);
+            populateSelect();
+          }
+
+          document.getElementById('nombre').value = '';
+          document.getElementById('email').value = '';
+          if (selectCharla) selectCharla.value = '';
+          if (cupoInfo) cupoInfo.innerHTML = 'Cupos disponibles: <strong>—</strong>';
+
+          setTimeout(() => {
+            qrContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        })
+        .catch(err => {
+          mensajeDiv.innerHTML = `<div class="mensaje-exito" style="border-left-color: var(--accent4);"><strong>⚠️</strong> ${err.message}</div>`;
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = 'Inscribirme';
+        });
+      });
+    }
+
+    // ============================================
+    // 8. DESCARGAR QR
+    // ============================================
+    if (descargarBtn) {
+      descargarBtn.addEventListener('click', function() {
+        if (!ultimoQrDataUrl) {
+          alert('Primero inscríbete para generar un QR.');
+          return;
+        }
+        if (ultimoQrDataUrl.startsWith('data:image')) {
           const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
+          link.href = ultimoQrDataUrl;
           link.download = `qr-inscripcion-${Date.now()}.png`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          URL.revokeObjectURL(link.href);
-        })
-        .catch(() => window.open(ultimoQrDataUrl, '_blank'));
+        } else {
+          fetch(ultimoQrDataUrl)
+            .then(res => res.blob())
+            .then(blob => {
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = `qr-inscripcion-${Date.now()}.png`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(link.href);
+            })
+            .catch(() => window.open(ultimoQrDataUrl, '_blank'));
+        }
+      });
     }
-  });
 
-  // ============================================
-  // 6. MIS INSCRIPCIONES (desde el servidor por email)
-  // ============================================
-  const emailBuscador = document.getElementById('email-buscador');
-  const btnBuscar = document.getElementById('btn-buscar-inscripciones');
+    // ============================================
+    // 9. BOTÓN "BUSCAR" EN MIS INSCRIPCIONES
+    // ============================================
+    const emailBuscador = document.getElementById('email-buscador');
+    const btnBuscar = document.getElementById('btn-buscar-inscripciones');
 
-  function buscarInscripciones(email) {
-    const contenedor = document.getElementById('lista-mis-inscripciones');
-    contenedor.innerHTML = '<p style="color: var(--text-dim); text-align: center; padding: 20px;">Cargando...</p>';
-
-    fetch(`/api/mis-inscripciones?email=${encodeURIComponent(email)}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Error al obtener inscripciones');
-        return res.json();
-      })
-      .then(data => {
-        if (data.length === 0) {
-          contenedor.innerHTML = `
-            <p style="color: var(--text-dim); font-size: 14px; grid-column: 1/-1; text-align: center; padding: 20px 0;">
-              No tienes inscripciones con este email. Inscríbete a una charla desde el cronograma.
-            </p>
-          `;
+    if (btnBuscar) {
+      btnBuscar.addEventListener('click', function() {
+        if (!emailBuscador) return;
+        const email = emailBuscador.value.trim();
+        if (!email) {
+          alert('Por favor, ingresa tu correo electrónico.');
           return;
         }
-
-        // Guardar email para futuras visitas
-        localStorage.setItem('miEmail', email);
-
-        contenedor.innerHTML = '';
-        data.forEach(ins => {
-          const card = document.createElement('div');
-          card.className = 'charla-card';
-          // Usamos la URL base actual (localhost o producción) para el QR
-          const baseUrl = window.location.origin;
-          const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${baseUrl}/verificar/${ins.codigo}`)}`;
-
-          card.innerHTML = `
-            <div class="ch-titulo">${ins.titulo}</div>
-            <div class="ch-meta">
-              <span>📅 ${ins.dia}</span>
-              <span>⏰ ${ins.hora}</span>
-            </div>
-            <div class="ch-disertante">🎤 ${ins.ponente}</div>
-            <div style="margin-top: 12px; text-align: center;">
-              <img src="${qrImageUrl}" alt="QR" style="max-width: 120px; border-radius: 6px; background: white; padding: 6px;" />
-            </div>
-            <div style="margin-top: 8px; font-size: 11px; color: var(--text-dimmer); display: flex; justify-content: space-between; align-items: center;">
-              <span>Código: ${ins.codigo}</span>
-              <button class="btn-descargar-qr-local" data-codigo="${ins.codigo}" style="background: transparent; border: none; color: var(--azul-ugr-claro); cursor: pointer; text-decoration: underline; font-size: 12px;">Descargar QR</button>
-            </div>
-          `;
-          contenedor.appendChild(card);
-        });
-
-        // Eventos de descarga
-        document.querySelectorAll('.btn-descargar-qr-local').forEach(btn => {
-          btn.addEventListener('click', function(e) {
-            const codigo = this.dataset.codigo;
-            const baseUrl = window.location.origin;
-            const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`${baseUrl}/verificar/${codigo}`)}`;
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `qr-${codigo}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          });
-        });
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        contenedor.innerHTML = `
-          <p style="color: var(--accent4); text-align: center; padding: 20px;">
-            ⚠️ Error al cargar las inscripciones. Intenta de nuevo.
-          </p>
-        `;
+        buscarInscripciones(email);
       });
+    }
+
+    if (emailBuscador) {
+      emailBuscador.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          if (btnBuscar) btnBuscar.click();
+        }
+      });
+    }
+
+    // ============================================
+    // 10. INICIALIZACIÓN
+    // ============================================
+    setTimeout(cargarCharlas, 500);
+    console.log('🚀 Jornadas UGR 2026 - Todo listo');
   }
 
-  // Evento del botón "Buscar"
-  btnBuscar.addEventListener('click', function() {
-    const email = emailBuscador.value.trim();
-    if (!email) {
-      alert('Por favor, ingresa tu correo electrónico.');
-      return;
-    }
-    buscarInscripciones(email);
-  });
-
-  // Buscar al presionar Enter
-  emailBuscador.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      btnBuscar.click();
-    }
-  });
-
-  // ============================================
-  // 7. INICIALIZACIÓN
-  // ============================================
-  setTimeout(cargarCharlas, 500);
-
-  console.log('🚀 Jornadas UGR 2026 - Formulario en página principal y Mis inscripciones vía servidor');
+  // Esperar a que el DOM esté completamente cargado antes de ejecutar
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    // El DOM ya está listo (ejecutar inmediatamente)
+    initApp();
+  }
 })();
