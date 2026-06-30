@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración - Jornadas UGR</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* Estilos específicos para el panel */
+    .admin-wrapper {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+    }
+    .admin-header h1 {
+      font-family: var(--font-display);
+      color: #fff;
+      font-size: 28px;
+    }
+    .admin-header .btn-volver {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .admin-header .btn-volver:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      background: var(--surface);
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .filtros input,
+    .filtros select,
+    .filtros button {
+      padding: 8px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--font-body);
+    }
+    .filtros input:focus,
+    .filtros select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .filtros button {
+      background: var(--accent);
+      color: #0d1117;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .filtros button:hover {
+      opacity: 0.85;
+    }
+    .filtros .btn-exportar {
+      background: var(--azul-ugr);
+      color: #fff;
+    }
+    .filtros .btn-exportar:hover {
+      background: var(--azul-ugr-claro);
+    }
+    .tabla-container {
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 0 16px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    table th {
+      background: var(--surface2);
+      color: var(--text-dim);
+      font-weight: 600;
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+      vertical-align: middle;
+    }
+    table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+    table .estado-escaneado {
+      color: var(--verde);
+      font-weight: 600;
+    }
+    table .estado-no-escaneado {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .acciones {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .acciones button {
+      padding: 4px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .acciones button:hover {
+      opacity: 0.8;
+    }
+    .btn-toggle {
+      background: var(--azul-ugr);
+      color: #fff;
+    }
+    .btn-toggle.escaneado {
+      background: var(--verde);
+    }
+    .btn-eliminar {
+      background: var(--rojo-ugr);
+      color: #fff;
+    }
+    .paginacion {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      flex-wrap: wrap;
+    }
+    .paginacion button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .paginacion button:hover {
+      background: var(--surface2);
+    }
+    .paginacion button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .paginacion span {
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+    .mensaje {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      margin: 12px 0;
+      display: none;
+    }
+    .mensaje.exito {
+      background: rgba(129,199,132,0.12);
+      border: 1px solid rgba(129,199,132,0.3);
+      color: var(--verde);
+      display: block;
+    }
+    .mensaje.error {
+      background: rgba(239,83,80,0.12);
+      border: 1px solid rgba(239,83,80,0.3);
+      color: var(--accent4);
+      display: block;
+    }
+    .cargando {
+      text-align: center;
+      color: var(--text-dim);
+      padding: 40px;
+    }
+    @media (max-width: 600px) {
+      .filtros { flex-direction: column; }
+      .admin-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-wrapper">
+    <!-- Header -->
+    <div class="admin-header">
+      <h1>🔐 Panel de Administración</h1>
+      <a href="/" class="btn-volver">← Volver al inicio</a>
+    </div>
+
+    <!-- Mensaje de autenticación -->
+    <div id="auth-message" class="mensaje"></div>
+
+    <!-- Filtros -->
+    <div class="filtros">
+      <input type="text" id="filtro-email" placeholder="Buscar por email..." />
+      <select id="filtro-charla">
+        <option value="">Todas las charlas</option>
+      </select>
+      <select id="filtro-escaneado">
+        <option value="">Todos</option>
+        <option value="true">Escaneados</option>
+        <option value="false">No escaneados</option>
+      </select>
+      <button id="btn-filtrar">🔍 Buscar</button>
+      <button id="btn-exportar" class="btn-exportar">📥 Exportar CSV</button>
+      <button id="btn-limpiar" style="background: var(--surface2); color: var(--text-dim);">Limpiar filtros</button>
+    </div>
+
+    <!-- Tabla de inscripciones -->
+    <div class="tabla-container">
+      <div id="tabla-cargando" class="cargando">Cargando inscripciones...</div>
+      <div id="tabla-contenido" style="display:none;">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Charla</th>
+              <th>Día</th>
+              <th>Hora</th>
+              <th>Código</th>
+              <th>Escaneado</th>
+              <th>Fecha inscripción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-body">
+          </tbody>
+        </table>
+        <!-- Paginación -->
+        <div class="paginacion" id="paginacion-container">
+          <button id="btn-anterior" disabled>Anterior</button>
+          <span id="info-pagina">Página 1 de 1</span>
+          <button id="btn-siguiente" disabled>Siguiente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ============================================
+      // CONFIGURACIÓN
+      // ============================================
+      const TOKEN = 'Bearer admin123';
+      let paginaActual = 1;
+      const limite = 20;
+      let totalPaginas = 1;
+
+      // Elementos DOM
+      const tablaBody = document.getElementById('tabla-body');
+      const tablaCargando = document.getElementById('tabla-cargando');
+      const tablaContenido = document.getElementById('tabla-contenido');
+      const filtroEmail = document.getElementById('filtro-email');
+      const filtroCharla = document.getElementById('filtro-charla');
+      const filtroEscaneado = document.getElementById('filtro-escaneado');
+      const btnFiltrar = document.getElementById('btn-filtrar');
+      const btnExportar = document.getElementById('btn-exportar');
+      const btnLimpiar = document.getElementById('btn-limpiar');
+      const btnAnterior = document.getElementById('btn-anterior');
+      const btnSiguiente = document.getElementById('btn-siguiente');
+      const infoPagina = document.getElementById('info-pagina');
+      const authMessage = document.getElementById('auth-message');
+
+      // ============================================
+      // FUNCIONES AUXILIARES
+      // ============================================
+      function mostrarMensaje(texto, tipo) {
+        authMessage.textContent = texto;
+        authMessage.className = 'mensaje ' + tipo;
+        setTimeout(() => {
+          authMessage.className = 'mensaje';
+        }, 5000);
+      }
+
+      function obtenerHeaders() {
+        return {
+          'Authorization': TOKEN,
+          'Content-Type': 'application/json'
+        };
+      }
+
+      // ============================================
+      // CARGAR CHARLAS PARA FILTRO
+      // ============================================
+      async function cargarCharlasFiltro() {
+        try {
+          const res = await fetch('/api/admin/charlas', { headers: obtenerHeaders() });
+          if (!res.ok) throw new Error('Error al cargar charlas');
+          const data = await res.json();
+          filtroCharla.innerHTML = '<option value="">Todas las charlas</option>';
+          data.forEach(ch => {
+            const opt = document.createElement('option');
+            opt.value = ch.id;
+            opt.textContent = ch.titulo;
+            filtroCharla.appendChild(opt);
+          });
+        } catch (err) {
+          console.error('Error cargando charlas para filtro:', err);
+        }
+      }
+
+      // ============================================
+      // CARGAR INSCRIPCIONES
+      // ============================================
+      async function cargarInscripciones(page = 1) {
+        paginaActual = page;
+        tablaCargando.style.display = 'block';
+        tablaContenido.style.display = 'none';
+
+        const email = filtroEmail.value.trim();
+        const charla_id = filtroCharla.value;
+        const escaneado = filtroEscaneado.value;
+
+        let url = `/api/admin/inscripciones?page=${page}&limit=${limite}`;
+        if (email) url += `&email=${encodeURIComponent(email)}`;
+        if (charla_id) url += `&charla_id=${charla_id}`;
+        if (escaneado !== '') url += `&escaneado=${escaneado}`;
+
+        try {
+          const res = await fetch(url, { headers: obtenerHeaders() });
+          if (!res.ok) {
+            if (res.status === 401) {
+              mostrarMensaje('❌ No autorizado. Verifica el token de administración.', 'error');
+              tablaCargando.style.display = 'none';
+              return;
+            }
+            throw new Error('Error al cargar inscripciones');
+          }
+          const data = await res.json();
+          const inscripciones = data.data || [];
+          const pagination = data.pagination || { total: 0, page: 1, totalPages: 1 };
+
+          totalPaginas = pagination.totalPages || 1;
+          renderizarTabla(inscripciones);
+          actualizarPaginacion(pagination);
+
+          tablaCargando.style.display = 'none';
+          tablaContenido.style.display = 'block';
+        } catch (err) {
+          console.error('Error:', err);
+          mostrarMensaje('❌ Error al cargar inscripciones: ' + err.message, 'error');
+          tablaCargando.style.display = 'none';
+        }
+      }
+
+      // ============================================
+      // RENDERIZAR TABLA
+      // ============================================
+      function renderizarTabla(inscripciones) {
+        if (inscripciones.length === 0) {
+          tablaBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-dim);">No hay inscripciones que coincidan con los filtros.</td></tr>`;
+          return;
+        }
+
+        tablaBody.innerHTML = '';
+        inscripciones.forEach(ins => {
+          const tr = document.createElement('tr');
+          const escaneadoClass = ins.escaneado ? 'estado-escaneado' : 'estado-no-escaneado';
+          const escaneadoText = ins.escaneado ? '✅ Sí' : '❌ No';
+
+          tr.innerHTML = `
+            <td>${ins.id}</td>
+            <td><strong>${ins.nombre}</strong></td>
+            <td>${ins.email}</td>
+            <td>${ins.charla_titulo}</td>
+            <td>${ins.dia}</td>
+            <td>${ins.hora}</td>
+            <td><code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px;">${ins.codigo}</code></td>
+            <td class="${escaneadoClass}">${escaneadoText}</td>
+            <td style="font-size:11px;">${ins.fecha_inscripcion}</td>
+            <td>
+              <div class="acciones">
+                <button class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-escaneado="${ins.escaneado}">
+                  ${ins.escaneado ? 'Desmarcar' : 'Marcar'}
+                </button>
+                <button class="btn-eliminar" data-id="${ins.id}">Eliminar</button>
+              </div>
+            </td>
+          `;
+          tablaBody.appendChild(tr);
+        });
+
+        // Eventos de los botones
+        document.querySelectorAll('.btn-toggle').forEach(btn => {
+          btn.addEventListener('click', async function(e) {
+            const id = this.dataset.id;
+            const actual = this.dataset.escaneado === 'true';
+            await toggleEscaneado(id, !actual);
+          });
+        });
+
+        document.querySelectorAll('.btn-eliminar').forEach(btn => {
+          btn.addEventListener('click', async function(e) {
+            const id = this.dataset.id;
+            if (confirm('¿Estás seguro de eliminar esta inscripción?')) {
+              await eliminarInscripcion(id);
+            }
+          });
+        });
+      }
+
+      // ============================================
+      // PAGINACIÓN
+      // ============================================
+      function actualizarPaginacion(pagination) {
+        const { page, totalPages } = pagination;
+        infoPagina.textContent = `Página ${page} de ${totalPages}`;
+        btnAnterior.disabled = page <= 1;
+        btnSiguiente.disabled = page >= totalPages;
+        btnAnterior.onclick = () => cargarInscripciones(page - 1);
+        btnSiguiente.onclick = () => cargarInscripciones(page + 1);
+      }
+
+      // ============================================
+      // ACCIONES: TOGGLE ESCANEADO
+      // ============================================
+      async function toggleEscaneado(id, nuevoEstado) {
+        try {
+          const res = await fetch(`/api/admin/inscripciones/${id}/escaneado`, {
+            method: 'PUT',
+            headers: obtenerHeaders(),
+            body: JSON.stringify({ escaneado: nuevoEstado })
+          });
+          if (!res.ok) throw new Error('Error al actualizar');
+          mostrarMensaje('✅ Estado de escaneo actualizado', 'exito');
+          cargarInscripciones(paginaActual);
+        } catch (err) {
+          console.error(err);
+          mostrarMensaje('❌ Error al actualizar', 'error');
+        }
+      }
+
+      // ============================================
+      // ACCIONES: ELIMINAR
+      // ============================================
+      async function eliminarInscripcion(id) {
+        try {
+          const res = await fetch(`/api/admin/inscripciones/${id}`, {
+            method: 'DELETE',
+            headers: obtenerHeaders()
+          });
+          if (!res.ok) throw new Error('Error al eliminar');
+          mostrarMensaje('✅ Inscripción eliminada', 'exito');
+          cargarInscripciones(paginaActual);
+        } catch (err) {
+          console.error(err);
+          mostrarMensaje('❌ Error al eliminar', 'error');
+        }
+      }
+
+      // ============================================
+      // EXPORTAR CSV
+      // ============================================
+      async function exportarCSV() {
+        try {
+          const res = await fetch('/api/admin/exportar-csv', {
+            headers: obtenerHeaders()
+          });
+          if (!res.ok) {
+            if (res.status === 404) {
+              mostrarMensaje('⚠️ No hay inscripciones para exportar', 'error');
+              return;
+            }
+            throw new Error('Error al exportar');
+          }
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `inscripciones-${new Date().toISOString().split('T')[0]}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+          mostrarMensaje('✅ Exportación exitosa', 'exito');
+        } catch (err) {
+          console.error(err);
+          mostrarMensaje('❌ Error al exportar', 'error');
+        }
+      }
+
+      // ============================================
+      // EVENTOS
+      // ============================================
+      btnFiltrar.addEventListener('click', () => cargarInscripciones(1));
+      btnExportar.addEventListener('click', exportarCSV);
+      btnLimpiar.addEventListener('click', () => {
+        filtroEmail.value = '';
+        filtroCharla.value = '';
+        filtroEscaneado.value = '';
+        cargarInscripciones(1);
+      });
+
+      // Enter en el campo email
+      filtroEmail.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') btnFiltrar.click();
+      });
+
+      // ============================================
+      // INICIALIZACIÓN
+      // ============================================
+      async function init() {
+        await cargarCharlasFiltro();
+        cargarInscripciones(1);
+      }
+
+      init();
+      console.log('🔐 Panel de administración cargado');
+    })();
+  </script>
+</body>
+</html>
