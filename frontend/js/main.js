@@ -217,7 +217,9 @@
       console.error('❌ linkMisInscripciones no encontrado en el DOM');
     }
 
+    // ===== CORRECCIÓN: excluir enlaces con clase admin-link =====
     document.querySelectorAll('.sidebar nav a').forEach(link => {
+      if (link.classList.contains('admin-link')) return; // 🔥 SALTA EL ADMIN
       if (link.id === 'linkMisInscripciones') return;
       link.addEventListener('click', function(e) {
         const view = this.dataset.view;

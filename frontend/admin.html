@@ -200,6 +200,56 @@
       color: var(--text-dim);
       padding: 40px;
     }
+    /* ===== LOGIN ===== */
+    .login-container {
+      max-width: 400px;
+      margin: 60px auto;
+      padding: 30px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+    }
+    .login-container h2 {
+      font-family: var(--font-display);
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 14px;
+    }
+    .login-container input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .login-container button {
+      width: 100%;
+      padding: 10px;
+      background: var(--accent);
+      color: #0d1117;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .login-container button:hover {
+      opacity: 0.85;
+    }
+    .login-container .error-msg {
+      color: var(--accent4);
+      font-size: 13px;
+      margin-top: 10px;
+      display: none;
+    }
     @media (max-width: 600px) {
       .filtros { flex-direction: column; }
       .admin-header { flex-direction: column; align-items: flex-start; }
@@ -207,59 +257,75 @@
   </style>
 </head>
 <body>
-  <div class="admin-wrapper">
-    <!-- Header -->
-    <div class="admin-header">
-      <h1>🔐 Panel de Administración</h1>
-      <a href="/" class="btn-volver">← Volver al inicio</a>
-    </div>
+  <!-- ===== LOGIN (visible al inicio) ===== -->
+  <div id="login-container" class="login-container">
+    <h2>🔐 Panel de Administración</h2>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Ingresa tus credenciales para acceder</p>
+    <input type="text" id="login-usuario" placeholder="Usuario" value="admin" />
+    <input type="password" id="login-password" placeholder="Contraseña" value="admin123" />
+    <div id="login-error" class="error-msg">❌ Usuario o contraseña incorrectos</div>
+    <button id="btn-login">Ingresar</button>
+  </div>
 
-    <!-- Mensaje de autenticación -->
-    <div id="auth-message" class="mensaje"></div>
+  <!-- ===== PANEL DE ADMINISTRACIÓN (oculto al inicio) ===== -->
+  <div id="admin-content" style="display:none;">
+    <div class="admin-wrapper">
+      <!-- Header -->
+      <div class="admin-header">
+        <h1>🔐 Panel de Administración</h1>
+        <div>
+          <a href="/" class="btn-volver">← Volver al inicio</a>
+          <button id="btn-logout" style="margin-left:10px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);padding:8px 16px;border-radius:var(--radius-sm);cursor:pointer;">Cerrar sesión</button>
+        </div>
+      </div>
 
-    <!-- Filtros -->
-    <div class="filtros">
-      <input type="text" id="filtro-email" placeholder="Buscar por email..." />
-      <select id="filtro-charla">
-        <option value="">Todas las charlas</option>
-      </select>
-      <select id="filtro-escaneado">
-        <option value="">Todos</option>
-        <option value="true">Escaneados</option>
-        <option value="false">No escaneados</option>
-      </select>
-      <button id="btn-filtrar">🔍 Buscar</button>
-      <button id="btn-exportar" class="btn-exportar">📥 Exportar CSV</button>
-      <button id="btn-limpiar" style="background: var(--surface2); color: var(--text-dim);">Limpiar filtros</button>
-    </div>
+      <!-- Mensaje de autenticación -->
+      <div id="auth-message" class="mensaje"></div>
 
-    <!-- Tabla de inscripciones -->
-    <div class="tabla-container">
-      <div id="tabla-cargando" class="cargando">Cargando inscripciones...</div>
-      <div id="tabla-contenido" style="display:none;">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Charla</th>
-              <th>Día</th>
-              <th>Hora</th>
-              <th>Código</th>
-              <th>Escaneado</th>
-              <th>Fecha inscripción</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-body">
-          </tbody>
-        </table>
-        <!-- Paginación -->
-        <div class="paginacion" id="paginacion-container">
-          <button id="btn-anterior" disabled>Anterior</button>
-          <span id="info-pagina">Página 1 de 1</span>
-          <button id="btn-siguiente" disabled>Siguiente</button>
+      <!-- Filtros -->
+      <div class="filtros">
+        <input type="text" id="filtro-email" placeholder="Buscar por email..." />
+        <select id="filtro-charla">
+          <option value="">Todas las charlas</option>
+        </select>
+        <select id="filtro-escaneado">
+          <option value="">Todos</option>
+          <option value="true">Escaneados</option>
+          <option value="false">No escaneados</option>
+        </select>
+        <button id="btn-filtrar">🔍 Buscar</button>
+        <button id="btn-exportar" class="btn-exportar">📥 Exportar CSV</button>
+        <button id="btn-limpiar" style="background: var(--surface2); color: var(--text-dim);">Limpiar filtros</button>
+      </div>
+
+      <!-- Tabla de inscripciones -->
+      <div class="tabla-container">
+        <div id="tabla-cargando" class="cargando">Cargando inscripciones...</div>
+        <div id="tabla-contenido" style="display:none;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Charla</th>
+                <th>Día</th>
+                <th>Hora</th>
+                <th>Código</th>
+                <th>Escaneado</th>
+                <th>Fecha inscripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-body">
+            </tbody>
+          </table>
+          <!-- Paginación -->
+          <div class="paginacion" id="paginacion-container">
+            <button id="btn-anterior" disabled>Anterior</button>
+            <span id="info-pagina">Página 1 de 1</span>
+            <button id="btn-siguiente" disabled>Siguiente</button>
+          </div>
         </div>
       </div>
     </div>
@@ -276,8 +342,17 @@
       let paginaActual = 1;
       const limite = 20;
       let totalPaginas = 1;
+      let tokenActual = null;
 
       // Elementos DOM
+      const loginContainer = document.getElementById('login-container');
+      const adminContent = document.getElementById('admin-content');
+      const loginUsuario = document.getElementById('login-usuario');
+      const loginPassword = document.getElementById('login-password');
+      const loginError = document.getElementById('login-error');
+      const btnLogin = document.getElementById('btn-login');
+      const btnLogout = document.getElementById('btn-logout');
+
       const tablaBody = document.getElementById('tabla-body');
       const tablaCargando = document.getElementById('tabla-cargando');
       const tablaContenido = document.getElementById('tabla-contenido');
@@ -293,6 +368,50 @@
       const authMessage = document.getElementById('auth-message');
 
       // ============================================
+      // FUNCIONES DE AUTENTICACIÓN
+      // ============================================
+      function mostrarLogin() {
+        loginContainer.style.display = 'block';
+        adminContent.style.display = 'none';
+        tokenActual = null;
+        loginError.style.display = 'none';
+      }
+
+      function mostrarPanel() {
+        loginContainer.style.display = 'none';
+        adminContent.style.display = 'block';
+        tokenActual = TOKEN;
+        cargarCharlasFiltro();
+        cargarInscripciones(1);
+      }
+
+      // ============================================
+      // EVENTO LOGIN
+      // ============================================
+      btnLogin.addEventListener('click', function() {
+        const usuario = loginUsuario.value.trim();
+        const password = loginPassword.value.trim();
+
+        if (usuario === 'admin' && password === 'admin123') {
+          loginError.style.display = 'none';
+          mostrarPanel();
+        } else {
+          loginError.style.display = 'block';
+        }
+      });
+
+      loginPassword.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') btnLogin.click();
+      });
+
+      // ============================================
+      // EVENTO LOGOUT
+      // ============================================
+      btnLogout.addEventListener('click', function() {
+        mostrarLogin();
+      });
+
+      // ============================================
       // FUNCIONES AUXILIARES
       // ============================================
       function mostrarMensaje(texto, tipo) {
@@ -305,7 +424,7 @@
 
       function obtenerHeaders() {
         return {
-          'Authorization': TOKEN,
+          'Authorization': tokenActual || TOKEN,
           'Content-Type': 'application/json'
         };
       }
@@ -351,8 +470,8 @@
           const res = await fetch(url, { headers: obtenerHeaders() });
           if (!res.ok) {
             if (res.status === 401) {
-              mostrarMensaje('❌ No autorizado. Verifica el token de administración.', 'error');
-              tablaCargando.style.display = 'none';
+              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
+              mostrarLogin();
               return;
             }
             throw new Error('Error al cargar inscripciones');
@@ -411,7 +530,6 @@
           tablaBody.appendChild(tr);
         });
 
-        // Eventos de los botones
         document.querySelectorAll('.btn-toggle').forEach(btn => {
           btn.addEventListener('click', async function(e) {
             const id = this.dataset.id;
@@ -522,7 +640,6 @@
         cargarInscripciones(1);
       });
 
-      // Enter en el campo email
       filtroEmail.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') btnFiltrar.click();
       });
@@ -530,13 +647,8 @@
       // ============================================
       // INICIALIZACIÓN
       // ============================================
-      async function init() {
-        await cargarCharlasFiltro();
-        cargarInscripciones(1);
-      }
-
-      init();
-      console.log('🔐 Panel de administración cargado');
+      mostrarLogin();
+      console.log('🔐 Panel de administración con login cargado');
     })();
   </script>
 </body>
