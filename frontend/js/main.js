@@ -117,15 +117,18 @@
               <div style="margin-top: 12px; text-align: center;">
                 <img src="${qrImageUrl}" alt="QR" style="max-width: 120px; border-radius: 6px; background: white; padding: 6px;" />
               </div>
-              <div style="margin-top: 8px; font-size: 11px; color: var(--text-dimmer); display: flex; justify-content: space-between; align-items: center;">
+              <div style="margin-top: 8px; font-size: 11px; color: var(--text-dimmer); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
                 <span>Código: ${ins.codigo}</span>
-                <button class="btn-descargar-qr-local" data-codigo="${ins.codigo}" style="background: transparent; border: none; color: var(--azul-ugr-claro); cursor: pointer; text-decoration: underline; font-size: 12px;">Descargar QR</button>
+                <div style="display: flex; gap: 6px;">
+                  <button class="btn-descargar-qr-local" data-codigo="${ins.codigo}" style="background: transparent; border: none; color: var(--azul-ugr-claro); cursor: pointer; text-decoration: underline; font-size: 12px;">Descargar QR</button>
+                  <button class="btn-cancelar-inscripcion" data-codigo="${ins.codigo}" data-titulo="${ins.titulo}" style="background: transparent; border: none; color: var(--rojo-ugr); cursor: pointer; text-decoration: underline; font-size: 12px;">Cancelar</button>
+                </div>
               </div>
             `;
             contenedor.appendChild(card);
           });
 
-          // Eventos de descarga
+          // Eventos: Descargar QR
           document.querySelectorAll('.btn-descargar-qr-local').forEach(btn => {
             btn.addEventListener('click', function(e) {
               const codigo = this.dataset.codigo;
@@ -137,6 +140,39 @@
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
+            });
+          });
+
+          // Eventos: Cancelar inscripción
+          document.querySelectorAll('.btn-cancelar-inscripcion').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+              const codigo = this.dataset.codigo;
+              const titulo = this.dataset.titulo;
+              if (confirm(`¿Estás seguro de cancelar tu inscripción a "${titulo}"? Esta acción liberará tu cupo y eliminará el QR.`)) {
+                try {
+                  const res = await fetch(`/api/inscripciones/${codigo}`, {
+                    method: 'DELETE'
+                  });
+                  if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Error al cancelar');
+                  }
+                  // Mostrar mensaje de éxito
+                  const mensajeDiv = document.getElementById('mensaje-inscripcion');
+                  if (mensajeDiv) {
+                    mensajeDiv.innerHTML = `<div class="mensaje-exito"><strong>✅ Inscripción cancelada correctamente.</strong> El cupo ha sido liberado.</div>`;
+                    setTimeout(() => { mensajeDiv.innerHTML = ''; }, 5000);
+                  }
+                  // Recargar las inscripciones y actualizar el cronograma
+                  const email = document.getElementById('email-buscador').value.trim();
+                  if (email) {
+                    await cargarCharlas(); // Actualiza los datos de charlas y los botones del cronograma
+                    buscarInscripciones(email, paginaActual); // Recarga la lista de inscripciones
+                  }
+                } catch (err) {
+                  alert('❌ Error: ' + err.message);
+                }
+              }
             });
           });
 
@@ -219,7 +255,7 @@
 
     // ===== CORRECCIÓN: excluir enlaces con clase admin-link =====
     document.querySelectorAll('.sidebar nav a').forEach(link => {
-      if (link.classList.contains('admin-link')) return; // 🔥 SALTA EL ADMIN
+      if (link.classList.contains('admin-link')) return;
       if (link.id === 'linkMisInscripciones') return;
       link.addEventListener('click', function(e) {
         const view = this.dataset.view;
@@ -272,8 +308,7 @@
     let charlas = [];
 
     function cargarCharlas() {
-      if (charlas.length > 0) return;
-      fetch('/api/charlas')
+      return fetch('/api/charlas')
         .then(res => {
           if (!res.ok) throw new Error('Error al obtener charlas');
           return res.json();
@@ -281,6 +316,7 @@
         .then(data => {
           charlas = data;
           populateSelect();
+          actualizarBotonesCronograma();
           console.log('✅ Charlas cargadas correctamente.');
         })
         .catch(err => console.error('❌ Error cargando charlas:', err));
@@ -310,7 +346,31 @@
     }
 
     // ============================================
-    // 9. FORMULARIO DE INSCRIPCIÓN
+    // 9. FUNCIÓN PARA ACTUALIZAR BOTONES DEL CRONOGRAMA
+    // ============================================
+    function actualizarBotonesCronograma() {
+      document.querySelectorAll('.btn-inscribir-cronograma').forEach(btn => {
+        const id = parseInt(btn.dataset.id);
+        const ch = charlas.find(c => c.id === id);
+        if (ch) {
+          const disponibles = ch.disponibles || 0;
+          if (disponibles <= 0) {
+            btn.disabled = true;
+            btn.textContent = 'Cupo lleno';
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+          } else {
+            btn.disabled = false;
+            btn.textContent = 'Inscribirse';
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+          }
+        }
+      });
+    }
+
+    // ============================================
+    // 10. FORMULARIO DE INSCRIPCIÓN
     // ============================================
     const form = document.getElementById('form-inscripcion');
     const mensajeDiv = document.getElementById('mensaje-inscripcion');
@@ -367,6 +427,7 @@
           if (ch) {
             ch.disponibles = Math.max(0, ch.disponibles - 1);
             populateSelect();
+            actualizarBotonesCronograma();
           }
 
           document.getElementById('nombre').value = '';
@@ -389,7 +450,7 @@
     }
 
     // ============================================
-    // 10. DESCARGAR QR
+    // 11. DESCARGAR QR
     // ============================================
     if (descargarBtn) {
       descargarBtn.addEventListener('click', function() {
@@ -422,7 +483,7 @@
     }
 
     // ============================================
-    // 11. BOTÓN "BUSCAR" EN MIS INSCRIPCIONES
+    // 12. BOTÓN "BUSCAR" EN MIS INSCRIPCIONES
     // ============================================
     const emailBuscador = document.getElementById('email-buscador');
     const btnBuscar = document.getElementById('btn-buscar-inscripciones');
@@ -448,9 +509,11 @@
     }
 
     // ============================================
-    // 12. INICIALIZACIÓN
+    // 13. INICIALIZACIÓN
     // ============================================
-    setTimeout(cargarCharlas, 500);
+    // Cargar charlas inicialmente
+    cargarCharlas();
+
     console.log('🚀 Jornadas UGR 2026 - Todo listo');
   }
 

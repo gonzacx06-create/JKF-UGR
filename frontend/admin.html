@@ -149,6 +149,10 @@
       background: var(--rojo-ugr);
       color: #fff;
     }
+    .btn-editar {
+      background: var(--accent);
+      color: #0d1117;
+    }
     .paginacion {
       display: flex;
       justify-content: center;
@@ -200,6 +204,7 @@
       color: var(--text-dim);
       padding: 40px;
     }
+
     /* ===== LOGIN ===== */
     .login-container {
       max-width: 400px;
@@ -250,6 +255,87 @@
       margin-top: 10px;
       display: none;
     }
+
+    /* ===== MODAL ===== */
+    #modal-editar-charla {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    #modal-editar-charla .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    #modal-editar-charla h3 {
+      font-family: var(--font-display);
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    #modal-editar-charla .form-group {
+      margin-bottom: 14px;
+    }
+    #modal-editar-charla label {
+      display: block;
+      color: var(--text-dim);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    #modal-editar-charla input {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 14px;
+    }
+    #modal-editar-charla input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    #modal-editar-charla .modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+    #modal-editar-charla .btn-cancelar {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    #modal-editar-charla .btn-cancelar:hover {
+      background: var(--surface);
+    }
+    #modal-editar-charla .btn-guardar {
+      background: var(--accent);
+      color: #0d1117;
+      border: none;
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    #modal-editar-charla .btn-guardar:hover {
+      opacity: 0.85;
+    }
+
     @media (max-width: 600px) {
       .filtros { flex-direction: column; }
       .admin-header { flex-direction: column; align-items: flex-start; }
@@ -257,17 +343,17 @@
   </style>
 </head>
 <body>
-  <!-- ===== LOGIN (visible al inicio) ===== -->
-<div id="login-container" class="login-container">
-  <h2>🔐 Panel de Administración</h2>
-  <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Ingresa tus credenciales para acceder</p>
-  <input type="text" id="login-usuario" placeholder="Usuario" autocomplete="off" />
-  <input type="password" id="login-password" placeholder="Contraseña" autocomplete="new-password" />
-  <div id="login-error" class="error-msg">❌ Usuario o contraseña incorrectos</div>
-  <button id="btn-login">Ingresar</button>
-</div>
+  <!-- ===== LOGIN ===== -->
+  <div id="login-container" class="login-container">
+    <h2>🔐 Panel de Administración</h2>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Ingresa tus credenciales para acceder</p>
+    <input type="text" id="login-usuario" placeholder="Usuario" autocomplete="off" />
+    <input type="password" id="login-password" placeholder="Contraseña" autocomplete="new-password" />
+    <div id="login-error" class="error-msg">❌ Usuario o contraseña incorrectos</div>
+    <button id="btn-login">Ingresar</button>
+  </div>
 
-  <!-- ===== PANEL DE ADMINISTRACIÓN (oculto al inicio) ===== -->
+  <!-- ===== PANEL DE ADMINISTRACIÓN ===== -->
   <div id="admin-content" style="display:none;">
     <div class="admin-wrapper">
       <!-- Header -->
@@ -331,6 +417,40 @@
     </div>
   </div>
 
+  <!-- ===== MODAL DE EDICIÓN ===== -->
+  <div id="modal-editar-charla">
+    <div class="modal-content">
+      <h3>✏️ Editar Charla</h3>
+      <form id="form-editar-charla">
+        <input type="hidden" id="edit-id" />
+        <div class="form-group">
+          <label for="edit-titulo">Título *</label>
+          <input type="text" id="edit-titulo" required placeholder="Ej: Conferencia Inaugural" />
+        </div>
+        <div class="form-group">
+          <label for="edit-dia">Día *</label>
+          <input type="text" id="edit-dia" required placeholder="Ej: Miércoles 2" />
+        </div>
+        <div class="form-group">
+          <label for="edit-hora">Hora *</label>
+          <input type="text" id="edit-hora" required placeholder="Ej: 10:00 - 11:30" />
+        </div>
+        <div class="form-group">
+          <label for="edit-ponente">Ponente *</label>
+          <input type="text" id="edit-ponente" required placeholder="Ej: Dr. Luis Miguel Torres" />
+        </div>
+        <div class="form-group">
+          <label for="edit-cupo">Cupo máximo *</label>
+          <input type="number" id="edit-cupo" required min="1" placeholder="Ej: 40" />
+        </div>
+        <div class="modal-buttons">
+          <button type="button" class="btn-cancelar" id="btn-cancelar-modal">Cancelar</button>
+          <button type="submit" class="btn-guardar">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     (function() {
       'use strict';
@@ -365,6 +485,17 @@
       const btnSiguiente = document.getElementById('btn-siguiente');
       const infoPagina = document.getElementById('info-pagina');
       const authMessage = document.getElementById('auth-message');
+
+      // Elementos del modal
+      const modal = document.getElementById('modal-editar-charla');
+      const formEditar = document.getElementById('form-editar-charla');
+      const editId = document.getElementById('edit-id');
+      const editTitulo = document.getElementById('edit-titulo');
+      const editDia = document.getElementById('edit-dia');
+      const editHora = document.getElementById('edit-hora');
+      const editPonente = document.getElementById('edit-ponente');
+      const editCupo = document.getElementById('edit-cupo');
+      const btnCancelarModal = document.getElementById('btn-cancelar-modal');
 
       // ============================================
       // FUNCIONES DE AUTENTICACIÓN
@@ -427,7 +558,6 @@
             loginError.style.display = 'block';
             return;
           }
-          // Guardar token
           tokenActual = data.token;
           localStorage.setItem('adminToken', tokenActual);
           loginError.style.display = 'none';
@@ -523,7 +653,7 @@
       }
 
       // ============================================
-      // RENDERIZAR TABLA
+      // RENDERIZAR TABLA (con botón Editar)
       // ============================================
       function renderizarTabla(inscripciones) {
         if (inscripciones.length === 0) {
@@ -549,6 +679,7 @@
             <td style="font-size:11px;">${ins.fecha_inscripcion}</td>
             <td>
               <div class="acciones">
+                <button class="btn-editar" data-id="${ins.id}" data-charla-titulo="${ins.charla_titulo}" data-dia="${ins.dia}" data-hora="${ins.hora}" data-ponente="${ins.ponente}">✏️ Editar</button>
                 <button class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-escaneado="${ins.escaneado}">
                   ${ins.escaneado ? 'Desmarcar' : 'Marcar'}
                 </button>
@@ -559,6 +690,7 @@
           tablaBody.appendChild(tr);
         });
 
+        // Eventos: Toggle escaneado
         document.querySelectorAll('.btn-toggle').forEach(btn => {
           btn.addEventListener('click', async function(e) {
             const id = this.dataset.id;
@@ -567,6 +699,7 @@
           });
         });
 
+        // Eventos: Eliminar
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
           btn.addEventListener('click', async function(e) {
             const id = this.dataset.id;
@@ -575,7 +708,88 @@
             }
           });
         });
+
+        // Eventos: Editar
+        document.querySelectorAll('.btn-editar').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const id = parseInt(this.dataset.id);
+            const titulo = this.dataset.charlaTitulo;
+            const dia = this.dataset.dia;
+            const hora = this.dataset.hora;
+            const ponente = this.dataset.ponente;
+            abrirModalEdicion(id, titulo, dia, hora, ponente);
+          });
+        });
       }
+
+      // ============================================
+      // MODAL DE EDICIÓN
+      // ============================================
+      function abrirModalEdicion(id, titulo, dia, hora, ponente) {
+        // Cargar datos completos desde la API para obtener el cupo_maximo
+        fetch(`/api/admin/charlas/${id}`, { headers: obtenerHeaders() })
+          .then(res => {
+            if (!res.ok) throw new Error('Error al cargar datos de la charla');
+            return res.json();
+          })
+          .then(data => {
+            editId.value = data.id;
+            editTitulo.value = data.titulo;
+            editDia.value = data.dia;
+            editHora.value = data.hora;
+            editPonente.value = data.ponente;
+            editCupo.value = data.cupo_maximo;
+            modal.style.display = 'flex';
+          })
+          .catch(err => {
+            console.error('Error cargando charla:', err);
+            mostrarMensaje('❌ Error al cargar los datos de la charla', 'error');
+          });
+      }
+
+      function cerrarModal() {
+        modal.style.display = 'none';
+        formEditar.reset();
+      }
+
+      btnCancelarModal.addEventListener('click', cerrarModal);
+
+      // Cerrar modal al hacer clic fuera del contenido
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) cerrarModal();
+      });
+
+      // Enviar formulario de edición
+      formEditar.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const id = editId.value;
+        const payload = {
+          titulo: editTitulo.value.trim(),
+          dia: editDia.value.trim(),
+          hora: editHora.value.trim(),
+          ponente: editPonente.value.trim(),
+          cupo_maximo: parseInt(editCupo.value)
+        };
+
+        try {
+          const res = await fetch(`/api/admin/charlas/${id}`, {
+            method: 'PUT',
+            headers: obtenerHeaders(),
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.error || 'Error al actualizar');
+          }
+          mostrarMensaje('✅ Charla actualizada correctamente', 'exito');
+          cerrarModal();
+          cargarInscripciones(paginaActual);
+        } catch (err) {
+          console.error('Error actualizando charla:', err);
+          mostrarMensaje('❌ Error al actualizar: ' + err.message, 'error');
+        }
+      });
 
       // ============================================
       // PAGINACIÓN
@@ -695,16 +909,13 @@
       // ============================================
       // INICIALIZACIÓN
       // ============================================
-      // Si hay token guardado, intentar mostrar panel directamente
       if (tokenActual) {
-        // Podríamos verificar el token con una petición, pero por simplicidad mostramos panel
-        // y si falla, el middleware redirigirá al login.
         mostrarPanel();
       } else {
         mostrarLogin();
       }
 
-      console.log('🔐 Panel de administración con JWT');
+      console.log('🔐 Panel de administración con edición de charlas');
     })();
   </script>
 </body>

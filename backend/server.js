@@ -5,8 +5,6 @@ const QRCode = require('qrcode');
 const crypto = require('crypto');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-// bcrypt no es necesario porque comparamos en texto plano (por simplicidad)
-// pero lo dejamos importado por si se usa en el futuro
 
 const app = express();
 app.use(cors());
@@ -70,22 +68,22 @@ async function initDB() {
     const count = parseInt(result.rows[0].count);
     if (count === 0) {
       const charlas = [
-        ['Recepción y acreditación', 'Miércoles 2', '08:30 - 10:00', 'Secretaría Técnica', 100],
-        ['Conferencia Inaugural: Actualización en Dolor Crónico', 'Miércoles 2', '10:00 - 11:30', 'Dr. Luis Miguel Torres', 80],
-        ['Mesa Redonda: Abordaje Multidisciplinar de la Tendinopatía', 'Miércoles 2', '11:30 - 13:00', 'Dra. María López / Dr. Javier Pérez', 80],
-        ['Pausa - Almuerzo', 'Miércoles 2', '13:00 - 14:30', 'Organización', 120],
+        ['Recepción y acreditación', 'Miércoles 2', '08:30 - 10:00', 'Secretaría Técnica', 40],
+        ['Conferencia Inaugural: Actualización en Dolor Crónico', 'Miércoles 2', '10:00 - 11:30', 'Dr. Luis Miguel Torres', 40],
+        ['Mesa Redonda: Abordaje Multidisciplinar de la Tendinopatía', 'Miércoles 2', '11:30 - 13:00', 'Dra. María López / Dr. Javier Pérez', 40],
+        ['Pausa - Almuerzo', 'Miércoles 2', '13:00 - 14:30', 'Organización', 40],
         ['Taller Práctico 1: Ecografía para Fisioterapeutas', 'Miércoles 2', '14:30 - 16:00', 'Dr. Carlos García (SERAM)', 40],
-        ['Comunicaciones Orales Libres', 'Miércoles 2', '16:00 - 17:30', 'Varios autores', 60],
-        ['Conferencia: Nuevas tendencias en neurorrehabilitación', 'Miércoles 2', '17:30 - 19:00', 'Dra. Elena Muñoz (UGR)', 80],
-        ['Cóctel de bienvenida y networking', 'Miércoles 2', '19:00 - 20:30', 'Comité Organizador', 100],
-        ['Recepción y entrega de materiales', 'Jueves 3', '08:30 - 10:00', 'Secretaría Técnica', 100],
-        ['Conferencia: Rehabilitación en el Deportista de Élite', 'Jueves 3', '10:00 - 11:30', 'Dr. Pedro Martínez (Real Madrid)', 80],
-        ['Mesa Redonda: Infiltraciones guiadas por ecografía', 'Jueves 3', '11:30 - 13:00', 'Dra. Ana Belén Rodríguez', 80],
-        ['Pausa - Almuerzo (Jueves)', 'Jueves 3', '13:00 - 14:30', 'Organización', 120],
+        ['Comunicaciones Orales Libres', 'Miércoles 2', '16:00 - 17:30', 'Varios autores', 40],
+        ['Conferencia: Nuevas tendencias en neurorrehabilitación', 'Miércoles 2', '17:30 - 19:00', 'Dra. Elena Muñoz (UGR)', 40],
+        ['Cóctel de bienvenida y networking', 'Miércoles 2', '19:00 - 20:30', 'Comité Organizador', 40],
+        ['Recepción y entrega de materiales', 'Jueves 3', '08:30 - 10:00', 'Secretaría Técnica', 40],
+        ['Conferencia: Rehabilitación en el Deportista de Élite', 'Jueves 3', '10:00 - 11:30', 'Dr. Pedro Martínez (Real Madrid)', 40],
+        ['Mesa Redonda: Infiltraciones guiadas por ecografía', 'Jueves 3', '11:30 - 13:00', 'Dra. Ana Belén Rodríguez', 40],
+        ['Pausa - Almuerzo (Jueves)', 'Jueves 3', '13:00 - 14:30', 'Organización', 40],
         ['Taller Práctico 2: Punción Seca y Neuromodulación', 'Jueves 3', '14:30 - 16:00', 'Dr. Fernando Ramos', 40],
-        ['Conferencia: Innovación en fisioterapia respiratoria', 'Jueves 3', '16:00 - 17:30', 'Dra. Laura Fernández', 80],
-        ['Conferencia de Clausura', 'Jueves 3', '17:30 - 19:00', 'Dr. Ricardo Gómez (UGR)', 80],
-        ['Entrega de premios y cierre oficial', 'Jueves 3', '19:00 - 20:30', 'Comité Organizador', 100]
+        ['Conferencia: Innovación en fisioterapia respiratoria', 'Jueves 3', '16:00 - 17:30', 'Dra. Laura Fernández', 40],
+        ['Conferencia de Clausura', 'Jueves 3', '17:30 - 19:00', 'Dr. Ricardo Gómez (UGR)', 40],
+        ['Entrega de premios y cierre oficial', 'Jueves 3', '19:00 - 20:30', 'Comité Organizador', 40]
       ];
 
       for (const ch of charlas) {
@@ -94,7 +92,7 @@ async function initDB() {
           ch
         );
       }
-      console.log('✅ Charlas de ejemplo insertadas');
+      console.log('✅ Charlas de ejemplo insertadas con cupo 40');
     } else {
       console.log(`✅ ${count} charlas ya existentes, omitiendo inserción`);
     }
@@ -119,14 +117,14 @@ function verificarToken(req, res, next) {
     return res.status(401).json({ error: 'Token no proporcionado' });
   }
 
-  const token = authHeader.split(' ')[1]; // "Bearer <token>"
+  const token = authHeader.split(' ')[1];
   if (!token) {
     return res.status(401).json({ error: 'Token no proporcionado' });
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.usuario = decoded; // guardamos la info del usuario
+    req.usuario = decoded;
     next();
   } catch (err) {
     return res.status(403).json({ error: 'Token inválido o expirado' });
@@ -276,6 +274,46 @@ app.get('/api/mis-inscripciones', async (req, res) => {
   }
 });
 
+// ============================================
+// CANCELAR INSCRIPCIÓN (liberar cupo y eliminar registro)
+// ============================================
+app.delete('/api/inscripciones/:codigo', async (req, res) => {
+  const codigo = req.params.codigo;
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Obtener la inscripción para saber el charla_id
+    const insResult = await client.query(
+      'SELECT charla_id FROM inscripciones WHERE codigo_unico = $1',
+      [codigo]
+    );
+    if (insResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Inscripción no encontrada' });
+    }
+    const charla_id = insResult.rows[0].charla_id;
+
+    // Eliminar la inscripción
+    await client.query('DELETE FROM inscripciones WHERE codigo_unico = $1', [codigo]);
+
+    // Reducir el contador de inscritos (si es > 0)
+    await client.query(
+      'UPDATE charlas SET inscritos = inscritos - 1 WHERE id = $1 AND inscritos > 0',
+      [charla_id]
+    );
+
+    await client.query('COMMIT');
+    res.json({ mensaje: 'Inscripción cancelada correctamente' });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('Error cancelando inscripción:', err.message);
+    res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
 // Verificar código QR (API JSON)
 app.get('/api/verificar/:codigo', async (req, res) => {
   const codigo = req.params.codigo;
@@ -307,9 +345,7 @@ app.post('/api/admin/login', (req, res) => {
     return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
   }
 
-  // Verificar credenciales
   if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
-    // Generar token con expiración (8 horas)
     const token = jwt.sign(
       { username, role: 'admin' },
       JWT_SECRET,
@@ -443,7 +479,7 @@ app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, async (req, re
   }
 });
 
-// ELIMINAR INSCRIPCIÓN
+// ELIMINAR INSCRIPCIÓN (desde admin)
 app.delete('/api/admin/inscripciones/:id', verificarToken, async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
@@ -469,6 +505,54 @@ app.get('/api/admin/charlas', verificarToken, async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error('Error obteniendo charlas para admin:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// OBTENER UNA CHARLA POR ID (para editar)
+app.get('/api/admin/charlas/:id', verificarToken, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+  try {
+    const result = await pool.query('SELECT * FROM charlas WHERE id = $1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Charla no encontrada' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error obteniendo charla:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ACTUALIZAR UNA CHARLA
+app.put('/api/admin/charlas/:id', verificarToken, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  const { titulo, dia, hora, ponente, cupo_maximo } = req.body;
+  if (!titulo || !dia || !hora || !ponente || cupo_maximo === undefined) {
+    return res.status(400).json({ error: 'Todos los campos son requeridos' });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE charlas 
+       SET titulo = $1, dia = $2, hora = $3, ponente = $4, cupo_maximo = $5 
+       WHERE id = $6 
+       RETURNING *`,
+      [titulo, dia, hora, ponente, cupo_maximo, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Charla no encontrada' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error actualizando charla:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
