@@ -779,3 +779,23 @@ body {
     max-width: 100%;
   }
 }
+
+/* ===== PAGINACIÓN ===== */
+.btn-paginacion {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  font-size: 13px;
+}
+.btn-paginacion:hover {
+  background: var(--surface2);
+  color: var(--accent);
+}
+.btn-paginacion:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

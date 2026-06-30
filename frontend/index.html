@@ -408,33 +408,37 @@
   </div> <!-- fin view-main -->
 
   <!-- ============================================= -->
-  <!-- VISTA 2: MIS INSCRIPCIONES (CON ESTILOS INLINE DE RESPALDO) -->
-  <!-- ============================================= -->
-  <div class="page-view" id="view-mis-inscripciones">
-    <div style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
-      <!-- MENSAJE DE DEPURACIÓN VISIBLE -->
-      <div style="background: #1a2332; border: 2px solid #e8a838; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px; text-align: center; color: #e8a838; font-weight: bold;">
-        ✅ VISTA "MIS INSCRIPCIONES" CARGADA CORRECTAMENTE
-      </div>
-
-      <h2 style="font-family: Georgia, serif; font-size: 28px; color: #fff; margin-bottom: 8px;">📋 Mis inscripciones</h2>
-      <p style="color: #8b949e; font-size: 14px; border-bottom: 1px solid #30363d; padding-bottom: 16px; margin-bottom: 32px;">
-        Ingresa tu correo electrónico para ver todas las charlas a las que te has inscrito.
-      </p>
-
-      <!-- Buscador por email -->
-      <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
-        <input type="email" id="email-buscador" placeholder="tucorreo@ejemplo.com" style="flex: 1; padding: 10px 14px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 14px;" />
-        <button id="btn-buscar-inscripciones" style="background: #e8a838; color: #0d1117; font-weight: 700; padding: 10px 28px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; white-space: nowrap;">Buscar</button>
-      </div>
-
-      <div id="lista-mis-inscripciones" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
-        <p style="color: #8b949e; font-size: 14px; grid-column: 1/-1; text-align: center; padding: 20px 0;">
-          Ingresa tu email y presiona "Buscar" para ver tus inscripciones.
-        </p>
-      </div>
+<!-- VISTA 2: MIS INSCRIPCIONES (CON PAGINACIÓN) -->
+<!-- ============================================= -->
+<div class="page-view" id="view-mis-inscripciones">
+  <div style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
+    <!-- MENSAJE DE DEPURACIÓN -->
+    <div style="background: #1a2332; border: 2px solid #e8a838; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px; text-align: center; color: #e8a838; font-weight: bold;">
+      ✅ VISTA "MIS INSCRIPCIONES" CARGADA CORRECTAMENTE
     </div>
+
+    <h2 style="font-family: Georgia, serif; font-size: 28px; color: #fff; margin-bottom: 8px;">📋 Mis inscripciones</h2>
+    <p style="color: #8b949e; font-size: 14px; border-bottom: 1px solid #30363d; padding-bottom: 16px; margin-bottom: 32px;">
+      Ingresa tu correo electrónico para ver todas las charlas a las que te has inscrito.
+    </p>
+
+    <!-- Buscador por email -->
+    <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+      <input type="email" id="email-buscador" placeholder="tucorreo@ejemplo.com" style="flex: 1; padding: 10px 14px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 14px;" />
+      <button id="btn-buscar-inscripciones" style="background: #e8a838; color: #0d1117; font-weight: 700; padding: 10px 28px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; white-space: nowrap;">Buscar</button>
+    </div>
+
+    <!-- Lista de inscripciones -->
+    <div id="lista-mis-inscripciones" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+      <p style="color: #8b949e; font-size: 14px; grid-column: 1/-1; text-align: center; padding: 20px 0;">
+        Ingresa tu email y presiona "Buscar" para ver tus inscripciones.
+      </p>
+    </div>
+
+    <!-- Contenedor de paginación -->
+    <div id="paginacion-container" style="margin-top: 20px;"></div>
   </div>
+</div>
 
   <!-- ===== JavaScript ===== -->
   <script src="js/main.js"></script>

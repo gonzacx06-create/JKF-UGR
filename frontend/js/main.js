@@ -30,18 +30,15 @@
     overlay.addEventListener('click', closeSidebarFunc);
 
     // ============================================
-    // 2. FUNCIÓN PARA CAMBIAR DE VISTA (CORREGIDA)
+    // 2. FUNCIÓN PARA CAMBIAR DE VISTA
     // ============================================
     function showView(viewId) {
-      // Obtener los elementos directamente por ID (sin depender de un objeto views)
       const viewMain = document.getElementById('view-main');
       const viewMis = document.getElementById('view-mis-inscripciones');
 
-      // Ocultar todas
       if (viewMain) viewMain.classList.remove('active');
       if (viewMis) viewMis.classList.remove('active');
 
-      // Mostrar la seleccionada
       if (viewId === 'main' && viewMain) {
         viewMain.classList.add('active');
         console.log('✅ Vista activada: main');
@@ -55,7 +52,6 @@
 
       closeSidebarFunc();
 
-      // Si es la vista de inscripciones, buscar automáticamente si hay email guardado
       if (viewId === 'mis-inscripciones') {
         const emailBuscador = document.getElementById('email-buscador');
         const savedEmail = localStorage.getItem('miEmail');
@@ -69,28 +65,36 @@
     }
 
     // ============================================
-    // 3. FUNCIÓN PARA BUSCAR INSCRIPCIONES (sin cambios)
+    // 3. BUSCAR INSCRIPCIONES CON PAGINACIÓN
     // ============================================
-    function buscarInscripciones(email) {
+    const registrosPorPagina = 5;
+
+    function buscarInscripciones(email, page = 1) {
       const contenedor = document.getElementById('lista-mis-inscripciones');
+      const contenedorPaginacion = document.getElementById('paginacion-container');
       if (!contenedor) {
         console.error('❌ Contenedor "lista-mis-inscripciones" no encontrado.');
         return;
       }
-      contenedor.innerHTML = '<p style="color: var(--text-dim); text-align: center; padding: 20px;">Cargando...</p>';
 
-      fetch(`/api/mis-inscripciones?email=${encodeURIComponent(email)}`)
+      contenedor.innerHTML = '<p style="color: var(--text-dim); text-align: center; padding: 20px;">Cargando...</p>';
+      if (contenedorPaginacion) contenedorPaginacion.innerHTML = '';
+
+      fetch(`/api/mis-inscripciones?email=${encodeURIComponent(email)}&page=${page}&limit=${registrosPorPagina}`)
         .then(res => {
           if (!res.ok) throw new Error('Error al obtener inscripciones');
           return res.json();
         })
-        .then(data => {
+        .then(response => {
+          const { data, pagination } = response;
+
           if (data.length === 0) {
             contenedor.innerHTML = `
               <p style="color: var(--text-dim); font-size: 14px; grid-column: 1/-1; text-align: center; padding: 20px 0;">
                 No tienes inscripciones con este email. Inscríbete a una charla desde el cronograma.
               </p>
             `;
+            if (contenedorPaginacion) contenedorPaginacion.innerHTML = '';
             return;
           }
 
@@ -121,6 +125,7 @@
             contenedor.appendChild(card);
           });
 
+          // Eventos de descarga
           document.querySelectorAll('.btn-descargar-qr-local').forEach(btn => {
             btn.addEventListener('click', function(e) {
               const codigo = this.dataset.codigo;
@@ -134,6 +139,11 @@
               document.body.removeChild(link);
             });
           });
+
+          // Paginación
+          if (contenedorPaginacion) {
+            renderizarPaginacion(pagination, email);
+          }
         })
         .catch(err => {
           console.error('Error:', err);
@@ -142,20 +152,60 @@
               ⚠️ Error al cargar las inscripciones. Intenta de nuevo.
             </p>
           `;
+          if (contenedorPaginacion) contenedorPaginacion.innerHTML = '';
         });
     }
 
     // ============================================
-    // 4. ASIGNAR EVENTOS DEL MENÚ (SOLUCIÓN DEFINITIVA)
+    // 4. RENDERIZAR CONTROLES DE PAGINACIÓN
     // ============================================
-    // Asignar directamente al enlace por ID
+    function renderizarPaginacion(pagination, email) {
+      const contenedor = document.getElementById('paginacion-container');
+      if (!contenedor) return;
+
+      const { page, totalPages, total } = pagination;
+
+      if (totalPages <= 1) {
+        contenedor.innerHTML = '';
+        return;
+      }
+
+      let html = `
+        <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 20px; flex-wrap: wrap;">
+          <span style="color: var(--text-dim); font-size: 13px;">
+            Mostrando ${(page - 1) * registrosPorPagina + 1} - ${Math.min(page * registrosPorPagina, total)} de ${total} inscripciones
+          </span>
+          <div style="display: flex; gap: 6px;">
+      `;
+
+      if (page > 1) {
+        html += `<button onclick="cambiarPagina(${page - 1}, '${email}')" class="btn-paginacion" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 4px 12px; border-radius: 4px; cursor: pointer;">« Anterior</button>`;
+      }
+
+      html += `<span style="color: var(--text); padding: 4px 12px; background: var(--surface2); border-radius: 4px; border: 1px solid var(--border);">${page} / ${totalPages}</span>`;
+
+      if (page < totalPages) {
+        html += `<button onclick="cambiarPagina(${page + 1}, '${email}')" class="btn-paginacion" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 4px 12px; border-radius: 4px; cursor: pointer;">Siguiente »</button>`;
+      }
+
+      html += `</div></div>`;
+      contenedor.innerHTML = html;
+    }
+
+    // ============================================
+    // 5. FUNCIÓN GLOBAL PARA CAMBIAR DE PÁGINA
+    // ============================================
+    window.cambiarPagina = function(page, email) {
+      buscarInscripciones(email, page);
+    };
+
+    // ============================================
+    // 6. ASIGNAR EVENTOS DEL MENÚ
+    // ============================================
     const linkMisInscripciones = document.getElementById('linkMisInscripciones');
     if (linkMisInscripciones) {
-      // Clonar y reemplazar para eliminar eventos anteriores
       const newLink = linkMisInscripciones.cloneNode(true);
       linkMisInscripciones.parentNode.replaceChild(newLink, linkMisInscripciones);
-      
-      // Asignar evento al nuevo enlace
       newLink.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -167,9 +217,7 @@
       console.error('❌ linkMisInscripciones no encontrado en el DOM');
     }
 
-    // También asignar a todos los enlaces del sidebar (fallback)
     document.querySelectorAll('.sidebar nav a').forEach(link => {
-      // Evitar duplicar el evento en el enlace ya asignado
       if (link.id === 'linkMisInscripciones') return;
       link.addEventListener('click', function(e) {
         const view = this.dataset.view;
@@ -189,7 +237,7 @@
     });
 
     // ============================================
-    // 5. INSCRIBIR DESDE EL CRONOGRAMA (sin cambios)
+    // 7. INSCRIBIR DESDE EL CRONOGRAMA
     // ============================================
     function inscribirDesdeCronograma(charlaId) {
       const select = document.getElementById('charla-select');
@@ -215,7 +263,7 @@
     });
 
     // ============================================
-    // 6. GESTIÓN DE CHARLAS (API)
+    // 8. GESTIÓN DE CHARLAS (API)
     // ============================================
     const selectCharla = document.getElementById('charla-select');
     const cupoInfo = document.getElementById('cupo-disponible');
@@ -260,7 +308,7 @@
     }
 
     // ============================================
-    // 7. FORMULARIO DE INSCRIPCIÓN
+    // 9. FORMULARIO DE INSCRIPCIÓN
     // ============================================
     const form = document.getElementById('form-inscripcion');
     const mensajeDiv = document.getElementById('mensaje-inscripcion');
@@ -339,7 +387,7 @@
     }
 
     // ============================================
-    // 8. DESCARGAR QR
+    // 10. DESCARGAR QR
     // ============================================
     if (descargarBtn) {
       descargarBtn.addEventListener('click', function() {
@@ -372,7 +420,7 @@
     }
 
     // ============================================
-    // 9. BOTÓN "BUSCAR" EN MIS INSCRIPCIONES
+    // 11. BOTÓN "BUSCAR" EN MIS INSCRIPCIONES
     // ============================================
     const emailBuscador = document.getElementById('email-buscador');
     const btnBuscar = document.getElementById('btn-buscar-inscripciones');
@@ -398,7 +446,7 @@
     }
 
     // ============================================
-    // 10. INICIALIZACIÓN
+    // 12. INICIALIZACIÓN
     // ============================================
     setTimeout(cargarCharlas, 500);
     console.log('🚀 Jornadas UGR 2026 - Todo listo');
