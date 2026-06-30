@@ -338,11 +338,10 @@
       // ============================================
       // CONFIGURACIÓN
       // ============================================
-      const TOKEN = 'Bearer admin123';
       let paginaActual = 1;
       const limite = 20;
       let totalPaginas = 1;
-      let tokenActual = null;
+      let tokenActual = localStorage.getItem('adminToken') || null;
 
       // Elementos DOM
       const loginContainer = document.getElementById('login-container');
@@ -374,42 +373,16 @@
         loginContainer.style.display = 'block';
         adminContent.style.display = 'none';
         tokenActual = null;
+        localStorage.removeItem('adminToken');
         loginError.style.display = 'none';
       }
 
       function mostrarPanel() {
         loginContainer.style.display = 'none';
         adminContent.style.display = 'block';
-        tokenActual = TOKEN;
         cargarCharlasFiltro();
         cargarInscripciones(1);
       }
-
-      // ============================================
-      // EVENTO LOGIN
-      // ============================================
-      btnLogin.addEventListener('click', function() {
-        const usuario = loginUsuario.value.trim();
-        const password = loginPassword.value.trim();
-
-        if (usuario === 'admin' && password === 'admin123') {
-          loginError.style.display = 'none';
-          mostrarPanel();
-        } else {
-          loginError.style.display = 'block';
-        }
-      });
-
-      loginPassword.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') btnLogin.click();
-      });
-
-      // ============================================
-      // EVENTO LOGOUT
-      // ============================================
-      btnLogout.addEventListener('click', function() {
-        mostrarLogin();
-      });
 
       // ============================================
       // FUNCIONES AUXILIARES
@@ -424,10 +397,58 @@
 
       function obtenerHeaders() {
         return {
-          'Authorization': tokenActual || TOKEN,
+          'Authorization': `Bearer ${tokenActual}`,
           'Content-Type': 'application/json'
         };
       }
+
+      // ============================================
+      // LOGIN
+      // ============================================
+      btnLogin.addEventListener('click', async function() {
+        const username = loginUsuario.value.trim();
+        const password = loginPassword.value.trim();
+
+        if (!username || !password) {
+          loginError.textContent = '❌ Usuario y contraseña requeridos';
+          loginError.style.display = 'block';
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            loginError.textContent = '❌ ' + (data.error || 'Credenciales incorrectas');
+            loginError.style.display = 'block';
+            return;
+          }
+          // Guardar token
+          tokenActual = data.token;
+          localStorage.setItem('adminToken', tokenActual);
+          loginError.style.display = 'none';
+          mostrarPanel();
+        } catch (err) {
+          loginError.textContent = '❌ Error de conexión con el servidor';
+          loginError.style.display = 'block';
+          console.error(err);
+        }
+      });
+
+      loginPassword.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') btnLogin.click();
+      });
+
+      // ============================================
+      // LOGOUT
+      // ============================================
+      btnLogout.addEventListener('click', function() {
+        mostrarLogin();
+      });
 
       // ============================================
       // CARGAR CHARLAS PARA FILTRO
@@ -435,7 +456,14 @@
       async function cargarCharlasFiltro() {
         try {
           const res = await fetch('/api/admin/charlas', { headers: obtenerHeaders() });
-          if (!res.ok) throw new Error('Error al cargar charlas');
+          if (!res.ok) {
+            if (res.status === 401 || res.status === 403) {
+              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
+              mostrarLogin();
+              return;
+            }
+            throw new Error('Error al cargar charlas');
+          }
           const data = await res.json();
           filtroCharla.innerHTML = '<option value="">Todas las charlas</option>';
           data.forEach(ch => {
@@ -446,6 +474,7 @@
           });
         } catch (err) {
           console.error('Error cargando charlas para filtro:', err);
+          mostrarMensaje('❌ Error al cargar charlas para el filtro.', 'error');
         }
       }
 
@@ -469,7 +498,7 @@
         try {
           const res = await fetch(url, { headers: obtenerHeaders() });
           if (!res.ok) {
-            if (res.status === 401) {
+            if (res.status === 401 || res.status === 403) {
               mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
               mostrarLogin();
               return;
@@ -570,7 +599,14 @@
             headers: obtenerHeaders(),
             body: JSON.stringify({ escaneado: nuevoEstado })
           });
-          if (!res.ok) throw new Error('Error al actualizar');
+          if (!res.ok) {
+            if (res.status === 401 || res.status === 403) {
+              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
+              mostrarLogin();
+              return;
+            }
+            throw new Error('Error al actualizar');
+          }
           mostrarMensaje('✅ Estado de escaneo actualizado', 'exito');
           cargarInscripciones(paginaActual);
         } catch (err) {
@@ -588,7 +624,14 @@
             method: 'DELETE',
             headers: obtenerHeaders()
           });
-          if (!res.ok) throw new Error('Error al eliminar');
+          if (!res.ok) {
+            if (res.status === 401 || res.status === 403) {
+              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
+              mostrarLogin();
+              return;
+            }
+            throw new Error('Error al eliminar');
+          }
           mostrarMensaje('✅ Inscripción eliminada', 'exito');
           cargarInscripciones(paginaActual);
         } catch (err) {
@@ -606,6 +649,11 @@
             headers: obtenerHeaders()
           });
           if (!res.ok) {
+            if (res.status === 401 || res.status === 403) {
+              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
+              mostrarLogin();
+              return;
+            }
             if (res.status === 404) {
               mostrarMensaje('⚠️ No hay inscripciones para exportar', 'error');
               return;
@@ -647,8 +695,16 @@
       // ============================================
       // INICIALIZACIÓN
       // ============================================
-      mostrarLogin();
-      console.log('🔐 Panel de administración con login cargado');
+      // Si hay token guardado, intentar mostrar panel directamente
+      if (tokenActual) {
+        // Podríamos verificar el token con una petición, pero por simplicidad mostramos panel
+        // y si falla, el middleware redirigirá al login.
+        mostrarPanel();
+      } else {
+        mostrarLogin();
+      }
+
+      console.log('🔐 Panel de administración con JWT');
     })();
   </script>
 </body>

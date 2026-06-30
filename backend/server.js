@@ -4,10 +4,20 @@ const cors = require('cors');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
 const path = require('path');
+const jwt = require('jsonwebtoken');
+// bcrypt no es necesario porque comparamos en texto plano (por simplicidad)
+// pero lo dejamos importado por si se usa en el futuro
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ============================================
+// VARIABLES DE ENTORNO PARA AUTENTICACIÓN
+// ============================================
+const ADMIN_USER = process.env.ADMIN_USER || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const JWT_SECRET = process.env.JWT_SECRET || 'mi_clave_super_secreta_123456';
 
 // ============================================
 // CONEXIÓN A POSTGRESQL
@@ -97,6 +107,29 @@ async function initDB() {
   } finally {
     client.release();
     console.log('🔒 Conexión a la base de datos liberada');
+  }
+}
+
+// ============================================
+// MIDDLEWARE DE AUTENTICACIÓN JWT
+// ============================================
+function verificarToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Token no proporcionado' });
+  }
+
+  const token = authHeader.split(' ')[1]; // "Bearer <token>"
+  if (!token) {
+    return res.status(401).json({ error: 'Token no proporcionado' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.usuario = decoded; // guardamos la info del usuario
+    next();
+  } catch (err) {
+    return res.status(403).json({ error: 'Token inválido o expirado' });
   }
 }
 
@@ -265,14 +298,239 @@ app.get('/api/verificar/:codigo', async (req, res) => {
 });
 
 // ============================================
-// PÁGINA DE VERIFICACIÓN (CON LOGS Y FECHA CORREGIDA)
+// ADMIN: LOGIN (público)
+// ============================================
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
+  }
+
+  // Verificar credenciales
+  if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
+    // Generar token con expiración (8 horas)
+    const token = jwt.sign(
+      { username, role: 'admin' },
+      JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+    return res.json({ token, mensaje: 'Login exitoso' });
+  } else {
+    return res.status(401).json({ error: 'Credenciales incorrectas' });
+  }
+});
+
+// ============================================
+// ADMIN: ENDPOINTS PROTEGIDOS CON JWT
+// ============================================
+
+// OBTENER TODAS LAS INSCRIPCIONES (CON FILTROS)
+app.get('/api/admin/inscripciones', verificarToken, async (req, res) => {
+  const { email, charla_id, escaneado, page = 1, limit = 20 } = req.query;
+
+  try {
+    let query = `
+      SELECT 
+        i.id,
+        i.nombre,
+        i.email,
+        i.codigo_unico AS codigo,
+        i.fecha_inscripcion,
+        i.escaneado,
+        i.fecha_escaneo,
+        c.titulo AS charla_titulo,
+        c.dia,
+        c.hora,
+        c.ponente
+      FROM inscripciones i
+      JOIN charlas c ON i.charla_id = c.id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramIndex = 1;
+
+    if (email) {
+      query += ` AND i.email ILIKE $${paramIndex}`;
+      params.push(`%${email}%`);
+      paramIndex++;
+    }
+
+    if (charla_id) {
+      query += ` AND i.charla_id = $${paramIndex}`;
+      params.push(parseInt(charla_id));
+      paramIndex++;
+    }
+
+    if (escaneado !== undefined && escaneado !== '') {
+      const escaneadoBool = escaneado === 'true';
+      query += ` AND i.escaneado = $${paramIndex}`;
+      params.push(escaneadoBool);
+      paramIndex++;
+    }
+
+    query += ` ORDER BY i.fecha_inscripcion DESC`;
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    params.push(parseInt(limit), offset);
+
+    const result = await pool.query(query, params);
+    
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM inscripciones i
+      JOIN charlas c ON i.charla_id = c.id
+      WHERE 1=1
+    `;
+    const countParams = [];
+    let countIndex = 1;
+    if (email) {
+      countQuery += ` AND i.email ILIKE $${countIndex}`;
+      countParams.push(`%${email}%`);
+      countIndex++;
+    }
+    if (charla_id) {
+      countQuery += ` AND i.charla_id = $${countIndex}`;
+      countParams.push(parseInt(charla_id));
+      countIndex++;
+    }
+    if (escaneado !== undefined && escaneado !== '') {
+      const escaneadoBool = escaneado === 'true';
+      countQuery += ` AND i.escaneado = $${countIndex}`;
+      countParams.push(escaneadoBool);
+      countIndex++;
+    }
+    const countResult = await pool.query(countQuery, countParams);
+    const total = parseInt(countResult.rows[0].total);
+
+    res.json({
+      data: result.rows,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / parseInt(limit))
+      }
+    });
+  } catch (err) {
+    console.error('Error en admin/inscripciones:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ACTUALIZAR ESTADO DE ESCANEO
+app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { escaneado } = req.body;
+
+  if (isNaN(id) || typeof escaneado !== 'boolean') {
+    return res.status(400).json({ error: 'Datos inválidos' });
+  }
+
+  try {
+    const result = await pool.query(
+      'UPDATE inscripciones SET escaneado = $1, fecha_escaneo = CASE WHEN $1 THEN CURRENT_TIMESTAMP ELSE NULL END WHERE id = $2 RETURNING *',
+      [escaneado, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Inscripción no encontrada' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error actualizando escaneo:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ELIMINAR INSCRIPCIÓN
+app.delete('/api/admin/inscripciones/:id', verificarToken, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  try {
+    const result = await pool.query('DELETE FROM inscripciones WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Inscripción no encontrada' });
+    }
+    res.json({ mensaje: 'Inscripción eliminada', data: result.rows[0] });
+  } catch (err) {
+    console.error('Error eliminando inscripción:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// OBTENER LISTA DE CHARLAS (para filtros)
+app.get('/api/admin/charlas', verificarToken, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, titulo FROM charlas ORDER BY titulo');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error obteniendo charlas para admin:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// EXPORTAR A CSV
+app.get('/api/admin/exportar-csv', verificarToken, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        i.nombre,
+        i.email,
+        c.titulo AS charla,
+        c.dia,
+        c.hora,
+        i.codigo_unico AS codigo,
+        i.fecha_inscripcion,
+        CASE WHEN i.escaneado THEN 'Sí' ELSE 'No' END AS escaneado,
+        i.fecha_escaneo
+      FROM inscripciones i
+      JOIN charlas c ON i.charla_id = c.id
+      ORDER BY i.fecha_inscripcion DESC
+    `);
+
+    const rows = result.rows;
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'No hay inscripciones para exportar' });
+    }
+
+    const headers = ['Nombre', 'Email', 'Charla', 'Día', 'Hora', 'Código', 'Fecha Inscripción', 'Escaneado', 'Fecha Escaneo'];
+    let csv = headers.join(',') + '\n';
+    
+    rows.forEach(row => {
+      const values = [
+        `"${row.nombre.replace(/"/g, '""')}"`,
+        `"${row.email.replace(/"/g, '""')}"`,
+        `"${row.charla.replace(/"/g, '""')}"`,
+        `"${row.dia}"`,
+        `"${row.hora}"`,
+        `"${row.codigo}"`,
+        `"${row.fecha_inscripcion}"`,
+        `"${row.escaneado}"`,
+        `"${row.fecha_escaneo || ''}"`
+      ];
+      csv += values.join(',') + '\n';
+    });
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=inscripciones-${new Date().toISOString().split('T')[0]}.csv`);
+    res.send(csv);
+  } catch (err) {
+    console.error('Error exportando CSV:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================
+// PÁGINA DE VERIFICACIÓN (DISEÑO PROFESIONAL)
 // ============================================
 app.get('/verificar/:codigo', async (req, res) => {
   const codigo = req.params.codigo;
-  console.log(`🔍 Verificando código: ${codigo}`);
 
   try {
-    console.log('📡 Intentando consultar la base de datos...');
     const result = await pool.query(`
       SELECT i.nombre, i.email, i.fecha_inscripcion, i.escaneado, i.fecha_escaneo,
              c.titulo, c.dia, c.hora
@@ -281,44 +539,33 @@ app.get('/verificar/:codigo', async (req, res) => {
       WHERE i.codigo_unico = $1
     `, [codigo]);
 
-    console.log(`✅ Resultados obtenidos: ${result.rows.length} filas`);
-
     if (result.rows.length === 0) {
-      console.warn('⚠️ Código no encontrado en la base de datos.');
       return res.send(generateErrorPage('❌', 'Código no válido', 'No se encontró ninguna inscripción con este código.'));
     }
 
     const row = result.rows[0];
-    console.log(`👤 Inscripción encontrada para: ${row.nombre}`);
 
     if (row.escaneado === true) {
-      console.warn(`⛔ QR ya escaneado el ${row.fecha_escaneo}`);
       return res.send(generateErrorPage('⛔', 'QR ya utilizado', `Este código QR ya fue escaneado el <strong>${row.fecha_escaneo}</strong>. No se permite el reingreso.`));
     }
 
-    // ===== CORRECCIÓN DE FECHA =====
-    const ahora = new Date().toISOString(); // Formato ISO: YYYY-MM-DDTHH:MM:SS.MMMZ
-    console.log(`🕒 Escaneando por primera vez a las ${ahora}`);
-    
+    const ahora = new Date().toISOString();
     await pool.query(
       'UPDATE inscripciones SET escaneado = TRUE, fecha_escaneo = $1 WHERE codigo_unico = $2',
       [ahora, codigo]
     );
-    console.log('✅ Registro marcado como escaneado');
 
-    // Formatear fecha para mostrar en la página (más legible)
     const fechaLegible = new Date(ahora).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
     res.send(generateSuccessPage(row, fechaLegible));
 
   } catch (err) {
-    console.error('❌ Error en verificación:', err.message);
-    console.error('📄 Stack trace:', err.stack);
-    res.status(500).send(generateErrorPage('⚠️', 'Error interno', `Ocurrió un problema al verificar tu inscripción. Detalle técnico: ${err.message}`));
+    console.error('Error en verificación:', err.message);
+    res.status(500).send(generateErrorPage('⚠️', 'Error interno', 'Ocurrió un problema al verificar tu inscripción. Intenta de nuevo.'));
   }
 });
 
 // ============================================
-// FUNCIONES AUXILIARES PARA GENERAR HTML (verificación)
+// FUNCIONES AUXILIARES PARA GENERAR HTML
 // ============================================
 
 function generateLayout(title, bodyContent) {
@@ -578,239 +825,6 @@ function generateSuccessPage(row, horaEscaneo) {
 }
 
 // ============================================
-// ADMIN: ENDPOINTS DE ADMINISTRACIÓN
-// ============================================
-
-// OBTENER TODAS LAS INSCRIPCIONES (CON FILTROS)
-app.get('/api/admin/inscripciones', async (req, res) => {
-  const { email, charla_id, escaneado, page = 1, limit = 20 } = req.query;
-  
-  // Verificar autenticación (básica por ahora)
-  const authHeader = req.headers.authorization;
-  if (!authHeader || authHeader !== 'Bearer admin123') {
-    return res.status(401).json({ error: 'No autorizado' });
-  }
-
-  try {
-    let query = `
-      SELECT 
-        i.id,
-        i.nombre,
-        i.email,
-        i.codigo_unico AS codigo,
-        i.fecha_inscripcion,
-        i.escaneado,
-        i.fecha_escaneo,
-        c.titulo AS charla_titulo,
-        c.dia,
-        c.hora,
-        c.ponente
-      FROM inscripciones i
-      JOIN charlas c ON i.charla_id = c.id
-      WHERE 1=1
-    `;
-    const params = [];
-    let paramIndex = 1;
-
-    if (email) {
-      query += ` AND i.email ILIKE $${paramIndex}`;
-      params.push(`%${email}%`);
-      paramIndex++;
-    }
-
-    if (charla_id) {
-      query += ` AND i.charla_id = $${paramIndex}`;
-      params.push(parseInt(charla_id));
-      paramIndex++;
-    }
-
-    if (escaneado !== undefined && escaneado !== '') {
-      const escaneadoBool = escaneado === 'true';
-      query += ` AND i.escaneado = $${paramIndex}`;
-      params.push(escaneadoBool);
-      paramIndex++;
-    }
-
-    // Ordenar por fecha de inscripción descendente
-    query += ` ORDER BY i.fecha_inscripcion DESC`;
-
-    // Paginación
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-    params.push(parseInt(limit), offset);
-
-    const result = await pool.query(query, params);
-    
-    // Obtener total de registros para paginación (sin LIMIT)
-    let countQuery = `
-      SELECT COUNT(*) as total
-      FROM inscripciones i
-      JOIN charlas c ON i.charla_id = c.id
-      WHERE 1=1
-    `;
-    const countParams = [];
-    let countIndex = 1;
-    if (email) {
-      countQuery += ` AND i.email ILIKE $${countIndex}`;
-      countParams.push(`%${email}%`);
-      countIndex++;
-    }
-    if (charla_id) {
-      countQuery += ` AND i.charla_id = $${countIndex}`;
-      countParams.push(parseInt(charla_id));
-      countIndex++;
-    }
-    if (escaneado !== undefined && escaneado !== '') {
-      const escaneadoBool = escaneado === 'true';
-      countQuery += ` AND i.escaneado = $${countIndex}`;
-      countParams.push(escaneadoBool);
-      countIndex++;
-    }
-    const countResult = await pool.query(countQuery, countParams);
-    const total = parseInt(countResult.rows[0].total);
-
-    res.json({
-      data: result.rows,
-      pagination: {
-        total,
-        page: parseInt(page),
-        limit: parseInt(limit),
-        totalPages: Math.ceil(total / parseInt(limit))
-      }
-    });
-  } catch (err) {
-    console.error('Error en admin/inscripciones:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ACTUALIZAR ESTADO DE ESCANEO
-app.put('/api/admin/inscripciones/:id/escaneado', async (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || authHeader !== 'Bearer admin123') {
-    return res.status(401).json({ error: 'No autorizado' });
-  }
-
-  const id = parseInt(req.params.id);
-  const { escaneado } = req.body;
-
-  if (isNaN(id) || typeof escaneado !== 'boolean') {
-    return res.status(400).json({ error: 'Datos inválidos' });
-  }
-
-  try {
-    const result = await pool.query(
-      'UPDATE inscripciones SET escaneado = $1, fecha_escaneo = CASE WHEN $1 THEN CURRENT_TIMESTAMP ELSE NULL END WHERE id = $2 RETURNING *',
-      [escaneado, id]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Inscripción no encontrada' });
-    }
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error('Error actualizando escaneo:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ELIMINAR INSCRIPCIÓN
-app.delete('/api/admin/inscripciones/:id', async (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || authHeader !== 'Bearer admin123') {
-    return res.status(401).json({ error: 'No autorizado' });
-  }
-
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
-  try {
-    const result = await pool.query('DELETE FROM inscripciones WHERE id = $1 RETURNING *', [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Inscripción no encontrada' });
-    }
-    res.json({ mensaje: 'Inscripción eliminada', data: result.rows[0] });
-  } catch (err) {
-    console.error('Error eliminando inscripción:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// OBTENER LISTA DE CHARLAS (para filtros)
-app.get('/api/admin/charlas', async (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || authHeader !== 'Bearer admin123') {
-    return res.status(401).json({ error: 'No autorizado' });
-  }
-
-  try {
-    const result = await pool.query('SELECT id, titulo FROM charlas ORDER BY titulo');
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Error obteniendo charlas para admin:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// EXPORTAR A CSV
-app.get('/api/admin/exportar-csv', async (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || authHeader !== 'Bearer admin123') {
-    return res.status(401).json({ error: 'No autorizado' });
-  }
-
-  try {
-    const result = await pool.query(`
-      SELECT 
-        i.nombre,
-        i.email,
-        c.titulo AS charla,
-        c.dia,
-        c.hora,
-        i.codigo_unico AS codigo,
-        i.fecha_inscripcion,
-        CASE WHEN i.escaneado THEN 'Sí' ELSE 'No' END AS escaneado,
-        i.fecha_escaneo
-      FROM inscripciones i
-      JOIN charlas c ON i.charla_id = c.id
-      ORDER BY i.fecha_inscripcion DESC
-    `);
-
-    const rows = result.rows;
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'No hay inscripciones para exportar' });
-    }
-
-    // Generar CSV
-    const headers = ['Nombre', 'Email', 'Charla', 'Día', 'Hora', 'Código', 'Fecha Inscripción', 'Escaneado', 'Fecha Escaneo'];
-    let csv = headers.join(',') + '\n';
-    
-    rows.forEach(row => {
-      const values = [
-        `"${row.nombre.replace(/"/g, '""')}"`,
-        `"${row.email.replace(/"/g, '""')}"`,
-        `"${row.charla.replace(/"/g, '""')}"`,
-        `"${row.dia}"`,
-        `"${row.hora}"`,
-        `"${row.codigo}"`,
-        `"${row.fecha_inscripcion}"`,
-        `"${row.escaneado}"`,
-        `"${row.fecha_escaneo || ''}"`
-      ];
-      csv += values.join(',') + '\n';
-    });
-
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename=inscripciones-${new Date().toISOString().split('T')[0]}.csv`);
-    res.send(csv);
-  } catch (err) {
-    console.error('Error exportando CSV:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ============================================
 // SERVIDOR DE ARCHIVOS ESTÁTICOS
 // ============================================
 const frontendPath = path.join(__dirname, '../frontend');
@@ -824,3 +838,10 @@ app.get('/', (req, res) => {
 // ============================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
+
+// ============================================
+// INICIALIZAR BASE DE DATOS
+// ============================================
+initDB().catch(err => {
+  console.error('❌ Error fatal en initDB:', err.message);
+});
