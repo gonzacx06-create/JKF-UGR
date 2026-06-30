@@ -318,8 +318,12 @@
           populateSelect();
           actualizarBotonesCronograma();
           console.log('✅ Charlas cargadas correctamente.');
+          return data; // para poder encadenar
         })
-        .catch(err => console.error('❌ Error cargando charlas:', err));
+        .catch(err => {
+          console.error('❌ Error cargando charlas:', err);
+          throw err;
+        });
     }
 
     function populateSelect() {

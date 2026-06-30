@@ -6,12 +6,8 @@
   <title>Panel de Administración - Jornadas UGR</title>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    /* Estilos específicos para el panel */
-    .admin-wrapper {
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
+    /* Estilos generales */
+    .admin-wrapper { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
     .admin-header {
       display: flex;
       justify-content: space-between;
@@ -22,11 +18,7 @@
       border-bottom: 1px solid var(--border);
       padding-bottom: 16px;
     }
-    .admin-header h1 {
-      font-family: var(--font-display);
-      color: #fff;
-      font-size: 28px;
-    }
+    .admin-header h1 { font-family: var(--font-display); color: #fff; font-size: 28px; }
     .admin-header .btn-volver {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -36,10 +28,33 @@
       text-decoration: none;
       transition: background 0.2s;
     }
-    .admin-header .btn-volver:hover {
-      background: var(--surface2);
-      color: var(--text);
+    .admin-header .btn-volver:hover { background: var(--surface2); color: var(--text); }
+    /* Pestañas */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--border);
     }
+    .tabs button {
+      background: transparent;
+      border: none;
+      padding: 10px 20px;
+      color: var(--text-dim);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tabs button:hover { color: var(--text); }
+    .tabs button.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    /* Filtros y tablas (mismos estilos que antes) */
     .filtros {
       display: flex;
       flex-wrap: wrap;
@@ -50,21 +65,13 @@
       border-radius: var(--radius);
       border: 1px solid var(--border);
     }
-    .filtros input,
-    .filtros select,
-    .filtros button {
+    .filtros input, .filtros select, .filtros button {
       padding: 8px 12px;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--text);
       font-size: 13px;
-      font-family: var(--font-body);
-    }
-    .filtros input:focus,
-    .filtros select:focus {
-      outline: none;
-      border-color: var(--accent);
     }
     .filtros button {
       background: var(--accent);
@@ -73,16 +80,9 @@
       cursor: pointer;
       transition: opacity 0.2s;
     }
-    .filtros button:hover {
-      opacity: 0.85;
-    }
-    .filtros .btn-exportar {
-      background: var(--azul-ugr);
-      color: #fff;
-    }
-    .filtros .btn-exportar:hover {
-      background: var(--azul-ugr-claro);
-    }
+    .filtros button:hover { opacity: 0.85; }
+    .filtros .btn-exportar { background: var(--azul-ugr); color: #fff; }
+    .filtros .btn-exportar:hover { background: var(--azul-ugr-claro); }
     .tabla-container {
       overflow-x: auto;
       background: var(--surface);
@@ -90,11 +90,7 @@
       border-radius: var(--radius);
       padding: 0 0 16px 0;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
     table th {
       background: var(--surface2);
       color: var(--text-dim);
@@ -110,17 +106,9 @@
       color: var(--text-dim);
       vertical-align: middle;
     }
-    table tr:hover td {
-      background: rgba(255,255,255,0.02);
-    }
-    table .estado-escaneado {
-      color: var(--verde);
-      font-weight: 600;
-    }
-    table .estado-no-escaneado {
-      color: var(--accent);
-      font-weight: 600;
-    }
+    table tr:hover td { background: rgba(255,255,255,0.02); }
+    .estado-escaneado { color: var(--verde); font-weight: 600; }
+    .estado-no-escaneado { color: var(--accent); font-weight: 600; }
     .acciones {
       display: flex;
       gap: 6px;
@@ -135,24 +123,11 @@
       font-weight: 600;
       transition: opacity 0.2s;
     }
-    .acciones button:hover {
-      opacity: 0.8;
-    }
-    .btn-toggle {
-      background: var(--azul-ugr);
-      color: #fff;
-    }
-    .btn-toggle.escaneado {
-      background: var(--verde);
-    }
-    .btn-eliminar {
-      background: var(--rojo-ugr);
-      color: #fff;
-    }
-    .btn-editar {
-      background: var(--accent);
-      color: #0d1117;
-    }
+    .acciones button:hover { opacity: 0.8; }
+    .btn-toggle { background: var(--azul-ugr); color: #fff; }
+    .btn-toggle.escaneado { background: var(--verde); }
+    .btn-eliminar { background: var(--rojo-ugr); color: #fff; }
+    .btn-editar-charla { background: var(--accent); color: #0d1117; }
     .paginacion {
       display: flex;
       justify-content: center;
@@ -170,17 +145,9 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .paginacion button:hover {
-      background: var(--surface2);
-    }
-    .paginacion button:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-    .paginacion span {
-      color: var(--text-dim);
-      font-size: 13px;
-    }
+    .paginacion button:hover { background: var(--surface2); }
+    .paginacion button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .paginacion span { color: var(--text-dim); font-size: 13px; }
     .mensaje {
       padding: 12px 16px;
       border-radius: var(--radius-sm);
@@ -199,13 +166,8 @@
       color: var(--accent4);
       display: block;
     }
-    .cargando {
-      text-align: center;
-      color: var(--text-dim);
-      padding: 40px;
-    }
-
-    /* ===== LOGIN ===== */
+    .cargando { text-align: center; color: var(--text-dim); padding: 40px; }
+    /* Login */
     .login-container {
       max-width: 400px;
       margin: 60px auto;
@@ -215,11 +177,7 @@
       border-radius: var(--radius);
       text-align: center;
     }
-    .login-container h2 {
-      font-family: var(--font-display);
-      color: #fff;
-      margin-bottom: 20px;
-    }
+    .login-container h2 { font-family: var(--font-display); color: #fff; margin-bottom: 20px; }
     .login-container input {
       width: 100%;
       padding: 10px 14px;
@@ -230,10 +188,7 @@
       color: var(--text);
       font-size: 14px;
     }
-    .login-container input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
+    .login-container input:focus { outline: none; border-color: var(--accent); }
     .login-container button {
       width: 100%;
       padding: 10px;
@@ -246,24 +201,18 @@
       cursor: pointer;
       transition: opacity 0.2s;
     }
-    .login-container button:hover {
-      opacity: 0.85;
-    }
+    .login-container button:hover { opacity: 0.85; }
     .login-container .error-msg {
       color: var(--accent4);
       font-size: 13px;
       margin-top: 10px;
       display: none;
     }
-
-    /* ===== MODAL ===== */
+    /* Modal */
     #modal-editar-charla {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.7);
       z-index: 9999;
       justify-content: center;
@@ -279,20 +228,9 @@
       max-height: 90vh;
       overflow-y: auto;
     }
-    #modal-editar-charla h3 {
-      font-family: var(--font-display);
-      color: #fff;
-      margin-bottom: 16px;
-    }
-    #modal-editar-charla .form-group {
-      margin-bottom: 14px;
-    }
-    #modal-editar-charla label {
-      display: block;
-      color: var(--text-dim);
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
+    #modal-editar-charla h3 { font-family: var(--font-display); color: #fff; margin-bottom: 16px; }
+    #modal-editar-charla .form-group { margin-bottom: 14px; }
+    #modal-editar-charla label { display: block; color: var(--text-dim); font-size: 13px; margin-bottom: 4px; }
     #modal-editar-charla input {
       width: 100%;
       padding: 8px 12px;
@@ -302,10 +240,7 @@
       color: var(--text);
       font-size: 14px;
     }
-    #modal-editar-charla input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
+    #modal-editar-charla input:focus { outline: none; border-color: var(--accent); }
     #modal-editar-charla .modal-buttons {
       display: flex;
       gap: 12px;
@@ -320,9 +255,7 @@
       border-radius: var(--radius-sm);
       cursor: pointer;
     }
-    #modal-editar-charla .btn-cancelar:hover {
-      background: var(--surface);
-    }
+    #modal-editar-charla .btn-cancelar:hover { background: var(--surface); }
     #modal-editar-charla .btn-guardar {
       background: var(--accent);
       color: #0d1117;
@@ -332,43 +265,51 @@
       cursor: pointer;
       font-weight: 700;
     }
-    #modal-editar-charla .btn-guardar:hover {
-      opacity: 0.85;
-    }
-
+    #modal-editar-charla .btn-guardar:hover { opacity: 0.85; }
     @media (max-width: 600px) {
       .filtros { flex-direction: column; }
       .admin-header { flex-direction: column; align-items: flex-start; }
+      .tabs { flex-wrap: wrap; }
     }
   </style>
 </head>
 <body>
-  <!-- ===== LOGIN ===== -->
-  <div id="login-container" class="login-container">
-    <h2>🔐 Panel de Administración</h2>
-    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Ingresa tus credenciales para acceder</p>
-    <input type="text" id="login-usuario" placeholder="Usuario" autocomplete="off" />
-    <input type="password" id="login-password" placeholder="Contraseña" autocomplete="new-password" />
-    <div id="login-error" class="error-msg">❌ Usuario o contraseña incorrectos</div>
-    <button id="btn-login">Ingresar</button>
-  </div>
 
-  <!-- ===== PANEL DE ADMINISTRACIÓN ===== -->
-  <div id="admin-content" style="display:none;">
-    <div class="admin-wrapper">
-      <!-- Header -->
-      <div class="admin-header">
-        <h1>🔐 Panel de Administración</h1>
-        <div>
-          <a href="/" class="btn-volver">← Volver al inicio</a>
-          <button id="btn-logout" style="margin-left:10px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);padding:8px 16px;border-radius:var(--radius-sm);cursor:pointer;">Cerrar sesión</button>
-        </div>
+<!-- ===== LOGIN ===== -->
+<div id="login-container" class="login-container">
+  <h2>🔐 Panel de Administración</h2>
+  <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Ingresa tus credenciales para acceder</p>
+  <input type="text" id="login-usuario" placeholder="Usuario" autocomplete="off" />
+  <input type="password" id="login-password" placeholder="Contraseña" autocomplete="new-password" />
+  <div id="login-error" class="error-msg">❌ Usuario o contraseña incorrectos</div>
+  <button id="btn-login">Ingresar</button>
+</div>
+
+<!-- ===== PANEL DE ADMINISTRACIÓN ===== -->
+<div id="admin-content" style="display:none;">
+  <div class="admin-wrapper">
+    <!-- Header -->
+    <div class="admin-header">
+      <h1>🔐 Panel de Administración</h1>
+      <div>
+        <a href="/" class="btn-volver">← Volver al inicio</a>
+        <button id="btn-logout" style="margin-left:10px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);padding:8px 16px;border-radius:var(--radius-sm);cursor:pointer;">Cerrar sesión</button>
       </div>
+    </div>
 
-      <!-- Mensaje de autenticación -->
-      <div id="auth-message" class="mensaje"></div>
+    <!-- Mensajes -->
+    <div id="auth-message" class="mensaje"></div>
 
-      <!-- Filtros -->
+    <!-- Pestañas -->
+    <div class="tabs">
+      <button class="active" data-tab="tab-inscripciones">📋 Inscripciones</button>
+      <button data-tab="tab-charlas">📅 Charlas (Cronograma)</button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: INSCRIPCIONES -->
+    <!-- ========================================== -->
+    <div id="tab-inscripciones" class="tab-content active">
       <div class="filtros">
         <input type="text" id="filtro-email" placeholder="Buscar por email..." />
         <select id="filtro-charla">
@@ -384,29 +325,18 @@
         <button id="btn-limpiar" style="background: var(--surface2); color: var(--text-dim);">Limpiar filtros</button>
       </div>
 
-      <!-- Tabla de inscripciones -->
       <div class="tabla-container">
         <div id="tabla-cargando" class="cargando">Cargando inscripciones...</div>
         <div id="tabla-contenido" style="display:none;">
           <table>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Charla</th>
-                <th>Día</th>
-                <th>Hora</th>
-                <th>Código</th>
-                <th>Escaneado</th>
-                <th>Fecha inscripción</th>
-                <th>Acciones</th>
+                <th>ID</th><th>Nombre</th><th>Email</th><th>Charla</th><th>Día</th><th>Hora</th>
+                <th>Código</th><th>Escaneado</th><th>Fecha inscripción</th><th>Acciones</th>
               </tr>
             </thead>
-            <tbody id="tabla-body">
-            </tbody>
+            <tbody id="tabla-body"></tbody>
           </table>
-          <!-- Paginación -->
           <div class="paginacion" id="paginacion-container">
             <button id="btn-anterior" disabled>Anterior</button>
             <span id="info-pagina">Página 1 de 1</span>
@@ -415,508 +345,537 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ===== MODAL DE EDICIÓN ===== -->
-  <div id="modal-editar-charla">
-    <div class="modal-content">
-      <h3>✏️ Editar Charla</h3>
-      <form id="form-editar-charla">
-        <input type="hidden" id="edit-id" />
-        <div class="form-group">
-          <label for="edit-titulo">Título *</label>
-          <input type="text" id="edit-titulo" required placeholder="Ej: Conferencia Inaugural" />
+    <!-- ========================================== -->
+    <!-- TAB 2: CHARLAS (CRONOGRAMA) -->
+    <!-- ========================================== -->
+    <div id="tab-charlas" class="tab-content">
+      <div class="tabla-container">
+        <div id="tabla-charlas-cargando" class="cargando">Cargando charlas...</div>
+        <div id="tabla-charlas-contenido" style="display:none;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Título</th><th>Día</th><th>Hora</th><th>Ponente</th>
+                <th>Cupo máximo</th><th>Inscritos</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-charlas-body"></tbody>
+          </table>
         </div>
-        <div class="form-group">
-          <label for="edit-dia">Día *</label>
-          <input type="text" id="edit-dia" required placeholder="Ej: Miércoles 2" />
-        </div>
-        <div class="form-group">
-          <label for="edit-hora">Hora *</label>
-          <input type="text" id="edit-hora" required placeholder="Ej: 10:00 - 11:30" />
-        </div>
-        <div class="form-group">
-          <label for="edit-ponente">Ponente *</label>
-          <input type="text" id="edit-ponente" required placeholder="Ej: Dr. Luis Miguel Torres" />
-        </div>
-        <div class="form-group">
-          <label for="edit-cupo">Cupo máximo *</label>
-          <input type="number" id="edit-cupo" required min="1" placeholder="Ej: 40" />
-        </div>
-        <div class="modal-buttons">
-          <button type="button" class="btn-cancelar" id="btn-cancelar-modal">Cancelar</button>
-          <button type="submit" class="btn-guardar">Guardar cambios</button>
-        </div>
-      </form>
+      </div>
     </div>
+
   </div>
+</div>
 
-  <script>
-    (function() {
-      'use strict';
+<!-- ===== MODAL DE EDICIÓN ===== -->
+<div id="modal-editar-charla">
+  <div class="modal-content">
+    <h3>✏️ Editar Charla</h3>
+    <form id="form-editar-charla">
+      <input type="hidden" id="edit-id" />
+      <div class="form-group">
+        <label for="edit-titulo">Título *</label>
+        <input type="text" id="edit-titulo" required placeholder="Ej: Conferencia Inaugural" />
+      </div>
+      <div class="form-group">
+        <label for="edit-dia">Día *</label>
+        <input type="text" id="edit-dia" required placeholder="Ej: Miércoles 2" />
+      </div>
+      <div class="form-group">
+        <label for="edit-hora">Hora *</label>
+        <input type="text" id="edit-hora" required placeholder="Ej: 10:00 - 11:30" />
+      </div>
+      <div class="form-group">
+        <label for="edit-ponente">Ponente *</label>
+        <input type="text" id="edit-ponente" required placeholder="Ej: Dr. Luis Miguel Torres" />
+      </div>
+      <div class="form-group">
+        <label for="edit-cupo">Cupo máximo *</label>
+        <input type="number" id="edit-cupo" required min="1" placeholder="Ej: 40" />
+      </div>
+      <div class="modal-buttons">
+        <button type="button" class="btn-cancelar" id="btn-cancelar-modal">Cancelar</button>
+        <button type="submit" class="btn-guardar">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-      // ============================================
-      // CONFIGURACIÓN
-      // ============================================
-      let paginaActual = 1;
-      const limite = 20;
-      let totalPaginas = 1;
-      let tokenActual = localStorage.getItem('adminToken') || null;
+<script>
+  (function() {
+    'use strict';
 
-      // Elementos DOM
-      const loginContainer = document.getElementById('login-container');
-      const adminContent = document.getElementById('admin-content');
-      const loginUsuario = document.getElementById('login-usuario');
-      const loginPassword = document.getElementById('login-password');
-      const loginError = document.getElementById('login-error');
-      const btnLogin = document.getElementById('btn-login');
-      const btnLogout = document.getElementById('btn-logout');
+    // ============================================
+    // CONFIGURACIÓN
+    // ============================================
+    let paginaActual = 1;
+    const limite = 20;
+    let totalPaginas = 1;
+    let tokenActual = localStorage.getItem('adminToken') || null;
 
-      const tablaBody = document.getElementById('tabla-body');
-      const tablaCargando = document.getElementById('tabla-cargando');
-      const tablaContenido = document.getElementById('tabla-contenido');
-      const filtroEmail = document.getElementById('filtro-email');
-      const filtroCharla = document.getElementById('filtro-charla');
-      const filtroEscaneado = document.getElementById('filtro-escaneado');
-      const btnFiltrar = document.getElementById('btn-filtrar');
-      const btnExportar = document.getElementById('btn-exportar');
-      const btnLimpiar = document.getElementById('btn-limpiar');
-      const btnAnterior = document.getElementById('btn-anterior');
-      const btnSiguiente = document.getElementById('btn-siguiente');
-      const infoPagina = document.getElementById('info-pagina');
-      const authMessage = document.getElementById('auth-message');
+    // Elementos DOM
+    const loginContainer = document.getElementById('login-container');
+    const adminContent = document.getElementById('admin-content');
+    const loginUsuario = document.getElementById('login-usuario');
+    const loginPassword = document.getElementById('login-password');
+    const loginError = document.getElementById('login-error');
+    const btnLogin = document.getElementById('btn-login');
+    const btnLogout = document.getElementById('btn-logout');
+    const authMessage = document.getElementById('auth-message');
 
-      // Elementos del modal
-      const modal = document.getElementById('modal-editar-charla');
-      const formEditar = document.getElementById('form-editar-charla');
-      const editId = document.getElementById('edit-id');
-      const editTitulo = document.getElementById('edit-titulo');
-      const editDia = document.getElementById('edit-dia');
-      const editHora = document.getElementById('edit-hora');
-      const editPonente = document.getElementById('edit-ponente');
-      const editCupo = document.getElementById('edit-cupo');
-      const btnCancelarModal = document.getElementById('btn-cancelar-modal');
+    // Tabs
+    const tabs = document.querySelectorAll('.tabs button');
+    const tabContenidos = {
+      inscripciones: document.getElementById('tab-inscripciones'),
+      charlas: document.getElementById('tab-charlas')
+    };
 
-      // ============================================
-      // FUNCIONES DE AUTENTICACIÓN
-      // ============================================
-      function mostrarLogin() {
-        loginContainer.style.display = 'block';
-        adminContent.style.display = 'none';
-        tokenActual = null;
-        localStorage.removeItem('adminToken');
+    // Inscripciones
+    const tablaBody = document.getElementById('tabla-body');
+    const tablaCargando = document.getElementById('tabla-cargando');
+    const tablaContenido = document.getElementById('tabla-contenido');
+    const filtroEmail = document.getElementById('filtro-email');
+    const filtroCharla = document.getElementById('filtro-charla');
+    const filtroEscaneado = document.getElementById('filtro-escaneado');
+    const btnFiltrar = document.getElementById('btn-filtrar');
+    const btnExportar = document.getElementById('btn-exportar');
+    const btnLimpiar = document.getElementById('btn-limpiar');
+    const btnAnterior = document.getElementById('btn-anterior');
+    const btnSiguiente = document.getElementById('btn-siguiente');
+    const infoPagina = document.getElementById('info-pagina');
+
+    // Charlas
+    const tablaCharlasBody = document.getElementById('tabla-charlas-body');
+    const tablaCharlasCargando = document.getElementById('tabla-charlas-cargando');
+    const tablaCharlasContenido = document.getElementById('tabla-charlas-contenido');
+
+    // Modal
+    const modal = document.getElementById('modal-editar-charla');
+    const formEditar = document.getElementById('form-editar-charla');
+    const editId = document.getElementById('edit-id');
+    const editTitulo = document.getElementById('edit-titulo');
+    const editDia = document.getElementById('edit-dia');
+    const editHora = document.getElementById('edit-hora');
+    const editPonente = document.getElementById('edit-ponente');
+    const editCupo = document.getElementById('edit-cupo');
+    const btnCancelarModal = document.getElementById('btn-cancelar-modal');
+
+    // ============================================
+    // FUNCIONES DE AUTENTICACIÓN
+    // ============================================
+    function mostrarLogin() {
+      loginContainer.style.display = 'block';
+      adminContent.style.display = 'none';
+      tokenActual = null;
+      localStorage.removeItem('adminToken');
+      loginError.style.display = 'none';
+    }
+
+    function mostrarPanel() {
+      loginContainer.style.display = 'none';
+      adminContent.style.display = 'block';
+      cargarCharlasFiltro();
+      cargarInscripciones(1);
+      cargarCharlasAdmin();
+    }
+
+    // ============================================
+    // FUNCIONES AUXILIARES
+    // ============================================
+    function mostrarMensaje(texto, tipo) {
+      authMessage.textContent = texto;
+      authMessage.className = 'mensaje ' + tipo;
+      setTimeout(() => { authMessage.className = 'mensaje'; }, 5000);
+    }
+
+    function obtenerHeaders() {
+      return { 'Authorization': `Bearer ${tokenActual}`, 'Content-Type': 'application/json' };
+    }
+
+    // ============================================
+    // LOGIN
+    // ============================================
+    btnLogin.addEventListener('click', async function() {
+      const username = loginUsuario.value.trim();
+      const password = loginPassword.value.trim();
+      if (!username || !password) {
+        loginError.textContent = '❌ Usuario y contraseña requeridos';
+        loginError.style.display = 'block';
+        return;
+      }
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          loginError.textContent = '❌ ' + (data.error || 'Credenciales incorrectas');
+          loginError.style.display = 'block';
+          return;
+        }
+        tokenActual = data.token;
+        localStorage.setItem('adminToken', tokenActual);
         loginError.style.display = 'none';
-      }
-
-      function mostrarPanel() {
-        loginContainer.style.display = 'none';
-        adminContent.style.display = 'block';
-        cargarCharlasFiltro();
-        cargarInscripciones(1);
-      }
-
-      // ============================================
-      // FUNCIONES AUXILIARES
-      // ============================================
-      function mostrarMensaje(texto, tipo) {
-        authMessage.textContent = texto;
-        authMessage.className = 'mensaje ' + tipo;
-        setTimeout(() => {
-          authMessage.className = 'mensaje';
-        }, 5000);
-      }
-
-      function obtenerHeaders() {
-        return {
-          'Authorization': `Bearer ${tokenActual}`,
-          'Content-Type': 'application/json'
-        };
-      }
-
-      // ============================================
-      // LOGIN
-      // ============================================
-      btnLogin.addEventListener('click', async function() {
-        const username = loginUsuario.value.trim();
-        const password = loginPassword.value.trim();
-
-        if (!username || !password) {
-          loginError.textContent = '❌ Usuario y contraseña requeridos';
-          loginError.style.display = 'block';
-          return;
-        }
-
-        try {
-          const res = await fetch('/api/admin/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-          });
-          const data = await res.json();
-          if (!res.ok) {
-            loginError.textContent = '❌ ' + (data.error || 'Credenciales incorrectas');
-            loginError.style.display = 'block';
-            return;
-          }
-          tokenActual = data.token;
-          localStorage.setItem('adminToken', tokenActual);
-          loginError.style.display = 'none';
-          mostrarPanel();
-        } catch (err) {
-          loginError.textContent = '❌ Error de conexión con el servidor';
-          loginError.style.display = 'block';
-          console.error(err);
-        }
-      });
-
-      loginPassword.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') btnLogin.click();
-      });
-
-      // ============================================
-      // LOGOUT
-      // ============================================
-      btnLogout.addEventListener('click', function() {
-        mostrarLogin();
-      });
-
-      // ============================================
-      // CARGAR CHARLAS PARA FILTRO
-      // ============================================
-      async function cargarCharlasFiltro() {
-        try {
-          const res = await fetch('/api/admin/charlas', { headers: obtenerHeaders() });
-          if (!res.ok) {
-            if (res.status === 401 || res.status === 403) {
-              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
-              mostrarLogin();
-              return;
-            }
-            throw new Error('Error al cargar charlas');
-          }
-          const data = await res.json();
-          filtroCharla.innerHTML = '<option value="">Todas las charlas</option>';
-          data.forEach(ch => {
-            const opt = document.createElement('option');
-            opt.value = ch.id;
-            opt.textContent = ch.titulo;
-            filtroCharla.appendChild(opt);
-          });
-        } catch (err) {
-          console.error('Error cargando charlas para filtro:', err);
-          mostrarMensaje('❌ Error al cargar charlas para el filtro.', 'error');
-        }
-      }
-
-      // ============================================
-      // CARGAR INSCRIPCIONES
-      // ============================================
-      async function cargarInscripciones(page = 1) {
-        paginaActual = page;
-        tablaCargando.style.display = 'block';
-        tablaContenido.style.display = 'none';
-
-        const email = filtroEmail.value.trim();
-        const charla_id = filtroCharla.value;
-        const escaneado = filtroEscaneado.value;
-
-        let url = `/api/admin/inscripciones?page=${page}&limit=${limite}`;
-        if (email) url += `&email=${encodeURIComponent(email)}`;
-        if (charla_id) url += `&charla_id=${charla_id}`;
-        if (escaneado !== '') url += `&escaneado=${escaneado}`;
-
-        try {
-          const res = await fetch(url, { headers: obtenerHeaders() });
-          if (!res.ok) {
-            if (res.status === 401 || res.status === 403) {
-              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
-              mostrarLogin();
-              return;
-            }
-            throw new Error('Error al cargar inscripciones');
-          }
-          const data = await res.json();
-          const inscripciones = data.data || [];
-          const pagination = data.pagination || { total: 0, page: 1, totalPages: 1 };
-
-          totalPaginas = pagination.totalPages || 1;
-          renderizarTabla(inscripciones);
-          actualizarPaginacion(pagination);
-
-          tablaCargando.style.display = 'none';
-          tablaContenido.style.display = 'block';
-        } catch (err) {
-          console.error('Error:', err);
-          mostrarMensaje('❌ Error al cargar inscripciones: ' + err.message, 'error');
-          tablaCargando.style.display = 'none';
-        }
-      }
-
-      // ============================================
-      // RENDERIZAR TABLA (con botón Editar)
-      // ============================================
-      function renderizarTabla(inscripciones) {
-        if (inscripciones.length === 0) {
-          tablaBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-dim);">No hay inscripciones que coincidan con los filtros.</td></tr>`;
-          return;
-        }
-
-        tablaBody.innerHTML = '';
-        inscripciones.forEach(ins => {
-          const tr = document.createElement('tr');
-          const escaneadoClass = ins.escaneado ? 'estado-escaneado' : 'estado-no-escaneado';
-          const escaneadoText = ins.escaneado ? '✅ Sí' : '❌ No';
-
-          tr.innerHTML = `
-            <td>${ins.id}</td>
-            <td><strong>${ins.nombre}</strong></td>
-            <td>${ins.email}</td>
-            <td>${ins.charla_titulo}</td>
-            <td>${ins.dia}</td>
-            <td>${ins.hora}</td>
-            <td><code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px;">${ins.codigo}</code></td>
-            <td class="${escaneadoClass}">${escaneadoText}</td>
-            <td style="font-size:11px;">${ins.fecha_inscripcion}</td>
-            <td>
-              <div class="acciones">
-                <button class="btn-editar" data-id="${ins.id}" data-charla-titulo="${ins.charla_titulo}" data-dia="${ins.dia}" data-hora="${ins.hora}" data-ponente="${ins.ponente}">✏️ Editar</button>
-                <button class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-escaneado="${ins.escaneado}">
-                  ${ins.escaneado ? 'Desmarcar' : 'Marcar'}
-                </button>
-                <button class="btn-eliminar" data-id="${ins.id}">Eliminar</button>
-              </div>
-            </td>
-          `;
-          tablaBody.appendChild(tr);
-        });
-
-        // Eventos: Toggle escaneado
-        document.querySelectorAll('.btn-toggle').forEach(btn => {
-          btn.addEventListener('click', async function(e) {
-            const id = this.dataset.id;
-            const actual = this.dataset.escaneado === 'true';
-            await toggleEscaneado(id, !actual);
-          });
-        });
-
-        // Eventos: Eliminar
-        document.querySelectorAll('.btn-eliminar').forEach(btn => {
-          btn.addEventListener('click', async function(e) {
-            const id = this.dataset.id;
-            if (confirm('¿Estás seguro de eliminar esta inscripción?')) {
-              await eliminarInscripcion(id);
-            }
-          });
-        });
-
-        // Eventos: Editar
-        document.querySelectorAll('.btn-editar').forEach(btn => {
-          btn.addEventListener('click', function(e) {
-            const id = parseInt(this.dataset.id);
-            const titulo = this.dataset.charlaTitulo;
-            const dia = this.dataset.dia;
-            const hora = this.dataset.hora;
-            const ponente = this.dataset.ponente;
-            abrirModalEdicion(id, titulo, dia, hora, ponente);
-          });
-        });
-      }
-
-      // ============================================
-      // MODAL DE EDICIÓN
-      // ============================================
-      function abrirModalEdicion(id, titulo, dia, hora, ponente) {
-        // Cargar datos completos desde la API para obtener el cupo_maximo
-        fetch(`/api/admin/charlas/${id}`, { headers: obtenerHeaders() })
-          .then(res => {
-            if (!res.ok) throw new Error('Error al cargar datos de la charla');
-            return res.json();
-          })
-          .then(data => {
-            editId.value = data.id;
-            editTitulo.value = data.titulo;
-            editDia.value = data.dia;
-            editHora.value = data.hora;
-            editPonente.value = data.ponente;
-            editCupo.value = data.cupo_maximo;
-            modal.style.display = 'flex';
-          })
-          .catch(err => {
-            console.error('Error cargando charla:', err);
-            mostrarMensaje('❌ Error al cargar los datos de la charla', 'error');
-          });
-      }
-
-      function cerrarModal() {
-        modal.style.display = 'none';
-        formEditar.reset();
-      }
-
-      btnCancelarModal.addEventListener('click', cerrarModal);
-
-      // Cerrar modal al hacer clic fuera del contenido
-      modal.addEventListener('click', function(e) {
-        if (e.target === modal) cerrarModal();
-      });
-
-      // Enviar formulario de edición
-      formEditar.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const id = editId.value;
-        const payload = {
-          titulo: editTitulo.value.trim(),
-          dia: editDia.value.trim(),
-          hora: editHora.value.trim(),
-          ponente: editPonente.value.trim(),
-          cupo_maximo: parseInt(editCupo.value)
-        };
-
-        try {
-          const res = await fetch(`/api/admin/charlas/${id}`, {
-            method: 'PUT',
-            headers: obtenerHeaders(),
-            body: JSON.stringify(payload)
-          });
-          if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.error || 'Error al actualizar');
-          }
-          mostrarMensaje('✅ Charla actualizada correctamente', 'exito');
-          cerrarModal();
-          cargarInscripciones(paginaActual);
-        } catch (err) {
-          console.error('Error actualizando charla:', err);
-          mostrarMensaje('❌ Error al actualizar: ' + err.message, 'error');
-        }
-      });
-
-      // ============================================
-      // PAGINACIÓN
-      // ============================================
-      function actualizarPaginacion(pagination) {
-        const { page, totalPages } = pagination;
-        infoPagina.textContent = `Página ${page} de ${totalPages}`;
-        btnAnterior.disabled = page <= 1;
-        btnSiguiente.disabled = page >= totalPages;
-        btnAnterior.onclick = () => cargarInscripciones(page - 1);
-        btnSiguiente.onclick = () => cargarInscripciones(page + 1);
-      }
-
-      // ============================================
-      // ACCIONES: TOGGLE ESCANEADO
-      // ============================================
-      async function toggleEscaneado(id, nuevoEstado) {
-        try {
-          const res = await fetch(`/api/admin/inscripciones/${id}/escaneado`, {
-            method: 'PUT',
-            headers: obtenerHeaders(),
-            body: JSON.stringify({ escaneado: nuevoEstado })
-          });
-          if (!res.ok) {
-            if (res.status === 401 || res.status === 403) {
-              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
-              mostrarLogin();
-              return;
-            }
-            throw new Error('Error al actualizar');
-          }
-          mostrarMensaje('✅ Estado de escaneo actualizado', 'exito');
-          cargarInscripciones(paginaActual);
-        } catch (err) {
-          console.error(err);
-          mostrarMensaje('❌ Error al actualizar', 'error');
-        }
-      }
-
-      // ============================================
-      // ACCIONES: ELIMINAR
-      // ============================================
-      async function eliminarInscripcion(id) {
-        try {
-          const res = await fetch(`/api/admin/inscripciones/${id}`, {
-            method: 'DELETE',
-            headers: obtenerHeaders()
-          });
-          if (!res.ok) {
-            if (res.status === 401 || res.status === 403) {
-              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
-              mostrarLogin();
-              return;
-            }
-            throw new Error('Error al eliminar');
-          }
-          mostrarMensaje('✅ Inscripción eliminada', 'exito');
-          cargarInscripciones(paginaActual);
-        } catch (err) {
-          console.error(err);
-          mostrarMensaje('❌ Error al eliminar', 'error');
-        }
-      }
-
-      // ============================================
-      // EXPORTAR CSV
-      // ============================================
-      async function exportarCSV() {
-        try {
-          const res = await fetch('/api/admin/exportar-csv', {
-            headers: obtenerHeaders()
-          });
-          if (!res.ok) {
-            if (res.status === 401 || res.status === 403) {
-              mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
-              mostrarLogin();
-              return;
-            }
-            if (res.status === 404) {
-              mostrarMensaje('⚠️ No hay inscripciones para exportar', 'error');
-              return;
-            }
-            throw new Error('Error al exportar');
-          }
-          const blob = await res.blob();
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `inscripciones-${new Date().toISOString().split('T')[0]}.csv`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-          mostrarMensaje('✅ Exportación exitosa', 'exito');
-        } catch (err) {
-          console.error(err);
-          mostrarMensaje('❌ Error al exportar', 'error');
-        }
-      }
-
-      // ============================================
-      // EVENTOS
-      // ============================================
-      btnFiltrar.addEventListener('click', () => cargarInscripciones(1));
-      btnExportar.addEventListener('click', exportarCSV);
-      btnLimpiar.addEventListener('click', () => {
-        filtroEmail.value = '';
-        filtroCharla.value = '';
-        filtroEscaneado.value = '';
-        cargarInscripciones(1);
-      });
-
-      filtroEmail.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') btnFiltrar.click();
-      });
-
-      // ============================================
-      // INICIALIZACIÓN
-      // ============================================
-      if (tokenActual) {
         mostrarPanel();
-      } else {
-        mostrarLogin();
+      } catch (err) {
+        loginError.textContent = '❌ Error de conexión con el servidor';
+        loginError.style.display = 'block';
+        console.error(err);
       }
+    });
 
-      console.log('🔐 Panel de administración con edición de charlas');
-    })();
-  </script>
+    loginPassword.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') btnLogin.click();
+    });
+
+    btnLogout.addEventListener('click', mostrarLogin);
+
+    // ============================================
+    // TABS
+    // ============================================
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        const target = this.dataset.tab;
+        Object.keys(tabContenidos).forEach(key => {
+          tabContenidos[key].classList.toggle('active', key === target);
+        });
+        if (target === 'tab-charlas') cargarCharlasAdmin();
+        if (target === 'tab-inscripciones') cargarInscripciones(paginaActual);
+      });
+    });
+
+    // ============================================
+    // INSCRIPCIONES
+    // ============================================
+    async function cargarCharlasFiltro() {
+      try {
+        const res = await fetch('/api/admin/charlas', { headers: obtenerHeaders() });
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return;
+          }
+          throw new Error('Error al cargar charlas');
+        }
+        const data = await res.json();
+        filtroCharla.innerHTML = '<option value="">Todas las charlas</option>';
+        data.forEach(ch => {
+          const opt = document.createElement('option');
+          opt.value = ch.id;
+          opt.textContent = ch.titulo;
+          filtroCharla.appendChild(opt);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function cargarInscripciones(page = 1) {
+      paginaActual = page;
+      tablaCargando.style.display = 'block';
+      tablaContenido.style.display = 'none';
+
+      const email = filtroEmail.value.trim();
+      const charla_id = filtroCharla.value;
+      const escaneado = filtroEscaneado.value;
+
+      let url = `/api/admin/inscripciones?page=${page}&limit=${limite}`;
+      if (email) url += `&email=${encodeURIComponent(email)}`;
+      if (charla_id) url += `&charla_id=${charla_id}`;
+      if (escaneado !== '') url += `&escaneado=${escaneado}`;
+
+      try {
+        const res = await fetch(url, { headers: obtenerHeaders() });
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return;
+          }
+          throw new Error('Error al cargar inscripciones');
+        }
+        const data = await res.json();
+        const inscripciones = data.data || [];
+        const pagination = data.pagination || { total: 0, page: 1, totalPages: 1 };
+        totalPaginas = pagination.totalPages || 1;
+        renderizarTabla(inscripciones);
+        actualizarPaginacion(pagination);
+        tablaCargando.style.display = 'none';
+        tablaContenido.style.display = 'block';
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje('❌ Error al cargar inscripciones: ' + err.message, 'error');
+        tablaCargando.style.display = 'none';
+      }
+    }
+
+    function renderizarTabla(inscripciones) {
+      if (inscripciones.length === 0) {
+        tablaBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-dim);">No hay inscripciones.</td></tr>`;
+        return;
+      }
+      tablaBody.innerHTML = '';
+      inscripciones.forEach(ins => {
+        const tr = document.createElement('tr');
+        const escaneadoClass = ins.escaneado ? 'estado-escaneado' : 'estado-no-escaneado';
+        const escaneadoText = ins.escaneado ? '✅ Sí' : '❌ No';
+        tr.innerHTML = `
+          <td>${ins.id}</td>
+          <td><strong>${ins.nombre}</strong></td>
+          <td>${ins.email}</td>
+          <td>${ins.charla_titulo}</td>
+          <td>${ins.dia}</td>
+          <td>${ins.hora}</td>
+          <td><code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px;">${ins.codigo}</code></td>
+          <td class="${escaneadoClass}">${escaneadoText}</td>
+          <td style="font-size:11px;">${ins.fecha_inscripcion}</td>
+          <td>
+            <div class="acciones">
+              <button class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-escaneado="${ins.escaneado}">
+                ${ins.escaneado ? 'Desmarcar' : 'Marcar'}
+              </button>
+              <button class="btn-eliminar" data-id="${ins.id}">Eliminar</button>
+            </div>
+          </td>
+        `;
+        tablaBody.appendChild(tr);
+      });
+
+      document.querySelectorAll('.btn-toggle').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          const id = this.dataset.id;
+          const actual = this.dataset.escaneado === 'true';
+          await toggleEscaneado(id, !actual);
+        });
+      });
+
+      document.querySelectorAll('.btn-eliminar').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          const id = this.dataset.id;
+          if (confirm('¿Eliminar esta inscripción?')) await eliminarInscripcion(id);
+        });
+      });
+    }
+
+    function actualizarPaginacion(pagination) {
+      const { page, totalPages } = pagination;
+      infoPagina.textContent = `Página ${page} de ${totalPages}`;
+      btnAnterior.disabled = page <= 1;
+      btnSiguiente.disabled = page >= totalPages;
+      btnAnterior.onclick = () => cargarInscripciones(page - 1);
+      btnSiguiente.onclick = () => cargarInscripciones(page + 1);
+    }
+
+    async function toggleEscaneado(id, nuevoEstado) {
+      try {
+        const res = await fetch(`/api/admin/inscripciones/${id}/escaneado`, {
+          method: 'PUT',
+          headers: obtenerHeaders(),
+          body: JSON.stringify({ escaneado: nuevoEstado })
+        });
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) { mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return; }
+          throw new Error('Error al actualizar');
+        }
+        mostrarMensaje('✅ Estado de escaneo actualizado', 'exito');
+        cargarInscripciones(paginaActual);
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje('❌ Error al actualizar', 'error');
+      }
+    }
+
+    async function eliminarInscripcion(id) {
+      try {
+        const res = await fetch(`/api/admin/inscripciones/${id}`, {
+          method: 'DELETE',
+          headers: obtenerHeaders()
+        });
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) { mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return; }
+          throw new Error('Error al eliminar');
+        }
+        mostrarMensaje('✅ Inscripción eliminada', 'exito');
+        cargarInscripciones(paginaActual);
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje('❌ Error al eliminar', 'error');
+      }
+    }
+
+    async function exportarCSV() {
+      try {
+        const res = await fetch('/api/admin/exportar-csv', { headers: obtenerHeaders() });
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) { mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return; }
+          if (res.status === 404) { mostrarMensaje('⚠️ No hay inscripciones', 'error'); return; }
+          throw new Error('Error al exportar');
+        }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `inscripciones-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        mostrarMensaje('✅ Exportación exitosa', 'exito');
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje('❌ Error al exportar', 'error');
+      }
+    }
+
+    btnFiltrar.addEventListener('click', () => cargarInscripciones(1));
+    btnExportar.addEventListener('click', exportarCSV);
+    btnLimpiar.addEventListener('click', () => {
+      filtroEmail.value = '';
+      filtroCharla.value = '';
+      filtroEscaneado.value = '';
+      cargarInscripciones(1);
+    });
+    filtroEmail.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') btnFiltrar.click();
+    });
+
+    // ============================================
+    // CHARLAS (CRONOGRAMA)
+    // ============================================
+    async function cargarCharlasAdmin() {
+      tablaCharlasCargando.style.display = 'block';
+      tablaCharlasContenido.style.display = 'none';
+      try {
+        const res = await fetch('/api/admin/charlas', { headers: obtenerHeaders() });
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) { mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return; }
+          throw new Error('Error al cargar charlas');
+        }
+        const data = await res.json();
+        renderizarTablaCharlas(data);
+        tablaCharlasCargando.style.display = 'none';
+        tablaCharlasContenido.style.display = 'block';
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje('❌ Error al cargar charlas', 'error');
+        tablaCharlasCargando.style.display = 'none';
+      }
+    }
+
+    function renderizarTablaCharlas(charlas) {
+      if (charlas.length === 0) {
+        tablaCharlasBody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;">No hay charlas.</td></tr>`;
+        return;
+      }
+      tablaCharlasBody.innerHTML = '';
+      charlas.forEach(ch => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${ch.id}</td>
+          <td><strong>${ch.titulo}</strong></td>
+          <td>${ch.dia}</td>
+          <td>${ch.hora}</td>
+          <td>${ch.ponente}</td>
+          <td>${ch.cupo_maximo}</td>
+          <td>${ch.inscritos}</td>
+          <td>
+            <div class="acciones">
+              <button class="btn-editar-charla" data-id="${ch.id}">✏️ Editar</button>
+            </div>
+          </td>
+        `;
+        tablaCharlasBody.appendChild(tr);
+      });
+
+      document.querySelectorAll('.btn-editar-charla').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = parseInt(this.dataset.id);
+          abrirModalEdicion(id);
+        });
+      });
+    }
+
+    // ============================================
+    // MODAL DE EDICIÓN
+    // ============================================
+    function abrirModalEdicion(id) {
+      fetch(`/api/admin/charlas/${id}`, { headers: obtenerHeaders() })
+        .then(res => {
+          if (!res.ok) throw new Error('Error al cargar datos');
+          return res.json();
+        })
+        .then(data => {
+          editId.value = data.id;
+          editTitulo.value = data.titulo;
+          editDia.value = data.dia;
+          editHora.value = data.hora;
+          editPonente.value = data.ponente;
+          editCupo.value = data.cupo_maximo;
+          modal.style.display = 'flex';
+        })
+        .catch(err => {
+          console.error(err);
+          mostrarMensaje('❌ Error al cargar la charla', 'error');
+        });
+    }
+
+    function cerrarModal() {
+      modal.style.display = 'none';
+      formEditar.reset();
+    }
+
+    btnCancelarModal.addEventListener('click', cerrarModal);
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) cerrarModal();
+    });
+
+    formEditar.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const id = editId.value;
+      const payload = {
+        titulo: editTitulo.value.trim(),
+        dia: editDia.value.trim(),
+        hora: editHora.value.trim(),
+        ponente: editPonente.value.trim(),
+        cupo_maximo: parseInt(editCupo.value)
+      };
+      try {
+        const res = await fetch(`/api/admin/charlas/${id}`, {
+          method: 'PUT',
+          headers: obtenerHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || 'Error al actualizar');
+        }
+        mostrarMensaje('✅ Charla actualizada correctamente', 'exito');
+        cerrarModal();
+        // Recargar ambas tablas
+        cargarCharlasAdmin();
+        cargarInscripciones(paginaActual);
+        // También actualizar los filtros de charlas
+        cargarCharlasFiltro();
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje('❌ Error al actualizar: ' + err.message, 'error');
+      }
+    });
+
+    // ============================================
+    // INICIALIZACIÓN
+    // ============================================
+    if (tokenActual) {
+      mostrarPanel();
+    } else {
+      mostrarLogin();
+    }
+
+    console.log('🔐 Panel de administración con gestión de charlas e inscripciones');
+  })();
+</script>
 </body>
 </html>
