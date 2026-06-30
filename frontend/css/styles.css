@@ -1,6 +1,8 @@
 /* ============================================
-   ESTILOS UNIFICADOS (tomados de la página 1)
+   ESTILOS UNIFICADOS - Jornadas UGR 2026
    ============================================ */
+
+/* ===== VARIABLES ===== */
 :root {
   --bg: #0d1117;
   --surface: #161b22;
@@ -24,6 +26,7 @@
   --radius-sm: 6px;
 }
 
+/* ===== RESET ===== */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   background: var(--bg);
@@ -185,7 +188,7 @@ body {
 }
 
 /* ============================================
-   ESTILOS DE LA PÁGINA PRINCIPAL (HERO, etc.)
+   ESTILOS DE LA PÁGINA PRINCIPAL
    ============================================ */
 .hero {
   background: linear-gradient(135deg, #161b22 0%, #0d1117 60%, #1a1205 100%);
@@ -257,14 +260,14 @@ body {
 
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);  /* 4 columnas fijas */
+  grid-template-columns: repeat(4, 1fr);
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  margin: 32px auto 0;   /* centrado horizontal */
-  max-width: 600px;      /* ancho máximo para que no se estire demasiado */
+  margin: 32px auto 0;
+  max-width: 600px;
 }
 .stat-cell {
   background: var(--surface);
@@ -323,6 +326,7 @@ body {
 }
 .prose strong { color: var(--text); }
 .prose em { color: var(--accent); font-style: italic; }
+
 .highlight-box {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -336,6 +340,7 @@ body {
   text-align: center;
 }
 .highlight-box strong { color: var(--accent); font-style: normal; }
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -417,6 +422,23 @@ body {
 }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ===== FILAS ALTERNADAS EN EL CRONOGRAMA ===== */
+.data-table tbody tr.fila-charla-1 {
+  background-color: rgba(211, 47, 47, 0.08);
+  border-left: 3px solid var(--rojo-ugr);
+}
+.data-table tbody tr.fila-charla-2 {
+  background-color: rgba(21, 101, 192, 0.08);
+  border-left: 3px solid var(--azul-ugr);
+}
+.data-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+.data-table td:last-child {
+  text-align: center;
+  vertical-align: middle;
+}
 
 .dot-list {
   list-style: none;
@@ -507,7 +529,7 @@ body {
 .site-footer strong { color: var(--accent); }
 
 /* ============================================
-   ESTILOS DE LA PÁGINA DE INSCRIPCIONES
+   ESTILOS DE LA PÁGINA "MIS INSCRIPCIONES"
    ============================================ */
 .inscripcion-wrapper {
   max-width: 900px;
@@ -528,6 +550,7 @@ body {
   padding-bottom: 16px;
 }
 
+/* ===== TARJETAS DE CHARLAS (para Mis inscripciones) ===== */
 .charla-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -576,6 +599,7 @@ body {
   margin-top: 8px;
 }
 
+/* ===== FORMULARIO ===== */
 .form-inscripcion {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -648,6 +672,7 @@ body {
 }
 .mensaje-exito strong { color: var(--accent3); }
 
+/* ===== QR CONTAINER ===== */
 .qr-container {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -702,14 +727,7 @@ body {
   color: var(--text);
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 600px) {
-  .hero, .page-body, .inscripcion-wrapper { padding-left: 16px; padding-right: 16px; }
-  .ex-card { grid-template-columns: auto 1fr; }
-  .ex-dose { grid-column: 2; }
-  .form-inscripcion { padding: 18px; }
-}
-
+/* ===== BOTONES ESPECIALES ===== */
 .btn-inscribir-cronograma {
   background: var(--accent);
   color: #0d1117;
@@ -729,75 +747,35 @@ body {
   transform: scale(0.95);
 }
 
-/* Colores para filas de charlas en el cronograma */
-.charla-rojo {
-  background-color: rgba(211, 47, 47, 0.12); /* rojo UGR con transparencia */
-}
-.charla-azul {
-  background-color: rgba(21, 101, 192, 0.12); /* azul UGR con transparencia */
-}
-/* Opcional: para filas neutras (recepción, almuerzo, etc.) */
-.fila-neutra {
-  background-color: rgba(48, 54, 61, 0.2); /* gris muy suave */
-}
-/* Mejorar contraste del texto en filas coloreadas */
-.charla-rojo td,
-.charla-azul td {
-  color: var(--text); /* asegura legibilidad */
-}
-
-/* ===== FILAS ALTERNADAS EN EL CRONOGRAMA ===== */
-/* Las filas que contienen charlas (con botón) tendrán colores alternados */
-.data-table tbody tr.fila-charla-1 {
-  background-color: rgba(211, 47, 47, 0.08); /* Rojo UGR */
-  border-left: 3px solid var(--rojo-ugr);
-}
-
-.data-table tbody tr.fila-charla-2 {
-  background-color: rgba(21, 101, 192, 0.08); /* Azul UGR */
-  border-left: 3px solid var(--azul-ugr);
-}
-
-/* Efecto hover para todas las filas */
-.data-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-}
-
-/* Ajuste para la columna del botón */
-.data-table td:last-child {
-  text-align: center;
-  vertical-align: middle;
-}
-
-/* ===== FILAS ALTERNADAS EN EL CRONOGRAMA ===== */
-.data-table tbody tr.fila-charla-1 {
-  background-color: rgba(211, 47, 47, 0.08);
-  border-left: 3px solid var(--rojo-ugr);
-}
-.data-table tbody tr.fila-charla-2 {
-  background-color: rgba(21, 101, 192, 0.08);
-  border-left: 3px solid var(--azul-ugr);
-}
-.data-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-}
-.data-table td:last-child {
-  text-align: center;
-  vertical-align: middle;
-}
-
-.btn-inscribir-cronograma {
-  background: var(--accent);
-  color: #0d1117;
+.btn-descargar-qr-local {
+  background: transparent;
   border: none;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
+  color: var(--azul-ugr-claro);
   cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
+  text-decoration: underline;
+  font-size: 12px;
 }
-.btn-inscribir-cronograma:hover {
-  opacity: 0.85;
+.btn-descargar-qr-local:hover {
+  color: var(--text);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .hero, .page-body, .inscripcion-wrapper {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .ex-card {
+    grid-template-columns: auto 1fr;
+  }
+  .ex-dose {
+    grid-column: 2;
+  }
+  .form-inscripcion {
+    padding: 18px;
+  }
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 100%;
+  }
 }
