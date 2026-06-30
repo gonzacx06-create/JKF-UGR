@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>XI Jornadas de Kinesiología UGR 2026</title>
-  <!-- Ruta relativa a la carpeta frontend/ -->
+  <title>IX Jornadas de Kinesiología UGR 2026</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -13,9 +12,8 @@
   <header class="site-header">
     <div class="header-left">
       <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
-      <!-- Ruta relativa a assets/ -->
       <img src="assets/logo-ugr.png" alt="UGR" class="logo-ugr" />
-      <span class="brand">JKF-UGR <small>· XI Jornadas</small></span>
+      <span class="brand">JKF-UGR <small>· IX Jornadas</small></span>
     </div>
     <div class="header-right">
       <span class="patient-tag">2 y 3 sep · Santa Fe</span>
@@ -33,18 +31,19 @@
     <nav>
       <a data-view="main" data-scroll="hero">🏠 Inicio</a>
       <a data-view="main" data-scroll="cronograma-section">📅 Cronograma</a>
-      <a data-view="inscripciones" id="linkInscribirse">✍️ Inscribirse a charlas</a>
+      <a data-view="mis-inscripciones" id="linkMisInscripciones">📋 Mis inscripciones</a>
     </nav>
   </aside>
 
   <!-- ============================================= -->
-  <!-- VISTA 1: PÁGINA PRINCIPAL (Jornadas) -->
+  <!-- VISTA 1: PÁGINA PRINCIPAL (Jornadas + Formulario) -->
   <!-- ============================================= -->
   <div class="page-view active" id="view-main">
     <!-- HERO (igual que antes) -->
     <div class="hero" id="hero">
-      <h1>· XI Jornadas de <em>Kinesiología y Fisiatría</em><br>UGR ·</h1>
-      <p class="hero-subtitle">Un espacio de encuentro para estudiantes de Kinesiología y la Fisiatría, con ponencias de vanguardia y talleres prácticos que marcarán la actualidad de la disciplina.</p>
+      <p class="hero-eyebrow">Congreso Académico · 2 y 3 de septiembre · Santa Fe, Argentina</p>
+      <h1>IX Jornadas de <em>Kinesiología y Fisiatría</em><br>UGR · Santa Fe 2026</h1>
+      <p class="hero-subtitle">Un espacio de encuentro para profesionales de la Kinesiología y la Fisiatría, con ponencias de vanguardia, talleres prácticos y mesas redondas que marcarán la actualidad de la disciplina.</p>
       <div class="hero-meta">
         <div class="meta-item"><span class="meta-label">Fechas</span><span class="meta-value">2 y 3 de septiembre</span></div>
         <div class="meta-item"><span class="meta-label">Sede Santa Fe</span><span class="meta-value">Facultad de Kinesiología y Fisiatría</span></div>
@@ -63,190 +62,217 @@
       </div>
     </div>
 
-    <!-- CUERPO PRINCIPAL (mismo contenido de antes) -->
+    <!-- CUERPO PRINCIPAL -->
     <div class="page-body">
-    <!-- ===== SECCIÓN 01: CRONOGRAMA ===== -->
-<div id="cronograma-section">
-  <div class="section-header">
-    <span class="section-num">Sección 01</span>
-    <h2 class="section-title">🗓️ Cronograma</h2>
-  </div>
-  <p class="prose">Selecciona una actividad y haz clic en <strong>"Inscribirse"</strong> para reservar tu lugar. Todas las actividades tienen cupo limitado.</p>
+      <!-- Cronograma (Sección 01) -->
+      <div id="cronograma-section">
+        <div class="section-header">
+          <span class="section-num">Sección 01</span>
+          <h2 class="section-title">🗓️ Cronograma</h2>
+        </div>
+        <p class="prose">Selecciona una actividad y haz clic en <strong>"Inscribirse"</strong> para reservar tu lugar. Todas las actividades tienen cupo limitado.</p>
 
-  <!-- Día 1: Miércoles 2 -->
-  <div class="sub-title">📆 Miércoles 2 de septiembre</div>
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Hora</th>
-        <th>Actividad</th>
-        <th>Ponente / Responsable</th>
-        <th style="text-align:center;">Inscribirse</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Fila 1: Rojo -->
-      <tr class="fila-charla-1">
-        <td>08:30 - 10:00</td>
-        <td>Recepción y acreditación</td>
-        <td>Secretaría Técnica</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="1" data-titulo="Recepción y acreditación" data-dia="Miércoles 2" data-hora="08:30 - 10:00" data-ponente="Secretaría Técnica">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 2: Azul -->
-      <tr class="fila-charla-2">
-        <td>10:00 - 11:30</td>
-        <td><strong>Conferencia Inaugural</strong>: "Actualización en Dolor Crónico"</td>
-        <td>Dr. Luis Miguel Torres</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="2" data-titulo="Conferencia Inaugural: Actualización en Dolor Crónico" data-dia="Miércoles 2" data-hora="10:00 - 11:30" data-ponente="Dr. Luis Miguel Torres">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 3: Rojo -->
-      <tr class="fila-charla-1">
-        <td>11:30 - 13:00</td>
-        <td>Mesa Redonda: "Abordaje Multidisciplinar de la Tendinopatía"</td>
-        <td>Dra. María López / Dr. Javier Pérez</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="3" data-titulo="Mesa Redonda: Abordaje Multidisciplinar de la Tendinopatía" data-dia="Miércoles 2" data-hora="11:30 - 13:00" data-ponente="Dra. María López / Dr. Javier Pérez">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 4: Azul -->
-      <tr class="fila-charla-2">
-        <td>13:00 - 14:30</td>
-        <td>Pausa - Almuerzo</td>
-        <td>—</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="4" data-titulo="Pausa - Almuerzo" data-dia="Miércoles 2" data-hora="13:00 - 14:30" data-ponente="Organización">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 5: Rojo -->
-      <tr class="fila-charla-1">
-        <td>14:30 - 16:00</td>
-        <td><strong>Taller Práctico 1:</strong> "Ecografía para Fisioterapeutas"</td>
-        <td>Dr. Carlos García (SERAM)</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="5" data-titulo="Taller Práctico 1: Ecografía para Fisioterapeutas" data-dia="Miércoles 2" data-hora="14:30 - 16:00" data-ponente="Dr. Carlos García (SERAM)">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 6: Azul -->
-      <tr class="fila-charla-2">
-        <td>16:00 - 17:30</td>
-        <td>Comunicaciones Orales Libres</td>
-        <td>Varios autores</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="6" data-titulo="Comunicaciones Orales Libres" data-dia="Miércoles 2" data-hora="16:00 - 17:30" data-ponente="Varios autores">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 7: Rojo -->
-      <tr class="fila-charla-1">
-        <td>17:30 - 19:00</td>
-        <td>Conferencia: "Nuevas tendencias en neurorrehabilitación"</td>
-        <td>Dra. Elena Muñoz (UGR)</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="7" data-titulo="Conferencia: Nuevas tendencias en neurorrehabilitación" data-dia="Miércoles 2" data-hora="17:30 - 19:00" data-ponente="Dra. Elena Muñoz (UGR)">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 8: Azul -->
-      <tr class="fila-charla-2">
-        <td>19:00 - 20:30</td>
-        <td>Cóctel de bienvenida y networking</td>
-        <td>Comité Organizador</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="8" data-titulo="Cóctel de bienvenida y networking" data-dia="Miércoles 2" data-hora="19:00 - 20:30" data-ponente="Comité Organizador">Inscribirse</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        <!-- Día 1: Miércoles 2 (mismo código que antes, con botones) -->
+        <div class="sub-title">📆 Miércoles 2 de septiembre</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Actividad</th>
+              <th>Ponente / Responsable</th>
+              <th style="text-align:center;">Inscribirse</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fila-charla-1">
+              <td>08:30 - 10:00</td>
+              <td>Recepción y acreditación</td>
+              <td>Secretaría Técnica</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="1" data-titulo="Recepción y acreditación" data-dia="Miércoles 2" data-hora="08:30 - 10:00" data-ponente="Secretaría Técnica">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-2">
+              <td>10:00 - 11:30</td>
+              <td><strong>Conferencia Inaugural</strong>: "Actualización en Dolor Crónico"</td>
+              <td>Dr. Luis Miguel Torres</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="2" data-titulo="Conferencia Inaugural: Actualización en Dolor Crónico" data-dia="Miércoles 2" data-hora="10:00 - 11:30" data-ponente="Dr. Luis Miguel Torres">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-1">
+              <td>11:30 - 13:00</td>
+              <td>Mesa Redonda: "Abordaje Multidisciplinar de la Tendinopatía"</td>
+              <td>Dra. María López / Dr. Javier Pérez</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="3" data-titulo="Mesa Redonda: Abordaje Multidisciplinar de la Tendinopatía" data-dia="Miércoles 2" data-hora="11:30 - 13:00" data-ponente="Dra. María López / Dr. Javier Pérez">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-2">
+              <td>13:00 - 14:30</td>
+              <td>Pausa - Almuerzo</td>
+              <td>—</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="4" data-titulo="Pausa - Almuerzo" data-dia="Miércoles 2" data-hora="13:00 - 14:30" data-ponente="Organización">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-1">
+              <td>14:30 - 16:00</td>
+              <td><strong>Taller Práctico 1:</strong> "Ecografía para Fisioterapeutas"</td>
+              <td>Dr. Carlos García (SERAM)</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="5" data-titulo="Taller Práctico 1: Ecografía para Fisioterapeutas" data-dia="Miércoles 2" data-hora="14:30 - 16:00" data-ponente="Dr. Carlos García (SERAM)">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-2">
+              <td>16:00 - 17:30</td>
+              <td>Comunicaciones Orales Libres</td>
+              <td>Varios autores</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="6" data-titulo="Comunicaciones Orales Libres" data-dia="Miércoles 2" data-hora="16:00 - 17:30" data-ponente="Varios autores">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-1">
+              <td>17:30 - 19:00</td>
+              <td>Conferencia: "Nuevas tendencias en neurorrehabilitación"</td>
+              <td>Dra. Elena Muñoz (UGR)</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="7" data-titulo="Conferencia: Nuevas tendencias en neurorrehabilitación" data-dia="Miércoles 2" data-hora="17:30 - 19:00" data-ponente="Dra. Elena Muñoz (UGR)">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-2">
+              <td>19:00 - 20:30</td>
+              <td>Cóctel de bienvenida y networking</td>
+              <td>Comité Organizador</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="8" data-titulo="Cóctel de bienvenida y networking" data-dia="Miércoles 2" data-hora="19:00 - 20:30" data-ponente="Comité Organizador">Inscribirse</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-  <!-- Día 2: Jueves 3 -->
-  <div class="sub-title">📆 Jueves 3 de septiembre</div>
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Hora</th>
-        <th>Actividad</th>
-        <th>Ponente / Responsable</th>
-        <th style="text-align:center;">Inscribirse</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Fila 9: Rojo (continúa la secuencia, la 9 es rojo porque 1,3,5,7,9 son impares) -->
-      <tr class="fila-charla-1">
-        <td>08:30 - 10:00</td>
-        <td>Recepción y entrega de materiales</td>
-        <td>Secretaría Técnica</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="9" data-titulo="Recepción y entrega de materiales" data-dia="Jueves 3" data-hora="08:30 - 10:00" data-ponente="Secretaría Técnica">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 10: Azul -->
-      <tr class="fila-charla-2">
-        <td>10:00 - 11:30</td>
-        <td>Conferencia: "Rehabilitación en el Deportista de Élite"</td>
-        <td>Dr. Pedro Martínez (Real Madrid)</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="10" data-titulo="Conferencia: Rehabilitación en el Deportista de Élite" data-dia="Jueves 3" data-hora="10:00 - 11:30" data-ponente="Dr. Pedro Martínez (Real Madrid)">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 11: Rojo -->
-      <tr class="fila-charla-1">
-        <td>11:30 - 13:00</td>
-        <td>Mesa Redonda: "Infiltraciones guiadas por ecografía"</td>
-        <td>Dra. Ana Belén Rodríguez</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="11" data-titulo="Mesa Redonda: Infiltraciones guiadas por ecografía" data-dia="Jueves 3" data-hora="11:30 - 13:00" data-ponente="Dra. Ana Belén Rodríguez">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 12: Azul -->
-      <tr class="fila-charla-2">
-        <td>13:00 - 14:30</td>
-        <td>Pausa - Almuerzo</td>
-        <td>—</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="12" data-titulo="Pausa - Almuerzo (Jueves)" data-dia="Jueves 3" data-hora="13:00 - 14:30" data-ponente="Organización">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 13: Rojo -->
-      <tr class="fila-charla-1">
-        <td>14:30 - 16:00</td>
-        <td><strong>Taller Práctico 2:</strong> "Punción Seca y Neuromodulación"</td>
-        <td>Dr. Fernando Ramos</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="13" data-titulo="Taller Práctico 2: Punción Seca y Neuromodulación" data-dia="Jueves 3" data-hora="14:30 - 16:00" data-ponente="Dr. Fernando Ramos">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 14: Azul -->
-      <tr class="fila-charla-2">
-        <td>16:00 - 17:30</td>
-        <td>Conferencia: "Innovación en fisioterapia respiratoria"</td>
-        <td>Dra. Laura Fernández</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="14" data-titulo="Conferencia: Innovación en fisioterapia respiratoria" data-dia="Jueves 3" data-hora="16:00 - 17:30" data-ponente="Dra. Laura Fernández">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 15: Rojo -->
-      <tr class="fila-charla-1">
-        <td>17:30 - 19:00</td>
-        <td>Conferencia de Clausura</td>
-        <td>Dr. Ricardo Gómez (UGR)</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="15" data-titulo="Conferencia de Clausura" data-dia="Jueves 3" data-hora="17:30 - 19:00" data-ponente="Dr. Ricardo Gómez (UGR)">Inscribirse</button>
-        </td>
-      </tr>
-      <!-- Fila 16: Azul -->
-      <tr class="fila-charla-2">
-        <td>19:00 - 20:30</td>
-        <td>Entrega de premios y cierre oficial</td>
-        <td>Comité Organizador</td>
-        <td style="text-align:center;">
-          <button class="btn-inscribir-cronograma" data-id="16" data-titulo="Entrega de premios y cierre oficial" data-dia="Jueves 3" data-hora="19:00 - 20:30" data-ponente="Comité Organizador">Inscribirse</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        <!-- Día 2: Jueves 3 -->
+        <div class="sub-title">📆 Jueves 3 de septiembre</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Actividad</th>
+              <th>Ponente / Responsable</th>
+              <th style="text-align:center;">Inscribirse</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fila-charla-1">
+              <td>08:30 - 10:00</td>
+              <td>Recepción y entrega de materiales</td>
+              <td>Secretaría Técnica</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="9" data-titulo="Recepción y entrega de materiales" data-dia="Jueves 3" data-hora="08:30 - 10:00" data-ponente="Secretaría Técnica">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-2">
+              <td>10:00 - 11:30</td>
+              <td>Conferencia: "Rehabilitación en el Deportista de Élite"</td>
+              <td>Dr. Pedro Martínez (Real Madrid)</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="10" data-titulo="Conferencia: Rehabilitación en el Deportista de Élite" data-dia="Jueves 3" data-hora="10:00 - 11:30" data-ponente="Dr. Pedro Martínez (Real Madrid)">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-1">
+              <td>11:30 - 13:00</td>
+              <td>Mesa Redonda: "Infiltraciones guiadas por ecografía"</td>
+              <td>Dra. Ana Belén Rodríguez</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="11" data-titulo="Mesa Redonda: Infiltraciones guiadas por ecografía" data-dia="Jueves 3" data-hora="11:30 - 13:00" data-ponente="Dra. Ana Belén Rodríguez">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-2">
+              <td>13:00 - 14:30</td>
+              <td>Pausa - Almuerzo</td>
+              <td>—</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="12" data-titulo="Pausa - Almuerzo (Jueves)" data-dia="Jueves 3" data-hora="13:00 - 14:30" data-ponente="Organización">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-1">
+              <td>14:30 - 16:00</td>
+              <td><strong>Taller Práctico 2:</strong> "Punción Seca y Neuromodulación"</td>
+              <td>Dr. Fernando Ramos</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="13" data-titulo="Taller Práctico 2: Punción Seca y Neuromodulación" data-dia="Jueves 3" data-hora="14:30 - 16:00" data-ponente="Dr. Fernando Ramos">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-2">
+              <td>16:00 - 17:30</td>
+              <td>Conferencia: "Innovación en fisioterapia respiratoria"</td>
+              <td>Dra. Laura Fernández</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="14" data-titulo="Conferencia: Innovación en fisioterapia respiratoria" data-dia="Jueves 3" data-hora="16:00 - 17:30" data-ponente="Dra. Laura Fernández">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-1">
+              <td>17:30 - 19:00</td>
+              <td>Conferencia de Clausura</td>
+              <td>Dr. Ricardo Gómez (UGR)</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="15" data-titulo="Conferencia de Clausura" data-dia="Jueves 3" data-hora="17:30 - 19:00" data-ponente="Dr. Ricardo Gómez (UGR)">Inscribirse</button>
+              </td>
+            </tr>
+            <tr class="fila-charla-2">
+              <td>19:00 - 20:30</td>
+              <td>Entrega de premios y cierre oficial</td>
+              <td>Comité Organizador</td>
+              <td style="text-align:center;">
+                <button class="btn-inscribir-cronograma" data-id="16" data-titulo="Entrega de premios y cierre oficial" data-dia="Jueves 3" data-hora="19:00 - 20:30" data-ponente="Comité Organizador">Inscribirse</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div> <!-- fin cronograma-section -->
+
+      <!-- ============================================ -->
+      <!-- FORMULARIO DE INSCRIPCIÓN (debajo del cronograma) -->
+      <!-- ============================================ -->
+      <div class="section-header">
+        <span class="section-num">Inscripción</span>
+        <h2 class="section-title">✍️ Inscribirse a una charla</h2>
+      </div>
+      <p class="prose">Completa tus datos y selecciona la charla a la que deseas asistir. Recibirás un código QR de acceso.</p>
+
+      <form id="form-inscripcion" class="form-inscripcion">
+        <div class="form-group">
+          <label for="nombre">Nombre completo *</label>
+          <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Correo electrónico *</label>
+          <input type="email" id="email" placeholder="tucorreo@ejemplo.com" required />
+        </div>
+        <div class="form-group">
+          <label for="charla-select">Selecciona una charla *</label>
+          <select id="charla-select" required>
+            <option value="">— Elige una charla —</option>
+          </select>
+          <span class="cupo-info" id="cupo-disponible">Cupos disponibles: <strong>—</strong></span>
+        </div>
+        <button type="submit" class="btn-primary">Inscribirme</button>
+      </form>
+
+      <div id="mensaje-inscripcion"></div>
+
+      <!-- QR generado (se muestra solo después de inscribirse) -->
+      <div id="qr-container" class="qr-container" style="display:none;">
+        <h3>✅ ¡Inscripción exitosa!</h3>
+        <p>Esta charla se ha agregado a "Mis inscripciones".</p>
+        <div class="qr-imagen-wrapper">
+          <img id="qr-imagen" src="" alt="Código QR de inscripción" />
+        </div>
+        <div>
+          <a id="qr-enlace" href="#" target="_blank" class="qr-enlace">🔗 Enlace de verificación</a>
+        </div>
+        <button id="descargar-qr" class="btn-secundario">⬇️ Descargar QR</button>
+      </div>
 
       <!-- Sección 02: Ponencias -->
       <div class="section-header"><span class="section-num">Sección 02</span><h2 class="section-title">🎤 Ponencias y Talleres Destacados</h2></div>
@@ -296,49 +322,14 @@
   </div>
 
   <!-- ============================================= -->
-  <!-- VISTA 2: PÁGINA DE INSCRIPCIONES (conectada a la API) -->
+  <!-- VISTA 2: MIS INSCRIPCIONES (solo lista de QR) -->
   <!-- ============================================= -->
-  <div class="page-view" id="view-inscripciones">
+  <div class="page-view" id="view-mis-inscripciones">
     <div class="inscripcion-wrapper">
-      <h2>✍️ Inscripción a Charlas</h2>
-      <p class="subtitle">Selecciona una charla, completa tus datos y obtén tu código QR de acceso.</p>
-
-      <!-- Lista de charlas (se llena dinámicamente desde la API) -->
-      <div id="charlas-container" class="charla-grid"></div>
-
-      <!-- Formulario -->
-      <form id="form-inscripcion" class="form-inscripcion">
-        <div class="form-group">
-          <label for="nombre">Nombre completo *</label>
-          <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Correo electrónico *</label>
-          <input type="email" id="email" placeholder="tucorreo@ejemplo.com" required />
-        </div>
-        <div class="form-group">
-          <label for="charla-select">Selecciona una charla *</label>
-          <select id="charla-select" required>
-            <option value="">— Elige una charla —</option>
-          </select>
-          <span class="cupo-info" id="cupo-disponible">Cupos disponibles: <strong>—</strong></span>
-        </div>
-        <button type="submit" class="btn-primary">Inscribirme</button>
-      </form>
-
-      <div id="mensaje-inscripcion"></div>
-
-      <!-- QR generado por el servidor -->
-      <div id="qr-container" class="qr-container" style="display:none;">
-        <h3>✅ ¡Inscripción exitosa!</h3>
-        <p>Guarda este código QR para verificar tu asistencia el día del evento.</p>
-        <div class="qr-imagen-wrapper">
-          <img id="qr-imagen" src="" alt="Código QR de inscripción" />
-        </div>
-        <div>
-          <a id="qr-enlace" href="#" target="_blank" class="qr-enlace">🔗 Enlace de verificación</a>
-        </div>
-        <button id="descargar-qr" class="btn-secundario">⬇️ Descargar QR</button>
+      <h2>📋 Mis inscripciones</h2>
+      <p class="subtitle">Aquí encontrarás las charlas a las que te has inscrito. Guarda tus códigos QR para el día del evento.</p>
+      <div id="lista-mis-inscripciones" class="charla-grid">
+        <!-- Se llena desde JavaScript -->
       </div>
     </div>
   </div>

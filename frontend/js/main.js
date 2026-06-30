@@ -2,7 +2,7 @@
   'use strict';
 
   // ============================================
-  // 1. MENÚ LATERAL Y NAVEGACIÓN ENTRE VISTAS
+  // 1. MENÚ LATERAL Y NAVEGACIÓN
   // ============================================
   const menuBtn = document.getElementById('menuBtn');
   const sidebar = document.getElementById('sidebar');
@@ -21,10 +21,9 @@
   closeSidebar.addEventListener('click', closeSidebarFunc);
   overlay.addEventListener('click', closeSidebarFunc);
 
-  // Navegación por vistas
   const views = {
     main: document.getElementById('view-main'),
-    inscripciones: document.getElementById('view-inscripciones')
+    misInscripciones: document.getElementById('view-mis-inscripciones')
   };
 
   function showView(viewId) {
@@ -35,9 +34,8 @@
       views[viewId].classList.add('active');
     }
     closeSidebarFunc();
-    // Si es la vista de inscripciones, cargar las charlas si no están cargadas
-    if (viewId === 'inscripciones') {
-      cargarCharlas();
+    if (viewId === 'mis-inscripciones') {
+      renderizarMisInscripciones();
     }
   }
 
@@ -57,22 +55,43 @@
     });
   });
 
-  // Enlace específico "Inscribirse" (ya está en el menú)
   // ============================================
+  // 2. INSCRIBIR DESDE EL CRONOGRAMA
+  // ============================================
+  function inscribirDesdeCronograma(charlaId, titulo, dia, hora, ponente) {
+    // Seleccionar la charla en el formulario
+    const select = document.getElementById('charla-select');
+    if (select) {
+      select.value = charlaId;
+      select.dispatchEvent(new Event('change'));
+      // Desplazar al formulario
+      const form = document.getElementById('form-inscripcion');
+      if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-inscribir-cronograma');
+    if (btn) {
+      e.preventDefault();
+      const id = parseInt(btn.dataset.id);
+      const titulo = btn.dataset.titulo;
+      const dia = btn.dataset.dia;
+      const hora = btn.dataset.hora;
+      const ponente = btn.dataset.ponente;
+      inscribirDesdeCronograma(id, titulo, dia, hora, ponente);
+    }
+  });
 
   // ============================================
-  // 2. OBTENER CHARLAS DESDE LA API
+  // 3. GESTIÓN DE CHARLAS (API)
   // ============================================
-  const container = document.getElementById('charlas-container');
   const selectCharla = document.getElementById('charla-select');
   const cupoInfo = document.getElementById('cupo-disponible');
-
   let charlas = [];
 
   function cargarCharlas() {
-    // Evitar recargar si ya están cargadas
-    if (charlas.length > 0 && container.children.length > 0) return;
-
+    if (charlas.length > 0) return;
     fetch('/api/charlas')
       .then(res => {
         if (!res.ok) throw new Error('Error al obtener charlas');
@@ -80,31 +99,11 @@
       })
       .then(data => {
         charlas = data;
-        renderCharlas();
         populateSelect();
       })
       .catch(err => {
-        console.error(err);
-        container.innerHTML = `<p style="color:var(--accent4);">⚠️ No se pudieron cargar las charlas. Intenta de nuevo.</p>`;
+        console.error('❌ Error cargando charlas:', err);
       });
-  }
-
-  function renderCharlas() {
-    container.innerHTML = '';
-    charlas.forEach(ch => {
-      const card = document.createElement('div');
-      card.className = 'charla-card';
-      card.innerHTML = `
-        <div class="ch-titulo">${ch.titulo}</div>
-        <div class="ch-meta">
-          <span>📅 ${ch.dia}</span>
-          <span>⏰ ${ch.hora}</span>
-        </div>
-        <div class="ch-disertante">🎤 ${ch.ponente}</div>
-        <div class="ch-cupos">Cupos disponibles: ${ch.disponibles} de ${ch.cupo_maximo}</div>
-      `;
-      container.appendChild(card);
-    });
   }
 
   function populateSelect() {
@@ -115,7 +114,6 @@
       opt.textContent = `${ch.titulo} (${ch.dia} ${ch.hora}) - Cupos: ${ch.disponibles}`;
       selectCharla.appendChild(opt);
     });
-    // Actualizar cupo al seleccionar
     selectCharla.addEventListener('change', actualizarCupo);
   }
 
@@ -130,7 +128,7 @@
   }
 
   // ============================================
-  // 3. PROCESAR INSCRIPCIÓN (POST a la API)
+  // 4. INSCRIPCIÓN Y GUARDADO LOCAL
   // ============================================
   const form = document.getElementById('form-inscripcion');
   const mensajeDiv = document.getElementById('mensaje-inscripcion');
@@ -141,6 +139,77 @@
 
   let ultimoQrDataUrl = '';
 
+  function guardarInscripcionLocal(charlaId, titulo, dia, hora, ponente, qrDataUrl, urlVerificacion, codigo) {
+    const inscripciones = JSON.parse(localStorage.getItem('misInscripciones') || '[]');
+    inscripciones.push({
+      charlaId,
+      titulo,
+      dia,
+      hora,
+      ponente,
+      qr: qrDataUrl,
+      url: urlVerificacion,
+      codigo,
+      fecha: new Date().toISOString()
+    });
+    localStorage.setItem('misInscripciones', JSON.stringify(inscripciones));
+  }
+
+  function renderizarMisInscripciones() {
+    const contenedor = document.getElementById('lista-mis-inscripciones');
+    const inscripciones = JSON.parse(localStorage.getItem('misInscripciones') || '[]');
+
+    if (inscripciones.length === 0) {
+      contenedor.innerHTML = `
+        <p style="color: var(--text-dim); font-size: 14px; grid-column: 1/-1; text-align: center; padding: 20px 0;">
+          No tienes inscripciones aún. Selecciona una charla desde el <strong>cronograma</strong> o desde el formulario.
+        </p>
+      `;
+      return;
+    }
+
+    contenedor.innerHTML = '';
+    inscripciones.forEach((ins, index) => {
+      const card = document.createElement('div');
+      card.className = 'charla-card';
+      card.innerHTML = `
+        <div class="ch-titulo">${ins.titulo}</div>
+        <div class="ch-meta">
+          <span>📅 ${ins.dia}</span>
+          <span>⏰ ${ins.hora}</span>
+        </div>
+        <div class="ch-disertante">🎤 ${ins.ponente}</div>
+        <div style="margin-top: 12px; text-align: center;">
+          <img src="${ins.qr}" alt="QR" style="max-width: 120px; border-radius: 6px; background: white; padding: 6px;" />
+        </div>
+        <div style="margin-top: 8px; font-size: 11px; color: var(--text-dimmer); display: flex; justify-content: space-between; align-items: center;">
+          <span>Código: ${ins.codigo}</span>
+          <button class="btn-descargar-qr-local" data-index="${index}" style="background: transparent; border: none; color: var(--azul-ugr-claro); cursor: pointer; text-decoration: underline; font-size: 12px;">Descargar QR</button>
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
+
+    document.querySelectorAll('.btn-descargar-qr-local').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const idx = parseInt(this.dataset.index);
+        const inscripciones = JSON.parse(localStorage.getItem('misInscripciones') || '[]');
+        const ins = inscripciones[idx];
+        if (ins && ins.qr) {
+          const link = document.createElement('a');
+          link.href = ins.qr;
+          link.download = `qr-${ins.titulo.replace(/\s+/g, '-')}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      });
+    });
+  }
+
+  // ============================================
+  // 5. ENVÍO DEL FORMULARIO
+  // ============================================
   form.addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -149,11 +218,10 @@
     const charlaId = parseInt(selectCharla.value);
 
     if (!nombre || !email || !charlaId) {
-      mensajeDiv.innerHTML = `<div class="mensaje-exito" style="border-left-color: var(--accent4);"><strong>⚠️</strong> Completa todos los campos obligatorios.</div>`;
+      mensajeDiv.innerHTML = `<div class="mensaje-exito" style="border-left-color: var(--accent4);"><strong>⚠️</strong> Completa todos los campos.</div>`;
       return;
     }
 
-    // Deshabilitar botón para evitar envíos múltiples
     const btn = form.querySelector('.btn-primary');
     btn.disabled = true;
     btn.textContent = 'Enviando...';
@@ -172,35 +240,31 @@
       return res.json();
     })
     .then(data => {
-      // Éxito
-      mensajeDiv.innerHTML = `<div class="mensaje-exito"><strong>✅ ¡Inscripción confirmada!</strong> Revisa tu código QR abajo. Te esperamos en la charla.</div>`;
+      mensajeDiv.innerHTML = `<div class="mensaje-exito"><strong>✅ ¡Inscripción confirmada!</strong> Se agregó a "Mis inscripciones".</div>`;
 
-      // Mostrar QR
-      qrImagen.src = data.qr;  // dataURL
+      qrImagen.src = data.qr;
       qrImagen.alt = `QR para ${nombre}`;
       qrEnlace.href = data.url;
       qrEnlace.textContent = `🔗 Enlace de verificación (código: ${data.codigo})`;
       ultimoQrDataUrl = data.qr;
-
       qrContainer.style.display = 'block';
 
-      // Actualizar cupos localmente (restando 1 a la charla)
       const ch = charlas.find(c => c.id === charlaId);
       if (ch) {
+        guardarInscripcionLocal(charlaId, ch.titulo, ch.dia, ch.hora, ch.ponente, data.qr, data.url, data.codigo);
         ch.disponibles = Math.max(0, ch.disponibles - 1);
-        renderCharlas();
-        populateSelect(); // actualiza el select
+        populateSelect();
       }
 
-      // Desplazar hacia el QR
+      // Resetear campos (excepto nombre/email)
+      document.getElementById('nombre').value = '';
+      document.getElementById('email').value = '';
+      selectCharla.value = '';
+      cupoInfo.innerHTML = 'Cupos disponibles: <strong>—</strong>';
+
       setTimeout(() => {
         qrContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 300);
-
-      // Resetear formulario
-      form.reset();
-      selectCharla.value = '';
-      cupoInfo.innerHTML = 'Cupos disponibles: <strong>—</strong>';
     })
     .catch(err => {
       mensajeDiv.innerHTML = `<div class="mensaje-exito" style="border-left-color: var(--accent4);"><strong>⚠️</strong> ${err.message}</div>`;
@@ -212,14 +276,13 @@
   });
 
   // ============================================
-  // 4. DESCARGAR QR
+  // 6. DESCARGAR QR (desde el contenedor actual)
   // ============================================
   descargarBtn.addEventListener('click', function() {
     if (!ultimoQrDataUrl) {
-      alert('Primero debes inscribirte para generar un QR.');
+      alert('Primero inscríbete para generar un QR.');
       return;
     }
-    // Si es dataURL (empieza con data:image), la convertimos a blob
     if (ultimoQrDataUrl.startsWith('data:image')) {
       const link = document.createElement('a');
       link.href = ultimoQrDataUrl;
@@ -228,7 +291,6 @@
       link.click();
       document.body.removeChild(link);
     } else {
-      // Si es URL, usar fetch
       fetch(ultimoQrDataUrl)
         .then(res => res.blob())
         .then(blob => {
@@ -240,21 +302,15 @@
           document.body.removeChild(link);
           URL.revokeObjectURL(link.href);
         })
-        .catch(() => {
-          window.open(ultimoQrDataUrl, '_blank');
-        });
+        .catch(() => window.open(ultimoQrDataUrl, '_blank'));
     }
   });
 
   // ============================================
-  // 5. INICIALIZAR: Cargar charlas solo cuando se muestre la vista
+  // 7. INICIALIZACIÓN
   // ============================================
-  // Al cargar la página, si la vista de inscripciones está activa (no lo está por defecto)
-  // pero el usuario puede hacer clic en el menú, entonces showView llamará a cargarCharlas.
+  setTimeout(cargarCharlas, 500);
+  renderizarMisInscripciones();
 
-  // Cargar charlas en segundo plano para que estén listas
-  // (no bloquea la vista principal)
-  setTimeout(cargarCharlas, 1000);
-
-  console.log('🚀 Jornadas UGR 2026 con API integrada');
+  console.log('🚀 Jornadas UGR 2026 - Formulario en página principal y Mis inscripciones en vista separada');
 })();
