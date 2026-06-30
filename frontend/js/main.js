@@ -29,18 +29,47 @@
     closeSidebar.addEventListener('click', closeSidebarFunc);
     overlay.addEventListener('click', closeSidebarFunc);
 
-    const views = {
-      main: document.getElementById('view-main'),
-      misInscripciones: document.getElementById('view-mis-inscripciones')
-    };
+    // ============================================
+    // 2. FUNCIÓN PARA CAMBIAR DE VISTA (CORREGIDA)
+    // ============================================
+    function showView(viewId) {
+      // Obtener los elementos directamente por ID (sin depender de un objeto views)
+      const viewMain = document.getElementById('view-main');
+      const viewMis = document.getElementById('view-mis-inscripciones');
 
-    if (!views.main || !views.misInscripciones) {
-      console.error('❌ Error: Vistas no encontradas.');
-      return;
+      // Ocultar todas
+      if (viewMain) viewMain.classList.remove('active');
+      if (viewMis) viewMis.classList.remove('active');
+
+      // Mostrar la seleccionada
+      if (viewId === 'main' && viewMain) {
+        viewMain.classList.add('active');
+        console.log('✅ Vista activada: main');
+      } else if (viewId === 'mis-inscripciones' && viewMis) {
+        viewMis.classList.add('active');
+        console.log('✅ Vista activada: mis-inscripciones');
+      } else {
+        console.error(`❌ Vista no encontrada: ${viewId}`);
+        return;
+      }
+
+      closeSidebarFunc();
+
+      // Si es la vista de inscripciones, buscar automáticamente si hay email guardado
+      if (viewId === 'mis-inscripciones') {
+        const emailBuscador = document.getElementById('email-buscador');
+        const savedEmail = localStorage.getItem('miEmail');
+        if (savedEmail && emailBuscador) {
+          emailBuscador.value = savedEmail;
+          buscarInscripciones(savedEmail);
+        } else if (!emailBuscador) {
+          console.error('❌ Elemento "email-buscador" no encontrado.');
+        }
+      }
     }
 
     // ============================================
-    // 2. FUNCIÓN PARA BUSCAR INSCRIPCIONES (por email)
+    // 3. FUNCIÓN PARA BUSCAR INSCRIPCIONES (sin cambios)
     // ============================================
     function buscarInscripciones(email) {
       const contenedor = document.getElementById('lista-mis-inscripciones');
@@ -117,51 +146,23 @@
     }
 
     // ============================================
-    // 3. FUNCIÓN PARA CAMBIAR DE VISTA
-    // ============================================
-    function showView(viewId) {
-      Object.keys(views).forEach(key => {
-        views[key].classList.remove('active');
-      });
-      if (views[viewId]) {
-        views[viewId].classList.add('active');
-        console.log(`✅ Vista activada: ${viewId}`);
-      } else {
-        console.error(`❌ Vista no encontrada: ${viewId}`);
-      }
-      closeSidebarFunc();
-
-      if (viewId === 'mis-inscripciones') {
-        const emailBuscador = document.getElementById('email-buscador');
-        const savedEmail = localStorage.getItem('miEmail');
-        if (savedEmail && emailBuscador) {
-          emailBuscador.value = savedEmail;
-          buscarInscripciones(savedEmail);
-        } else if (!emailBuscador) {
-          console.error('❌ Elemento "email-buscador" no encontrado.');
-        }
-      }
-    }
-
-    // ============================================
     // 4. ASIGNAR EVENTOS DEL MENÚ (SOLUCIÓN DEFINITIVA)
     // ============================================
-    // Usar un enfoque híbrido: tanto por ID como por selector
+    // Asignar directamente al enlace por ID
     const linkMisInscripciones = document.getElementById('linkMisInscripciones');
     if (linkMisInscripciones) {
-      // Eliminar eventos anteriores (por si acaso)
-      linkMisInscripciones.replaceWith(linkMisInscripciones.cloneNode(true));
-      // Obtener el nuevo elemento clonado
-      const newLink = document.getElementById('linkMisInscripciones');
-      if (newLink) {
-        newLink.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('🔗 Clic en "Mis inscripciones" (por ID)');
-          showView('mis-inscripciones');
-        });
-        console.log('✅ Evento asignado a linkMisInscripciones por ID');
-      }
+      // Clonar y reemplazar para eliminar eventos anteriores
+      const newLink = linkMisInscripciones.cloneNode(true);
+      linkMisInscripciones.parentNode.replaceChild(newLink, linkMisInscripciones);
+      
+      // Asignar evento al nuevo enlace
+      newLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🔗 Clic en "Mis inscripciones" (por ID)');
+        showView('mis-inscripciones');
+      });
+      console.log('✅ Evento asignado a linkMisInscripciones por ID');
     } else {
       console.error('❌ linkMisInscripciones no encontrado en el DOM');
     }
@@ -188,7 +189,7 @@
     });
 
     // ============================================
-    // 5. INSCRIBIR DESDE EL CRONOGRAMA
+    // 5. INSCRIBIR DESDE EL CRONOGRAMA (sin cambios)
     // ============================================
     function inscribirDesdeCronograma(charlaId) {
       const select = document.getElementById('charla-select');
@@ -403,11 +404,10 @@
     console.log('🚀 Jornadas UGR 2026 - Todo listo');
   }
 
-  // Esperar a que el DOM esté completamente cargado antes de ejecutar
+  // Esperar a que el DOM esté completamente cargado
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
   } else {
-    // El DOM ya está listo (ejecutar inmediatamente)
     initApp();
   }
 })();
