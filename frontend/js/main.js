@@ -49,23 +49,26 @@
       } else if (viewId === 'mis-inscripciones' && viewMis) {
         viewMis.classList.add('active');
         console.log('✅ Vista activada: mis-inscripciones');
+        // Limpiar el campo de email y el contenedor de inscripciones al abrir la vista
+        const emailInput = document.getElementById('email-buscador');
+        if (emailInput) emailInput.value = '';
+        const contenedor = document.getElementById('lista-mis-inscripciones');
+        if (contenedor) {
+          contenedor.innerHTML = `
+            <p style="color: #8b949e; font-size: 14px; grid-column: 1/-1; text-align: center; padding: 20px 0;">
+              Ingresa tu email y presiona "Buscar" para ver tus inscripciones.
+            </p>
+          `;
+        }
+        // Ocultar paginación si existe
+        const contenedorPaginacion = document.getElementById('paginacion-container');
+        if (contenedorPaginacion) contenedorPaginacion.innerHTML = '';
       } else {
         console.error(`❌ Vista no encontrada: ${viewId}`);
         return;
       }
 
       closeSidebarFunc();
-
-      if (viewId === 'mis-inscripciones') {
-        const emailBuscador = document.getElementById('email-buscador');
-        const savedEmail = localStorage.getItem('miEmail');
-        if (savedEmail && emailBuscador) {
-          emailBuscador.value = savedEmail;
-          buscarInscripciones(savedEmail);
-        } else if (!emailBuscador) {
-          console.error('❌ Elemento "email-buscador" no encontrado.');
-        }
-      }
     }
 
     // ============================================
@@ -101,8 +104,6 @@
             return;
           }
 
-          localStorage.setItem('miEmail', email);
-
           contenedor.innerHTML = '';
           data.forEach(ins => {
             const card = document.createElement('div');
@@ -117,6 +118,10 @@
                 <span>⏰ ${ins.hora}</span>
               </div>
               <div class="ch-disertante">🎤 ${ins.ponente}</div>
+              <div style="margin-top: 6px; font-size: 12px; color: var(--text-dim);">
+                <span>${ins.escaneado ? '✅ Escaneado' : '❌ No escaneado'}</span>
+                ${ins.fecha_escaneo ? ` · <span style="font-size:11px;">Escaneado: ${new Date(ins.fecha_escaneo).toLocaleString()}</span>` : ''}
+              </div>
               <div style="margin-top: 12px; text-align: center;">
                 <img src="${qrImageUrl}" alt="QR" style="max-width: 120px; border-radius: 6px; background: white; padding: 6px;" />
               </div>
@@ -146,7 +151,7 @@
             });
           });
 
-          // Eventos: Cancelar inscripción (CORREGIDO)
+          // Eventos: Cancelar inscripción
           document.querySelectorAll('.btn-cancelar-inscripcion').forEach(btn => {
             btn.addEventListener('click', async function(e) {
               const codigo = this.dataset.codigo;
@@ -160,7 +165,6 @@
                     const err = await res.json();
                     throw new Error(err.error || 'Error al cancelar');
                   }
-                  // Mostrar mensaje de éxito en la interfaz
                   const mensajeDiv = document.getElementById('mensaje-inscripcion');
                   if (mensajeDiv) {
                     mensajeDiv.innerHTML = `<div class="mensaje-exito"><strong>✅ Inscripción cancelada correctamente.</strong> El cupo ha sido liberado.</div>`;
@@ -168,11 +172,10 @@
                   } else {
                     alert('✅ Inscripción cancelada correctamente.');
                   }
-                  // Recargar la lista usando la página actual
                   const email = document.getElementById('email-buscador').value.trim();
                   if (email) {
-                    await cargarCharlas(); // Actualiza botones del cronograma
-                    buscarInscripciones(email, paginaActual); // Recarga la lista
+                    await cargarCharlas();
+                    buscarInscripciones(email, paginaActual);
                   }
                 } catch (err) {
                   alert('❌ Error: ' + err.message);
@@ -354,7 +357,7 @@
     }
 
     // ============================================
-    // 9. FUNCIÓN PARA ACTUALIZAR BOTONES DEL CRONOGRAMA
+    // 9. FUNCIÓN PARA ACTUALIZAR BOTONES DEL CRONOGRAMA (con badge de cupos)
     // ============================================
     function actualizarBotonesCronograma() {
       document.querySelectorAll('.btn-inscribir-cronograma').forEach(btn => {
@@ -362,16 +365,28 @@
         const ch = charlas.find(c => c.id === id);
         if (ch) {
           const disponibles = ch.disponibles || 0;
+          const parentTd = btn.closest('td');
+          let badge = parentTd.querySelector('.cupo-badge');
+          if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'cupo-badge';
+            badge.style.cssText = 'display:inline-block; margin-left:8px; font-size:11px; color: var(--text-dim); background: var(--surface2); padding:2px 8px; border-radius:12px; border:1px solid var(--border);';
+            parentTd.appendChild(badge);
+          }
+          badge.textContent = `Cupos: ${disponibles}`;
+          
           if (disponibles <= 0) {
             btn.disabled = true;
             btn.textContent = 'Cupo lleno';
             btn.style.opacity = '0.5';
             btn.style.cursor = 'not-allowed';
+            badge.style.color = 'var(--accent4)';
           } else {
             btn.disabled = false;
             btn.textContent = 'Inscribirse';
             btn.style.opacity = '1';
             btn.style.cursor = 'pointer';
+            badge.style.color = 'var(--text-dim)';
           }
         }
       });
@@ -429,7 +444,7 @@
           ultimoQrDataUrl = data.qr;
           qrContainer.style.display = 'block';
 
-          localStorage.setItem('miEmail', email);
+          // NO GUARDAMOS EL EMAIL EN localStorage
 
           const ch = charlas.find(c => c.id === charlaId);
           if (ch) {
