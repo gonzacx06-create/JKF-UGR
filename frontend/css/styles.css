@@ -423,7 +423,7 @@ body {
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: rgba(255,255,255,0.02); }
 
-/* ===== FILAS ALTERNADAS EN EL CRONOGRAMA ===== */
+/* === Filas alternadas y badge de cupos === */
 .data-table tbody tr.fila-charla-1 {
   background-color: rgba(211, 47, 47, 0.08);
   border-left: 3px solid var(--rojo-ugr);
@@ -438,6 +438,17 @@ body {
 .data-table td:last-child {
   text-align: center;
   vertical-align: middle;
+  white-space: nowrap;
+}
+.data-table .cupo-badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  color: var(--text-dim);
+  background: var(--surface2);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
 }
 
 .dot-list {
@@ -550,7 +561,6 @@ body {
   padding-bottom: 16px;
 }
 
-/* ===== TARJETAS DE CHARLAS (para Mis inscripciones) ===== */
 .charla-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -759,43 +769,210 @@ body {
   color: var(--text);
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 600px) {
-  .hero, .page-body, .inscripcion-wrapper {
-    padding-left: 16px;
-    padding-right: 16px;
+/* ===== MEJORAS RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .data-table {
+    font-size: 11px;
   }
-  .ex-card {
-    grid-template-columns: auto 1fr;
+  .data-table th, .data-table td {
+    padding: 6px 8px;
   }
-  .ex-dose {
-    grid-column: 2;
+  .data-table .cupo-badge {
+    font-size: 9px;
+    padding: 1px 6px;
+    margin-left: 4px;
   }
-  .form-inscripcion {
-    padding: 18px;
+  .btn-inscribir-cronograma {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+  .hero {
+    padding: 32px 16px 24px;
+  }
+  .hero h1 {
+    font-size: 24px;
+  }
+  .page-body {
+    padding: 0 16px 40px;
+  }
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 24px 0 12px;
+  }
+  .section-num {
+    min-width: auto;
+    font-size: 10px;
+  }
+  .section-title {
+    font-size: 18px;
   }
   .stats-row {
     grid-template-columns: repeat(2, 1fr);
     max-width: 100%;
   }
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+  .charla-grid {
+    grid-template-columns: 1fr;
+  }
+  .ex-card {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .ex-dose {
+    text-align: left;
+    grid-column: auto;
+  }
+  .form-inscripcion {
+    padding: 18px 14px;
+  }
+  .filtros {
+    flex-direction: column;
+  }
+  .filtros input,
+  .filtros select,
+  .filtros button {
+    width: 100%;
+  }
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .admin-header h1 {
+    font-size: 20px;
+  }
+  .login-container {
+    margin: 30px auto;
+    padding: 20px;
+  }
+  .qr-container .qr-imagen-wrapper img {
+    max-width: 150px;
+  }
 }
 
-/* ===== PAGINACIÓN ===== */
-.btn-paginacion {
+@media (max-width: 480px) {
+  .site-header {
+    padding: 8px 12px;
+    height: 60px;
+  }
+  .brand {
+    font-size: 11px;
+  }
+  .logo-ugr {
+    height: 30px;
+  }
+  .menu-btn {
+    font-size: 22px;
+  }
+  .patient-tag {
+    font-size: 10px;
+  }
+  .hero h1 {
+    font-size: 20px;
+  }
+  .hero-subtitle {
+    font-size: 13px;
+  }
+  .meta-value {
+    font-size: 12px;
+  }
+  .stat-cell .val {
+    font-size: 22px;
+  }
+  .stat-cell .lbl {
+    font-size: 9px;
+  }
+  .sidebar {
+    width: 240px;
+    left: -240px;
+  }
+  .sidebar.open {
+    left: 0;
+  }
+  .inscripcion-wrapper {
+    padding: 20px 12px 40px;
+  }
+  .inscripcion-wrapper h2 {
+    font-size: 22px;
+  }
+}
+
+/* ===== MEJORAS DE DISEÑO (adicionales) ===== */
+
+/* 1. Hero con más padding y mejor centrado */
+.hero {
+  padding: 72px 40px 56px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: clamp(32px, 5.5vw, 52px);
+}
+
+.hero-subtitle {
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 2. Stats con más espacio y fuente más grande */
+.stats-row {
+  max-width: 700px;
+  gap: 2px;
+}
+.stat-cell .val {
+  font-size: 32px;
+}
+.stat-cell .lbl {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+/* 3. Tabla más espaciosa y con efecto hover */
+.data-table td {
+  padding: 12px 16px;
+}
+.data-table tbody tr {
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+.data-table tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.data-table .cupo-badge {
+  font-size: 12px;
+  padding: 3px 10px;
+}
+
+/* 4. Tarjetas de talleres con más contraste */
+.ex-card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  font-size: 13px;
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: transform 0.15s, box-shadow 0.15s;
 }
-.btn-paginacion:hover {
-  background: var(--surface2);
-  color: var(--accent);
+.ex-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
 }
-.btn-paginacion:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+
+/* 5. Footer con borde superior y mejor separación */
+.site-footer {
+  border-top: 2px solid var(--border);
+  padding: 32px 24px 24px;
 }
+.site-footer span:last-child {
+  font-size: 10px;
+  color: var(--text-dimmer);
+  opacity: 0.7;
+}
+
+/* 6. Ajuste menor para el título del hero (quitar punto y coma) */
+.hero h1 em {
+  font-style: normal;
+}
+/* Si quieres que el título termine con "Santa Fe 2026" en lugar de "UGR ·", puedes modificar el HTML directamente. */
