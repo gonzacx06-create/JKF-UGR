@@ -55,12 +55,10 @@ async function initDB() {
     `);
     console.log('✅ Tabla "inscripciones" creada/verificada');
 
-    // Resetear cupos y eliminar inscripciones (para pruebas)
     await client.query('UPDATE charlas SET inscritos = 0');
     await client.query('DELETE FROM inscripciones');
     console.log('✅ Cupos reseteados y inscripciones eliminadas');
 
-    // Insertar charlas de ejemplo si no existen
     const result = await client.query('SELECT COUNT(*) FROM charlas');
     const count = parseInt(result.rows[0].count);
     if (count === 0) {
@@ -489,7 +487,6 @@ app.get('/api/admin/inscripciones', verificarToken, async (req, res) => {
 
     const result = await pool.query(query, params);
     
-    // Contar total (sin paginación)
     let countQuery = `
       SELECT COUNT(*) as total
       FROM inscripciones i
@@ -714,7 +711,6 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
 
-// Inicializar base de datos
 initDB().catch(err => {
   console.error('❌ Error fatal en initDB:', err.message);
   process.exit(1);
