@@ -5,7 +5,7 @@ const QRCode = require('qrcode');
 const crypto = require('crypto');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-const ExcelJS = require('exceljs'); // <-- NUEVO
+const ExcelJS = require('exceljs');
 
 const app = express();
 app.use(cors());
