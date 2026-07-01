@@ -555,7 +555,9 @@ app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, async (req, re
   }
 });
 
-// Eliminar inscripción (desde admin) y actualizar cupo
+// ============================================
+// ELIMINAR INSCRIPCIÓN (DESDE ADMIN) CON ACTUALIZACIÓN DE CUPO
+// ============================================
 app.delete('/api/admin/inscripciones/:id', verificarToken, async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {

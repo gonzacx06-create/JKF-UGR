@@ -976,3 +976,25 @@ body {
   font-style: normal;
 }
 /* Si quieres que el título termine con "Santa Fe 2026" en lugar de "UGR ·", puedes modificar el HTML directamente. */
+
+/* Centrar metadatos del hero */
+.hero-meta {
+  justify-content: center;
+  gap: 30px; /* más separación */
+}
+
+.hero-meta .meta-item {
+  flex: 0 0 auto; /* que no se estiren */
+  text-align: center;
+}
+
+/* Ajuste opcional para pantallas pequeñas */
+@media (max-width: 600px) {
+  .hero-meta {
+    gap: 16px;
+  }
+  .hero-meta .meta-item {
+    flex: 1 1 50%; /* que ocupen 2 columnas en móvil */
+    min-width: 120px;
+  }
+}
