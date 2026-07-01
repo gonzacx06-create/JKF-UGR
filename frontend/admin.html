@@ -6,7 +6,7 @@
   <title>Panel de Administración - Jornadas UGR</title>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    /* Estilos generales */
+    /* ===== ESTILOS ===== */
     .admin-wrapper { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
     .admin-header {
       display: flex;
@@ -214,7 +214,7 @@
     <!-- Mensajes -->
     <div id="auth-message" class="mensaje"></div>
 
-    <!-- Filtros (solo inscripciones) -->
+    <!-- Filtros -->
     <div class="filtros">
       <input type="text" id="filtro-email" placeholder="Buscar por email..." />
       <select id="filtro-charla">
@@ -303,11 +303,10 @@
     function mostrarPanel() {
       loginContainer.style.display = 'none';
       adminContent.style.display = 'block';
-      cargarCharlasFiltro();
+      cargarCharlasFiltro(); // No esperamos a que termine, puede fallar sin bloquear
       cargarInscripciones(1);
     }
 
-    // Verificar si el token es válido
     async function verificarTokenValido() {
       if (!tokenActual) return false;
       try {
@@ -378,18 +377,15 @@
     btnLogout.addEventListener('click', mostrarLogin);
 
     // ============================================
-    // INSCRIPCIONES
+    // FILTRO: Cargar charlas desde el endpoint público
     // ============================================
     async function cargarCharlasFiltro() {
       try {
-        const res = await fetch('/api/admin/charlas', { headers: obtenerHeaders() });
+        // Usamos el endpoint público (que siempre existe)
+        const res = await fetch('/api/charlas');
         if (!res.ok) {
-          if (res.status === 401 || res.status === 403) {
-            mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
-            mostrarLogin();
-            return;
-          }
-          throw new Error('Error al cargar charlas');
+          console.warn('⚠️ No se pudieron cargar las charlas para el filtro');
+          return;
         }
         const data = await res.json();
         filtroCharla.innerHTML = '<option value="">Todas las charlas</option>';
@@ -400,10 +396,14 @@
           filtroCharla.appendChild(opt);
         });
       } catch (err) {
-        console.error('Error cargando charlas para filtro:', err);
+        console.warn('⚠️ Error cargando charlas para el filtro:', err);
+        // No mostramos mensaje de error al usuario, solo dejamos el select vacío
       }
     }
 
+    // ============================================
+    // CARGAR INSCRIPCIONES
+    // ============================================
     async function cargarInscripciones(page = 1) {
       paginaActual = page;
       tablaCargando.style.display = 'block';
@@ -426,7 +426,7 @@
             mostrarLogin();
             return;
           }
-          throw new Error('Error al cargar inscripciones');
+          throw new Error('Error al cargar inscripciones: ' + res.status);
         }
         const data = await res.json();
         const inscripciones = data.data || [];
@@ -440,9 +440,14 @@
         console.error('Error:', err);
         mostrarMensaje('❌ Error al cargar inscripciones: ' + err.message, 'error');
         tablaCargando.style.display = 'none';
+        tablaContenido.style.display = 'block';
+        tablaBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-dim);">Error al cargar datos: ${err.message}</td></tr>`;
       }
     }
 
+    // ============================================
+    // RENDERIZAR TABLA
+    // ============================================
     function renderizarTabla(inscripciones) {
       if (inscripciones.length === 0) {
         tablaBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-dim);">No hay inscripciones.</td></tr>`;
@@ -491,6 +496,9 @@
       });
     }
 
+    // ============================================
+    // PAGINACIÓN
+    // ============================================
     function actualizarPaginacion(pagination) {
       const { page, totalPages } = pagination;
       infoPagina.textContent = `Página ${page} de ${totalPages}`;
@@ -500,6 +508,9 @@
       btnSiguiente.onclick = () => cargarInscripciones(page + 1);
     }
 
+    // ============================================
+    // ACCIONES: TOGGLE ESCANEADO
+    // ============================================
     async function toggleEscaneado(id, nuevoEstado) {
       try {
         const res = await fetch(`/api/admin/inscripciones/${id}/escaneado`, {
@@ -523,6 +534,9 @@
       }
     }
 
+    // ============================================
+    // ACCIONES: ELIMINAR
+    // ============================================
     async function eliminarInscripcion(id) {
       try {
         const res = await fetch(`/api/admin/inscripciones/${id}`, {
@@ -545,6 +559,9 @@
       }
     }
 
+    // ============================================
+    // EXPORTAR CSV
+    // ============================================
     async function exportarCSV() {
       try {
         const res = await fetch('/api/admin/exportar-csv', { headers: obtenerHeaders() });
@@ -576,6 +593,9 @@
       }
     }
 
+    // ============================================
+    // EVENTOS
+    // ============================================
     btnFiltrar.addEventListener('click', () => cargarInscripciones(1));
     btnExportar.addEventListener('click', exportarCSV);
     btnLimpiar.addEventListener('click', () => {
@@ -589,7 +609,7 @@
     });
 
     // ============================================
-    // INICIALIZACIÓN (con verificación de token)
+    // INICIALIZACIÓN
     // ============================================
     async function initAdmin() {
       if (tokenActual) {
