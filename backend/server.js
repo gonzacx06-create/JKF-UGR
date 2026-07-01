@@ -141,7 +141,7 @@ app.get('/api/charlas', async (req, res) => {
   }
 });
 
-// Inscribir a una charla
+// Inscribir a una charla (con límite de 2 por email)
 app.post('/api/inscribir', async (req, res) => {
   const { nombre, email, charla_id } = req.body;
   if (!nombre || !email || !charla_id) {
@@ -152,6 +152,8 @@ app.post('/api/inscribir', async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+
+    // Verificar cupo de la charla
     const charlaResult = await client.query('SELECT cupo_maximo, inscritos FROM charlas WHERE id = $1 FOR UPDATE', [charla_id]);
     if (charlaResult.rows.length === 0) {
       await client.query('ROLLBACK');
@@ -163,6 +165,18 @@ app.post('/api/inscribir', async (req, res) => {
       await client.query('ROLLBACK');
       console.warn('❌ Cupo completo para charla ID:', charla_id);
       return res.status(400).json({ error: 'Cupo completo' });
+    }
+
+    // Verificar límite de 2 inscripciones por email por charla
+    const countResult = await client.query(
+      'SELECT COUNT(*) FROM inscripciones WHERE email = $1 AND charla_id = $2',
+      [email, charla_id]
+    );
+    const inscripcionesActuales = parseInt(countResult.rows[0].count);
+    if (inscripcionesActuales >= 2) {
+      await client.query('ROLLBACK');
+      console.warn(`❌ El usuario ${email} ya tiene ${inscripcionesActuales} inscripciones en la charla ${charla_id}`);
+      return res.status(400).json({ error: 'Ya tienes el máximo de 2 inscripciones para esta charla.' });
     }
 
     const codigo = crypto.randomBytes(4).toString('hex').toUpperCase();
