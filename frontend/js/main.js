@@ -49,7 +49,7 @@
       } else if (viewId === 'mis-inscripciones' && viewMis) {
         viewMis.classList.add('active');
         console.log('✅ Vista activada: mis-inscripciones');
-        // Limpiar el campo de email y el contenedor de inscripciones al abrir la vista
+        // Limpiar campo de email y contenedor
         const emailInput = document.getElementById('email-buscador');
         if (emailInput) emailInput.value = '';
         const contenedor = document.getElementById('lista-mis-inscripciones');
@@ -60,7 +60,6 @@
             </p>
           `;
         }
-        // Ocultar paginación si existe
         const contenedorPaginacion = document.getElementById('paginacion-container');
         if (contenedorPaginacion) contenedorPaginacion.innerHTML = '';
       } else {
@@ -172,9 +171,11 @@
                   } else {
                     alert('✅ Inscripción cancelada correctamente.');
                   }
+                  // Recargar las charlas y actualizar el cronograma
+                  await cargarCharlas(); // Esto actualiza los badges
+                  // Volver a cargar las inscripciones del usuario
                   const email = document.getElementById('email-buscador').value.trim();
                   if (email) {
-                    await cargarCharlas();
                     buscarInscripciones(email, paginaActual);
                   }
                 } catch (err) {
@@ -443,8 +444,6 @@
           qrEnlace.textContent = `🔗 Enlace de verificación (código: ${data.codigo})`;
           ultimoQrDataUrl = data.qr;
           qrContainer.style.display = 'block';
-
-          // NO GUARDAMOS EL EMAIL EN localStorage
 
           const ch = charlas.find(c => c.id === charlaId);
           if (ch) {
