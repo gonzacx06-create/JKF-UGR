@@ -29,32 +29,6 @@
       transition: background 0.2s;
     }
     .admin-header .btn-volver:hover { background: var(--surface2); color: var(--text); }
-    /* Pestañas */
-    .tabs {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 24px;
-      border-bottom: 2px solid var(--border);
-    }
-    .tabs button {
-      background: transparent;
-      border: none;
-      padding: 10px 20px;
-      color: var(--text-dim);
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .tabs button:hover { color: var(--text); }
-    .tabs button.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    /* Filtros y tablas (mismos estilos que antes) */
     .filtros {
       display: flex;
       flex-wrap: wrap;
@@ -127,7 +101,6 @@
     .btn-toggle { background: var(--azul-ugr); color: #fff; }
     .btn-toggle.escaneado { background: var(--verde); }
     .btn-eliminar { background: var(--rojo-ugr); color: #fff; }
-    .btn-editar-charla { background: var(--accent); color: #0d1117; }
     .paginacion {
       display: flex;
       justify-content: center;
@@ -208,68 +181,9 @@
       margin-top: 10px;
       display: none;
     }
-    /* Modal */
-    #modal-editar-charla {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-    }
-    #modal-editar-charla .modal-content {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 30px;
-      max-width: 500px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    #modal-editar-charla h3 { font-family: var(--font-display); color: #fff; margin-bottom: 16px; }
-    #modal-editar-charla .form-group { margin-bottom: 14px; }
-    #modal-editar-charla label { display: block; color: var(--text-dim); font-size: 13px; margin-bottom: 4px; }
-    #modal-editar-charla input {
-      width: 100%;
-      padding: 8px 12px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text);
-      font-size: 14px;
-    }
-    #modal-editar-charla input:focus { outline: none; border-color: var(--accent); }
-    #modal-editar-charla .modal-buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 16px;
-    }
-    #modal-editar-charla .btn-cancelar {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      padding: 8px 20px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-    }
-    #modal-editar-charla .btn-cancelar:hover { background: var(--surface); }
-    #modal-editar-charla .btn-guardar {
-      background: var(--accent);
-      color: #0d1117;
-      border: none;
-      padding: 8px 20px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-weight: 700;
-    }
-    #modal-editar-charla .btn-guardar:hover { opacity: 0.85; }
     @media (max-width: 600px) {
       .filtros { flex-direction: column; }
       .admin-header { flex-direction: column; align-items: flex-start; }
-      .tabs { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -300,106 +214,43 @@
     <!-- Mensajes -->
     <div id="auth-message" class="mensaje"></div>
 
-    <!-- Pestañas -->
-    <div class="tabs">
-      <button class="active" data-tab="tab-inscripciones">📋 Inscripciones</button>
-      <button data-tab="tab-charlas">📅 Charlas (Cronograma)</button>
+    <!-- Filtros (solo inscripciones) -->
+    <div class="filtros">
+      <input type="text" id="filtro-email" placeholder="Buscar por email..." />
+      <select id="filtro-charla">
+        <option value="">Todas las charlas</option>
+      </select>
+      <select id="filtro-escaneado">
+        <option value="">Todos</option>
+        <option value="true">Escaneados</option>
+        <option value="false">No escaneados</option>
+      </select>
+      <button id="btn-filtrar">🔍 Buscar</button>
+      <button id="btn-exportar" class="btn-exportar">📥 Exportar CSV</button>
+      <button id="btn-limpiar" style="background: var(--surface2); color: var(--text-dim);">Limpiar filtros</button>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TAB 1: INSCRIPCIONES -->
-    <!-- ========================================== -->
-    <div id="tab-inscripciones" class="tab-content active">
-      <div class="filtros">
-        <input type="text" id="filtro-email" placeholder="Buscar por email..." />
-        <select id="filtro-charla">
-          <option value="">Todas las charlas</option>
-        </select>
-        <select id="filtro-escaneado">
-          <option value="">Todos</option>
-          <option value="true">Escaneados</option>
-          <option value="false">No escaneados</option>
-        </select>
-        <button id="btn-filtrar">🔍 Buscar</button>
-        <button id="btn-exportar" class="btn-exportar">📥 Exportar CSV</button>
-        <button id="btn-limpiar" style="background: var(--surface2); color: var(--text-dim);">Limpiar filtros</button>
-      </div>
-
-      <div class="tabla-container">
-        <div id="tabla-cargando" class="cargando">Cargando inscripciones...</div>
-        <div id="tabla-contenido" style="display:none;">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th><th>Nombre</th><th>Email</th><th>Charla</th><th>Día</th><th>Hora</th>
-                <th>Código</th><th>Escaneado</th><th>Fecha inscripción</th><th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tabla-body"></tbody>
-          </table>
-          <div class="paginacion" id="paginacion-container">
-            <button id="btn-anterior" disabled>Anterior</button>
-            <span id="info-pagina">Página 1 de 1</span>
-            <button id="btn-siguiente" disabled>Siguiente</button>
-          </div>
+    <!-- Tabla de inscripciones -->
+    <div class="tabla-container">
+      <div id="tabla-cargando" class="cargando">Cargando inscripciones...</div>
+      <div id="tabla-contenido" style="display:none;">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Nombre</th><th>Email</th><th>Charla</th><th>Día</th><th>Hora</th>
+              <th>Código</th><th>Escaneado</th><th>Fecha inscripción</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-body"></tbody>
+        </table>
+        <div class="paginacion" id="paginacion-container">
+          <button id="btn-anterior" disabled>Anterior</button>
+          <span id="info-pagina">Página 1 de 1</span>
+          <button id="btn-siguiente" disabled>Siguiente</button>
         </div>
       </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TAB 2: CHARLAS (CRONOGRAMA) -->
-    <!-- ========================================== -->
-    <div id="tab-charlas" class="tab-content">
-      <div class="tabla-container">
-        <div id="tabla-charlas-cargando" class="cargando">Cargando charlas...</div>
-        <div id="tabla-charlas-contenido" style="display:none;">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th><th>Título</th><th>Día</th><th>Hora</th><th>Ponente</th>
-                <th>Cupo máximo</th><th>Inscritos</th><th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tabla-charlas-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ===== MODAL DE EDICIÓN ===== -->
-<div id="modal-editar-charla">
-  <div class="modal-content">
-    <h3>✏️ Editar Charla</h3>
-    <form id="form-editar-charla">
-      <input type="hidden" id="edit-id" />
-      <div class="form-group">
-        <label for="edit-titulo">Título *</label>
-        <input type="text" id="edit-titulo" required placeholder="Ej: Conferencia Inaugural" />
-      </div>
-      <div class="form-group">
-        <label for="edit-dia">Día *</label>
-        <input type="text" id="edit-dia" required placeholder="Ej: Miércoles 2" />
-      </div>
-      <div class="form-group">
-        <label for="edit-hora">Hora *</label>
-        <input type="text" id="edit-hora" required placeholder="Ej: 10:00 - 11:30" />
-      </div>
-      <div class="form-group">
-        <label for="edit-ponente">Ponente *</label>
-        <input type="text" id="edit-ponente" required placeholder="Ej: Dr. Luis Miguel Torres" />
-      </div>
-      <div class="form-group">
-        <label for="edit-cupo">Cupo máximo *</label>
-        <input type="number" id="edit-cupo" required min="1" placeholder="Ej: 40" />
-      </div>
-      <div class="modal-buttons">
-        <button type="button" class="btn-cancelar" id="btn-cancelar-modal">Cancelar</button>
-        <button type="submit" class="btn-guardar">Guardar cambios</button>
-      </div>
-    </form>
   </div>
 </div>
 
@@ -425,14 +276,6 @@
     const btnLogout = document.getElementById('btn-logout');
     const authMessage = document.getElementById('auth-message');
 
-    // Tabs
-    const tabs = document.querySelectorAll('.tabs button');
-    const tabContenidos = {
-      inscripciones: document.getElementById('tab-inscripciones'),
-      charlas: document.getElementById('tab-charlas')
-    };
-
-    // Inscripciones
     const tablaBody = document.getElementById('tabla-body');
     const tablaCargando = document.getElementById('tabla-cargando');
     const tablaContenido = document.getElementById('tabla-contenido');
@@ -445,22 +288,6 @@
     const btnAnterior = document.getElementById('btn-anterior');
     const btnSiguiente = document.getElementById('btn-siguiente');
     const infoPagina = document.getElementById('info-pagina');
-
-    // Charlas
-    const tablaCharlasBody = document.getElementById('tabla-charlas-body');
-    const tablaCharlasCargando = document.getElementById('tabla-charlas-cargando');
-    const tablaCharlasContenido = document.getElementById('tabla-charlas-contenido');
-
-    // Modal
-    const modal = document.getElementById('modal-editar-charla');
-    const formEditar = document.getElementById('form-editar-charla');
-    const editId = document.getElementById('edit-id');
-    const editTitulo = document.getElementById('edit-titulo');
-    const editDia = document.getElementById('edit-dia');
-    const editHora = document.getElementById('edit-hora');
-    const editPonente = document.getElementById('edit-ponente');
-    const editCupo = document.getElementById('edit-cupo');
-    const btnCancelarModal = document.getElementById('btn-cancelar-modal');
 
     // ============================================
     // FUNCIONES DE AUTENTICACIÓN
@@ -478,7 +305,23 @@
       adminContent.style.display = 'block';
       cargarCharlasFiltro();
       cargarInscripciones(1);
-      cargarCharlasAdmin();
+    }
+
+    // Verificar si el token es válido
+    async function verificarTokenValido() {
+      if (!tokenActual) return false;
+      try {
+        const res = await fetch('/api/admin/inscripciones?limit=1', {
+          headers: { 'Authorization': `Bearer ${tokenActual}` }
+        });
+        if (res.ok) return true;
+        tokenActual = null;
+        localStorage.removeItem('adminToken');
+        return false;
+      } catch (err) {
+        console.error('Error verificando token:', err);
+        return false;
+      }
     }
 
     // ============================================
@@ -535,22 +378,6 @@
     btnLogout.addEventListener('click', mostrarLogin);
 
     // ============================================
-    // TABS
-    // ============================================
-    tabs.forEach(tab => {
-      tab.addEventListener('click', function() {
-        tabs.forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-        const target = this.dataset.tab;
-        Object.keys(tabContenidos).forEach(key => {
-          tabContenidos[key].classList.toggle('active', key === target);
-        });
-        if (target === 'tab-charlas') cargarCharlasAdmin();
-        if (target === 'tab-inscripciones') cargarInscripciones(paginaActual);
-      });
-    });
-
-    // ============================================
     // INSCRIPCIONES
     // ============================================
     async function cargarCharlasFiltro() {
@@ -558,7 +385,9 @@
         const res = await fetch('/api/admin/charlas', { headers: obtenerHeaders() });
         if (!res.ok) {
           if (res.status === 401 || res.status === 403) {
-            mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return;
+            mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
+            mostrarLogin();
+            return;
           }
           throw new Error('Error al cargar charlas');
         }
@@ -571,7 +400,7 @@
           filtroCharla.appendChild(opt);
         });
       } catch (err) {
-        console.error(err);
+        console.error('Error cargando charlas para filtro:', err);
       }
     }
 
@@ -593,7 +422,9 @@
         const res = await fetch(url, { headers: obtenerHeaders() });
         if (!res.ok) {
           if (res.status === 401 || res.status === 403) {
-            mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return;
+            mostrarMensaje('❌ Sesión expirada. Vuelve a iniciar sesión.', 'error');
+            mostrarLogin();
+            return;
           }
           throw new Error('Error al cargar inscripciones');
         }
@@ -606,7 +437,7 @@
         tablaCargando.style.display = 'none';
         tablaContenido.style.display = 'block';
       } catch (err) {
-        console.error(err);
+        console.error('Error:', err);
         mostrarMensaje('❌ Error al cargar inscripciones: ' + err.message, 'error');
         tablaCargando.style.display = 'none';
       }
@@ -677,7 +508,11 @@
           body: JSON.stringify({ escaneado: nuevoEstado })
         });
         if (!res.ok) {
-          if (res.status === 401 || res.status === 403) { mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return; }
+          if (res.status === 401 || res.status === 403) {
+            mostrarMensaje('❌ Sesión expirada.', 'error');
+            mostrarLogin();
+            return;
+          }
           throw new Error('Error al actualizar');
         }
         mostrarMensaje('✅ Estado de escaneo actualizado', 'exito');
@@ -695,7 +530,11 @@
           headers: obtenerHeaders()
         });
         if (!res.ok) {
-          if (res.status === 401 || res.status === 403) { mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return; }
+          if (res.status === 401 || res.status === 403) {
+            mostrarMensaje('❌ Sesión expirada.', 'error');
+            mostrarLogin();
+            return;
+          }
           throw new Error('Error al eliminar');
         }
         mostrarMensaje('✅ Inscripción eliminada', 'exito');
@@ -710,8 +549,15 @@
       try {
         const res = await fetch('/api/admin/exportar-csv', { headers: obtenerHeaders() });
         if (!res.ok) {
-          if (res.status === 401 || res.status === 403) { mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return; }
-          if (res.status === 404) { mostrarMensaje('⚠️ No hay inscripciones', 'error'); return; }
+          if (res.status === 401 || res.status === 403) {
+            mostrarMensaje('❌ Sesión expirada.', 'error');
+            mostrarLogin();
+            return;
+          }
+          if (res.status === 404) {
+            mostrarMensaje('⚠️ No hay inscripciones', 'error');
+            return;
+          }
           throw new Error('Error al exportar');
         }
         const blob = await res.blob();
@@ -743,138 +589,21 @@
     });
 
     // ============================================
-    // CHARLAS (CRONOGRAMA)
+    // INICIALIZACIÓN (con verificación de token)
     // ============================================
-    async function cargarCharlasAdmin() {
-      tablaCharlasCargando.style.display = 'block';
-      tablaCharlasContenido.style.display = 'none';
-      try {
-        const res = await fetch('/api/admin/charlas', { headers: obtenerHeaders() });
-        if (!res.ok) {
-          if (res.status === 401 || res.status === 403) { mostrarMensaje('❌ Sesión expirada.', 'error'); mostrarLogin(); return; }
-          throw new Error('Error al cargar charlas');
+    async function initAdmin() {
+      if (tokenActual) {
+        const valido = await verificarTokenValido();
+        if (valido) {
+          mostrarPanel();
+          return;
         }
-        const data = await res.json();
-        renderizarTablaCharlas(data);
-        tablaCharlasCargando.style.display = 'none';
-        tablaCharlasContenido.style.display = 'block';
-      } catch (err) {
-        console.error(err);
-        mostrarMensaje('❌ Error al cargar charlas', 'error');
-        tablaCharlasCargando.style.display = 'none';
       }
-    }
-
-    function renderizarTablaCharlas(charlas) {
-      if (charlas.length === 0) {
-        tablaCharlasBody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;">No hay charlas.</td></tr>`;
-        return;
-      }
-      tablaCharlasBody.innerHTML = '';
-      charlas.forEach(ch => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${ch.id}</td>
-          <td><strong>${ch.titulo}</strong></td>
-          <td>${ch.dia}</td>
-          <td>${ch.hora}</td>
-          <td>${ch.ponente}</td>
-          <td>${ch.cupo_maximo}</td>
-          <td>${ch.inscritos}</td>
-          <td>
-            <div class="acciones">
-              <button class="btn-editar-charla" data-id="${ch.id}">✏️ Editar</button>
-            </div>
-          </td>
-        `;
-        tablaCharlasBody.appendChild(tr);
-      });
-
-      document.querySelectorAll('.btn-editar-charla').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const id = parseInt(this.dataset.id);
-          abrirModalEdicion(id);
-        });
-      });
-    }
-
-    // ============================================
-    // MODAL DE EDICIÓN
-    // ============================================
-    function abrirModalEdicion(id) {
-      fetch(`/api/admin/charlas/${id}`, { headers: obtenerHeaders() })
-        .then(res => {
-          if (!res.ok) throw new Error('Error al cargar datos');
-          return res.json();
-        })
-        .then(data => {
-          editId.value = data.id;
-          editTitulo.value = data.titulo;
-          editDia.value = data.dia;
-          editHora.value = data.hora;
-          editPonente.value = data.ponente;
-          editCupo.value = data.cupo_maximo;
-          modal.style.display = 'flex';
-        })
-        .catch(err => {
-          console.error(err);
-          mostrarMensaje('❌ Error al cargar la charla', 'error');
-        });
-    }
-
-    function cerrarModal() {
-      modal.style.display = 'none';
-      formEditar.reset();
-    }
-
-    btnCancelarModal.addEventListener('click', cerrarModal);
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) cerrarModal();
-    });
-
-    formEditar.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const id = editId.value;
-      const payload = {
-        titulo: editTitulo.value.trim(),
-        dia: editDia.value.trim(),
-        hora: editHora.value.trim(),
-        ponente: editPonente.value.trim(),
-        cupo_maximo: parseInt(editCupo.value)
-      };
-      try {
-        const res = await fetch(`/api/admin/charlas/${id}`, {
-          method: 'PUT',
-          headers: obtenerHeaders(),
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || 'Error al actualizar');
-        }
-        mostrarMensaje('✅ Charla actualizada correctamente', 'exito');
-        cerrarModal();
-        // Recargar ambas tablas
-        cargarCharlasAdmin();
-        cargarInscripciones(paginaActual);
-        // También actualizar los filtros de charlas
-        cargarCharlasFiltro();
-      } catch (err) {
-        console.error(err);
-        mostrarMensaje('❌ Error al actualizar: ' + err.message, 'error');
-      }
-    });
-
-    // ============================================
-    // INICIALIZACIÓN
-    // ============================================
-    if (tokenActual) {
-      mostrarPanel();
-    } else {
       mostrarLogin();
     }
 
-    console.log('🔐 Panel de administración con gestión de charlas e inscripciones');
+    initAdmin();
+    console.log('🔐 Panel de administración (solo inscripciones) con autenticación JWT');
   })();
 </script>
 </body>

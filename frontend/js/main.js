@@ -1,6 +1,10 @@
 (function() {
   'use strict';
 
+  // VARIABLES GLOBALES (ámbito de la IIFE)
+  let paginaActual = 1;
+  const registrosPorPagina = 5;
+
   // ============================================
   // 1. MENÚ LATERAL Y NAVEGACIÓN
   // ============================================
@@ -65,11 +69,10 @@
     }
 
     // ============================================
-    // 3. BUSCAR INSCRIPCIONES CON PAGINACIÓN
+    // 3. BUSCAR INSCRIPCIONES (con paginación)
     // ============================================
-    const registrosPorPagina = 5;
-
     function buscarInscripciones(email, page = 1) {
+      paginaActual = page;
       const contenedor = document.getElementById('lista-mis-inscripciones');
       const contenedorPaginacion = document.getElementById('paginacion-container');
       if (!contenedor) {
@@ -143,7 +146,7 @@
             });
           });
 
-          // Eventos: Cancelar inscripción
+          // Eventos: Cancelar inscripción (CORREGIDO)
           document.querySelectorAll('.btn-cancelar-inscripcion').forEach(btn => {
             btn.addEventListener('click', async function(e) {
               const codigo = this.dataset.codigo;
@@ -157,17 +160,19 @@
                     const err = await res.json();
                     throw new Error(err.error || 'Error al cancelar');
                   }
-                  // Mostrar mensaje de éxito
+                  // Mostrar mensaje de éxito en la interfaz
                   const mensajeDiv = document.getElementById('mensaje-inscripcion');
                   if (mensajeDiv) {
                     mensajeDiv.innerHTML = `<div class="mensaje-exito"><strong>✅ Inscripción cancelada correctamente.</strong> El cupo ha sido liberado.</div>`;
                     setTimeout(() => { mensajeDiv.innerHTML = ''; }, 5000);
+                  } else {
+                    alert('✅ Inscripción cancelada correctamente.');
                   }
-                  // Recargar las inscripciones y actualizar el cronograma
+                  // Recargar la lista usando la página actual
                   const email = document.getElementById('email-buscador').value.trim();
                   if (email) {
-                    await cargarCharlas(); // Actualiza los datos de charlas y los botones del cronograma
-                    buscarInscripciones(email, paginaActual); // Recarga la lista de inscripciones
+                    await cargarCharlas(); // Actualiza botones del cronograma
+                    buscarInscripciones(email, paginaActual); // Recarga la lista
                   }
                 } catch (err) {
                   alert('❌ Error: ' + err.message);
@@ -253,7 +258,6 @@
       console.error('❌ linkMisInscripciones no encontrado en el DOM');
     }
 
-    // ===== CORRECCIÓN: excluir enlaces con clase admin-link =====
     document.querySelectorAll('.sidebar nav a').forEach(link => {
       if (link.classList.contains('admin-link')) return;
       if (link.id === 'linkMisInscripciones') return;
@@ -318,7 +322,7 @@
           populateSelect();
           actualizarBotonesCronograma();
           console.log('✅ Charlas cargadas correctamente.');
-          return data; // para poder encadenar
+          return data;
         })
         .catch(err => {
           console.error('❌ Error cargando charlas:', err);
@@ -515,13 +519,11 @@
     // ============================================
     // 13. INICIALIZACIÓN
     // ============================================
-    // Cargar charlas inicialmente
     cargarCharlas();
 
     console.log('🚀 Jornadas UGR 2026 - Todo listo');
   }
 
-  // Esperar a que el DOM esté completamente cargado
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
   } else {
