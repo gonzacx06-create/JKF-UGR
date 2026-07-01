@@ -5,6 +5,7 @@ const QRCode = require('qrcode');
 const crypto = require('crypto');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const ExcelJS = require('exceljs'); // <-- NUEVO
 
 const app = express();
 app.use(cors());
@@ -484,7 +485,6 @@ app.get('/api/admin/inscripciones', verificarToken, async (req, res) => {
 
     const result = await pool.query(query, params);
     
-    // Contar total
     let countQuery = `
       SELECT COUNT(*) as total
       FROM inscripciones i
@@ -577,9 +577,11 @@ app.delete('/api/admin/inscripciones/:id', verificarToken, async (req, res) => {
   }
 });
 
-// Exportar a CSV
-app.get('/api/admin/exportar-csv', verificarToken, async (req, res) => {
-  console.log('📊 Admin: exportando CSV');
+// ============================================
+// ADMIN: EXPORTAR A EXCEL (.xlsx)
+// ============================================
+app.get('/api/admin/exportar-excel', verificarToken, async (req, res) => {
+  console.log('📊 Admin: exportando a Excel');
   try {
     const result = await pool.query(`
       SELECT 
@@ -600,29 +602,93 @@ app.get('/api/admin/exportar-csv', verificarToken, async (req, res) => {
       return res.status(404).json({ error: 'No hay inscripciones para exportar' });
     }
 
-    const headers = ['Nombre', 'Email', 'Charla', 'Día', 'Hora', 'Código', 'Fecha Inscripción', 'Escaneado', 'Fecha Escaneo'];
-    let csv = headers.join(',') + '\n';
-    rows.forEach(row => {
-      const values = [
-        `"${row.nombre.replace(/"/g, '""')}"`,
-        `"${row.email.replace(/"/g, '""')}"`,
-        `"${row.charla.replace(/"/g, '""')}"`,
-        `"${row.dia}"`,
-        `"${row.hora}"`,
-        `"${row.codigo}"`,
-        `"${row.fecha_inscripcion}"`,
-        `"${row.escaneado}"`,
-        `"${row.fecha_escaneo || ''}"`
-      ];
-      csv += values.join(',') + '\n';
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'Jornadas UGR';
+    workbook.created = new Date();
+    const worksheet = workbook.addWorksheet('Inscripciones', {
+      properties: { tabColor: { argb: '1565C0' } },
     });
 
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename=inscripciones-${new Date().toISOString().split('T')[0]}.csv`);
-    console.log(`✅ CSV exportado con ${rows.length} registros`);
-    res.send(csv);
+    const headerStyle = {
+      font: { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 },
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '1565C0' } },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: {
+        top: { style: 'thin', color: { argb: '30363d' } },
+        bottom: { style: 'thin', color: { argb: '30363d' } },
+        left: { style: 'thin', color: { argb: '30363d' } },
+        right: { style: 'thin', color: { argb: '30363d' } }
+      }
+    };
+
+    const cellStyle = {
+      alignment: { horizontal: 'left', vertical: 'middle' },
+      border: {
+        top: { style: 'thin', color: { argb: '30363d' } },
+        bottom: { style: 'thin', color: { argb: '30363d' } },
+        left: { style: 'thin', color: { argb: '30363d' } },
+        right: { style: 'thin', color: { argb: '30363d' } }
+      }
+    };
+
+    worksheet.columns = [
+      { header: 'Nombre', key: 'nombre', width: 25 },
+      { header: 'Email', key: 'email', width: 30 },
+      { header: 'Charla', key: 'charla', width: 40 },
+      { header: 'Día', key: 'dia', width: 15 },
+      { header: 'Hora', key: 'hora', width: 15 },
+      { header: 'Código', key: 'codigo', width: 15 },
+      { header: 'Fecha Inscripción', key: 'fecha_inscripcion', width: 22 },
+      { header: 'Escaneado', key: 'escaneado', width: 12 },
+      { header: 'Fecha Escaneo', key: 'fecha_escaneo', width: 22 }
+    ];
+
+    const headerRow = worksheet.getRow(1);
+    headerRow.height = 25;
+    headerRow.eachCell((cell) => {
+      cell.style = headerStyle;
+    });
+
+    rows.forEach((row, index) => {
+      const rowData = [
+        row.nombre,
+        row.email,
+        row.charla,
+        row.dia,
+        row.hora,
+        row.codigo,
+        row.fecha_inscripcion,
+        row.escaneado,
+        row.fecha_escaneo || ''
+      ];
+      const newRow = worksheet.addRow(rowData);
+      newRow.height = 20;
+      newRow.eachCell((cell) => {
+        cell.style = cellStyle;
+      });
+      if (index % 2 === 0) {
+        newRow.eachCell((cell) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'F5F5F5' }
+          };
+        });
+      }
+    });
+
+    worksheet.autoFilter = {
+      from: 'A1',
+      to: `I${rows.length + 1}`
+    };
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=inscripciones-${new Date().toISOString().split('T')[0]}.xlsx`);
+    res.send(buffer);
+    console.log(`✅ Excel exportado con ${rows.length} registros`);
   } catch (err) {
-    console.error('❌ Error exportando CSV:', err.message);
+    console.error('❌ Error exportando Excel:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
