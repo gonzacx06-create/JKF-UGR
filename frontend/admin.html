@@ -259,12 +259,12 @@
     'use strict';
 
     // ============================================
-    // CONFIGURACIÓN
+    // CONFIGURACIÓN (usamos sessionStorage para que la sesión expire al cerrar la pestaña)
     // ============================================
     let paginaActual = 1;
     const limite = 20;
     let totalPaginas = 1;
-    let tokenActual = localStorage.getItem('adminToken') || null;
+    let tokenActual = sessionStorage.getItem('adminToken') || null;
 
     // Elementos DOM
     const loginContainer = document.getElementById('login-container');
@@ -296,14 +296,14 @@
       loginContainer.style.display = 'block';
       adminContent.style.display = 'none';
       tokenActual = null;
-      localStorage.removeItem('adminToken');
+      sessionStorage.removeItem('adminToken');
       loginError.style.display = 'none';
     }
 
     function mostrarPanel() {
       loginContainer.style.display = 'none';
       adminContent.style.display = 'block';
-      cargarCharlasFiltro(); // No esperamos a que termine, puede fallar sin bloquear
+      cargarCharlasFiltro();
       cargarInscripciones(1);
     }
 
@@ -315,7 +315,7 @@
         });
         if (res.ok) return true;
         tokenActual = null;
-        localStorage.removeItem('adminToken');
+        sessionStorage.removeItem('adminToken');
         return false;
       } catch (err) {
         console.error('Error verificando token:', err);
@@ -360,7 +360,7 @@
           return;
         }
         tokenActual = data.token;
-        localStorage.setItem('adminToken', tokenActual);
+        sessionStorage.setItem('adminToken', tokenActual);
         loginError.style.display = 'none';
         mostrarPanel();
       } catch (err) {
@@ -381,7 +381,6 @@
     // ============================================
     async function cargarCharlasFiltro() {
       try {
-        // Usamos el endpoint público (que siempre existe)
         const res = await fetch('/api/charlas');
         if (!res.ok) {
           console.warn('⚠️ No se pudieron cargar las charlas para el filtro');
@@ -397,7 +396,6 @@
         });
       } catch (err) {
         console.warn('⚠️ Error cargando charlas para el filtro:', err);
-        // No mostramos mensaje de error al usuario, solo dejamos el select vacío
       }
     }
 
@@ -623,7 +621,7 @@
     }
 
     initAdmin();
-    console.log('🔐 Panel de administración (solo inscripciones) con autenticación JWT');
+    console.log('🔐 Panel de administración (solo inscripciones) con autenticación JWT y sesión por pestaña');
   })();
 </script>
 </body>
