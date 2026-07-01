@@ -555,7 +555,7 @@ app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, async (req, re
   }
 });
 
-// Eliminar inscripción
+// Eliminar inscripción (desde admin) y actualizar cupo
 app.delete('/api/admin/inscripciones/:id', verificarToken, async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
@@ -563,17 +563,38 @@ app.delete('/api/admin/inscripciones/:id', verificarToken, async (req, res) => {
     return res.status(400).json({ error: 'ID inválido' });
   }
   console.log(`🗑️ Admin: eliminando inscripción ${id}`);
+
+  const client = await pool.connect();
   try {
-    const result = await pool.query('DELETE FROM inscripciones WHERE id = $1 RETURNING *', [id]);
-    if (result.rows.length === 0) {
+    await client.query('BEGIN');
+
+    // Obtener el charla_id antes de eliminar
+    const insResult = await client.query('SELECT charla_id FROM inscripciones WHERE id = $1', [id]);
+    if (insResult.rows.length === 0) {
+      await client.query('ROLLBACK');
       console.warn(`❌ Inscripción ${id} no encontrada para eliminar`);
       return res.status(404).json({ error: 'Inscripción no encontrada' });
     }
-    console.log(`✅ Inscripción ${id} eliminada`);
-    res.json({ mensaje: 'Inscripción eliminada', data: result.rows[0] });
+    const charla_id = insResult.rows[0].charla_id;
+
+    // Eliminar la inscripción
+    const deleteResult = await client.query('DELETE FROM inscripciones WHERE id = $1 RETURNING *', [id]);
+
+    // Reducir el contador de inscritos en la charla (si es > 0)
+    await client.query(
+      'UPDATE charlas SET inscritos = inscritos - 1 WHERE id = $1 AND inscritos > 0',
+      [charla_id]
+    );
+
+    await client.query('COMMIT');
+    console.log(`✅ Inscripción ${id} eliminada y cupo actualizado`);
+    res.json({ mensaje: 'Inscripción eliminada y cupo liberado', data: deleteResult.rows[0] });
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error('❌ Error eliminando inscripción:', err.message);
     res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 });
 
