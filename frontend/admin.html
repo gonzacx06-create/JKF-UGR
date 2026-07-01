@@ -226,7 +226,7 @@
         <option value="false">No escaneados</option>
       </select>
       <button id="btn-filtrar">🔍 Buscar</button>
-      <button id="btn-exportar" class="btn-exportar">📥 Exportar CSV</button>
+      <button id="btn-exportar" class="btn-exportar">📊 Exportar Excel</button>
       <button id="btn-limpiar" style="background: var(--surface2); color: var(--text-dim);">Limpiar filtros</button>
     </div>
 
@@ -558,11 +558,11 @@
     }
 
     // ============================================
-    // EXPORTAR CSV
+    // EXPORTAR EXCEL (en lugar de CSV)
     // ============================================
-    async function exportarCSV() {
+    async function exportarExcel() {
       try {
-        const res = await fetch('/api/admin/exportar-csv', { headers: obtenerHeaders() });
+        const res = await fetch('/api/admin/exportar-excel', { headers: obtenerHeaders() });
         if (!res.ok) {
           if (res.status === 401 || res.status === 403) {
             mostrarMensaje('❌ Sesión expirada.', 'error');
@@ -570,7 +570,7 @@
             return;
           }
           if (res.status === 404) {
-            mostrarMensaje('⚠️ No hay inscripciones', 'error');
+            mostrarMensaje('⚠️ No hay inscripciones para exportar', 'error');
             return;
           }
           throw new Error('Error al exportar');
@@ -579,12 +579,12 @@
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `inscripciones-${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `inscripciones-${new Date().toISOString().split('T')[0]}.xlsx`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-        mostrarMensaje('✅ Exportación exitosa', 'exito');
+        mostrarMensaje('✅ Exportación a Excel exitosa', 'exito');
       } catch (err) {
         console.error(err);
         mostrarMensaje('❌ Error al exportar', 'error');
@@ -595,7 +595,7 @@
     // EVENTOS
     // ============================================
     btnFiltrar.addEventListener('click', () => cargarInscripciones(1));
-    btnExportar.addEventListener('click', exportarCSV);
+    btnExportar.addEventListener('click', exportarExcel);
     btnLimpiar.addEventListener('click', () => {
       filtroEmail.value = '';
       filtroCharla.value = '';
@@ -621,7 +621,7 @@
     }
 
     initAdmin();
-    console.log('🔐 Panel de administración (solo inscripciones) con autenticación JWT y sesión por pestaña');
+    console.log('🔐 Panel de administración con exportación a Excel');
   })();
 </script>
 </body>
