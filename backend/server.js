@@ -8,6 +8,24 @@ const jwt = require('jsonwebtoken');
 const ExcelJS = require('exceljs');
 
 const app = express();
+
+// ========== SEGURIDAD Y CABECERAS ==========
+app.disable('x-powered-by'); // Elimina X-Powered-By
+
+// Middleware para cabeceras de seguridad y caché
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  
+  // Cache para recursos estáticos (1 año)
+  if (req.url.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  } else {
+    // Sin caché para HTML y API
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+  next();
+});
+
 app.use(cors());
 app.use(express.json());
 
@@ -56,7 +74,7 @@ db.serialize(() => {
     else console.log('✅ Tabla inscripciones lista');
   });
 
-  // Migración: agregar columnas si no existen (ya están en CREATE, pero por si acaso)
+  // Migración: agregar columnas si no existen
   db.all("PRAGMA table_info(inscripciones)", (err, rows) => {
     if (err) return;
     const columns = rows.map(r => r.name);
@@ -68,13 +86,12 @@ db.serialize(() => {
     }
   });
 
-  // Resetear cupos e inscripciones (para empezar limpio)
+  // Resetear cupos e inscripciones
   db.run("UPDATE charlas SET inscritos = 0");
   db.run("DELETE FROM inscripciones");
   console.log('✅ Cupos reseteados a 0 y inscripciones eliminadas');
 
   // ========== NUEVA LISTA DE CHARLAS ==========
-  // Eliminar todas las charlas existentes para reemplazarlas
   db.run("DELETE FROM charlas", (err) => {
     if (err) console.error('Error al eliminar charlas:', err.message);
     else {
@@ -126,7 +143,6 @@ function verificarToken(req, res, next) {
 
 // ========== ENDPOINTS PÚBLICOS ==========
 
-// Obtener charlas
 app.get('/api/charlas', (req, res) => {
   db.all("SELECT *, (cupo_maximo - inscritos) as disponibles FROM charlas", (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -134,7 +150,6 @@ app.get('/api/charlas', (req, res) => {
   });
 });
 
-// Inscribir
 app.post('/api/inscribir', (req, res) => {
   const { nombre, email, charla_id } = req.body;
   if (!nombre || !email || !charla_id) {
@@ -148,7 +163,6 @@ app.post('/api/inscribir', (req, res) => {
       return res.status(400).json({ error: 'Cupo completo' });
     }
 
-    // Límite de 2 inscripciones por email por charla
     db.get("SELECT COUNT(*) as count FROM inscripciones WHERE email = ? AND charla_id = ?", [email, charla_id], (err, countRow) => {
       if (err) return res.status(500).json({ error: err.message });
       if (countRow.count >= 2) {
@@ -178,7 +192,6 @@ app.post('/api/inscribir', (req, res) => {
   });
 });
 
-// Mis inscripciones (por email)
 app.get('/api/mis-inscripciones', (req, res) => {
   const email = req.query.email;
   const page = parseInt(req.query.page) || 1;
@@ -209,7 +222,6 @@ app.get('/api/mis-inscripciones', (req, res) => {
   });
 });
 
-// Cancelar inscripción (por código)
 app.delete('/api/inscripciones/:codigo', (req, res) => {
   const codigo = req.params.codigo;
   db.run("BEGIN TRANSACTION");
@@ -303,7 +315,6 @@ app.get('/verificar/:codigo', (req, res) => {
       `);
     }
 
-    // Primer escaneo válido
     const ahora = new Date().toISOString();
     db.run("UPDATE inscripciones SET escaneado = 1, fecha_escaneo = ? WHERE codigo_unico = ?", [ahora, codigo]);
 
@@ -352,7 +363,7 @@ app.get('/verificar/:codigo', (req, res) => {
   });
 });
 
-// ========== ADMIN: LOGIN ==========
+// ========== ADMIN ==========
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
@@ -363,7 +374,6 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
-// ========== ADMIN: GESTIÓN DE INSCRIPCIONES ==========
 app.get('/api/admin/inscripciones', verificarToken, (req, res) => {
   const { email, charla_id, escaneado, page = 1, limit = 20 } = req.query;
   const offset = (parseInt(page) - 1) * parseInt(limit);
@@ -397,7 +407,6 @@ app.get('/api/admin/inscripciones', verificarToken, (req, res) => {
   });
 });
 
-// Actualizar escaneado (admin)
 app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, (req, res) => {
   const id = parseInt(req.params.id);
   const { escaneado } = req.body;
@@ -415,7 +424,6 @@ app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, (req, res) => 
   );
 });
 
-// Eliminar inscripción (admin)
 app.delete('/api/admin/inscripciones/:id', verificarToken, (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
@@ -436,7 +444,6 @@ app.delete('/api/admin/inscripciones/:id', verificarToken, (req, res) => {
   });
 });
 
-// ========== ADMIN: EXPORTAR A EXCEL ==========
 app.get('/api/admin/exportar-excel', verificarToken, (req, res) => {
   db.all(`
     SELECT i.nombre, i.email, c.titulo AS charla, c.dia, c.hora, i.codigo_unico AS codigo,
