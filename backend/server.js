@@ -72,35 +72,41 @@ db.serialize(() => {
   db.run("UPDATE charlas SET inscritos = 0");
   db.run("DELETE FROM inscripciones");
   console.log('✅ Cupos reseteados a 0 y inscripciones eliminadas');
-});
 
-// Insertar charlas de ejemplo si no existen
-db.get("SELECT COUNT(*) as count FROM charlas", (err, row) => {
-  if (err) return console.error(err);
-  if (row.count === 0) {
-    const charlas = [
-      ['Recepción y acreditación', 'Miércoles 2', '08:30 - 10:00', 'Secretaría Técnica', 40],
-      ['Conferencia Inaugural: Actualización en Dolor Crónico', 'Miércoles 2', '10:00 - 11:30', 'Dr. Luis Miguel Torres', 40],
-      ['Mesa Redonda: Abordaje Multidisciplinar de la Tendinopatía', 'Miércoles 2', '11:30 - 13:00', 'Dra. María López / Dr. Javier Pérez', 40],
-      ['Pausa - Almuerzo', 'Miércoles 2', '13:00 - 14:30', 'Organización', 40],
-      ['Taller Práctico 1: Ecografía para Fisioterapeutas', 'Miércoles 2', '14:30 - 16:00', 'Dr. Carlos García (SERAM)', 40],
-      ['Comunicaciones Orales Libres', 'Miércoles 2', '16:00 - 17:30', 'Varios autores', 40],
-      ['Conferencia: Nuevas tendencias en neurorrehabilitación', 'Miércoles 2', '17:30 - 19:00', 'Dra. Elena Muñoz (UGR)', 40],
-      ['Cóctel de bienvenida y networking', 'Miércoles 2', '19:00 - 20:30', 'Comité Organizador', 40],
-      ['Recepción y entrega de materiales', 'Jueves 3', '08:30 - 10:00', 'Secretaría Técnica', 40],
-      ['Conferencia: Rehabilitación en el Deportista de Élite', 'Jueves 3', '10:00 - 11:30', 'Dr. Pedro Martínez (Real Madrid)', 40],
-      ['Mesa Redonda: Infiltraciones guiadas por ecografía', 'Jueves 3', '11:30 - 13:00', 'Dra. Ana Belén Rodríguez', 40],
-      ['Pausa - Almuerzo (Jueves)', 'Jueves 3', '13:00 - 14:30', 'Organización', 40],
-      ['Taller Práctico 2: Punción Seca y Neuromodulación', 'Jueves 3', '14:30 - 16:00', 'Dr. Fernando Ramos', 40],
-      ['Conferencia: Innovación en fisioterapia respiratoria', 'Jueves 3', '16:00 - 17:30', 'Dra. Laura Fernández', 40],
-      ['Conferencia de Clausura', 'Jueves 3', '17:30 - 19:00', 'Dr. Ricardo Gómez (UGR)', 40],
-      ['Entrega de premios y cierre oficial', 'Jueves 3', '19:00 - 20:30', 'Comité Organizador', 40]
-    ];
-    const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
-    charlas.forEach(c => stmt.run(c));
-    stmt.finalize();
-    console.log('✅ Charlas de ejemplo insertadas con cupo 40');
-  }
+  // ========== NUEVA LISTA DE CHARLAS (según los datos proporcionados) ==========
+  // Eliminar todas las charlas existentes para reemplazarlas
+  db.run("DELETE FROM charlas", (err) => {
+    if (err) console.error('Error al eliminar charlas:', err.message);
+    else {
+      const nuevasCharlas = [
+        // Miércoles 2
+        ['Robertino Bottaniz', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
+        ['agus elz', 'Miércoles 2', '09:00 - 10:00', 'agus elz', 40],
+        ['Angelina Tibaldo', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
+        ['rami pioli', 'Miércoles 2', '11:00 - 12:00', 'rami pioli', 40],
+        ['Sofi Mandole, Iara Pereyra', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
+        ['Ana Cristina Piacenza', 'Miércoles 2', '13:00 - 14:00', 'Ana Cristina Piacenza', 40],
+        ['Anto Baldesari', 'Miércoles 2', '14:00 - 15:00', 'Anto Baldesari', 40],
+        ['Carlos fumero', 'Miércoles 2', '15:00 - 16:00', 'Carlos fumero', 40],
+        ['fede uca', 'Miércoles 2', '16:00 - 17:00', 'fede uca', 40],
+        ['brenda lorenz', 'Miércoles 2', '18:00 - 19:00', 'brenda lorenz', 40],
+        ['Vanesa Dupertuis', 'Miércoles 2', '19:00 - 20:00', 'Vanesa Dupertuis', 40],
+        // Jueves 3
+        ['Lucas Orlandi', 'Jueves 3', '08:00 - 09:00', 'Lucas Orlandi', 40],
+        ['Male y Mica Carrizo', 'Jueves 3', '10:00 - 11:00', 'Male y Mica Carrizo', 40],
+        ['Pablo Seguro', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
+        ['Gri Sosa', 'Jueves 3', '12:00 - 13:00', 'Gri Sosa', 40],
+        ['Carlos Bonino', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino', 40],
+        ['Mariela Perugini', 'Jueves 3', '12:00 - 14:30', 'Mariela Perugini', 40]
+      ];
+
+      const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
+      nuevasCharlas.forEach(ch => stmt.run(ch));
+      stmt.finalize(() => {
+        console.log('✅ Charlas actualizadas con los nuevos horarios y disertantes');
+      });
+    }
+  });
 });
 
 // ========== MIDDLEWARE JWT ==========
