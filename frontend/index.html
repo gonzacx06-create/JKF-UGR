@@ -1,101 +1,188 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jornadas Kinesiología UGR 2026</title>
-  <link rel="stylesheet" href="css/styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jornadas Kinesiologia UGR 2026</title>
+    <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <!-- Fondo decorativo con formas abstractas -->
-  <div class="bg-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-    <div class="shape shape-4"></div>
-    <div class="shape shape-5"></div>
-    <div class="shape shape-6"></div>
-    <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path fill="rgba(0,51,102,0.03)" d="M0,224L60,213.3C120,203,240,181,360,186.7C480,192,600,224,720,229.3C840,235,960,213,1080,192C1200,171,1320,149,1380,138.7L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-    </svg>
-    <svg class="wave wave-2" viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path fill="rgba(213,35,51,0.04)" d="M0,128L60,138.7C120,149,240,171,360,165.3C480,160,600,128,720,117.3C840,107,960,117,1080,138.7C1200,160,1320,192,1380,208L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-    </svg>
-  </div>
-
-  <!-- Contenido principal -->
-  <header>
-    <div class="container header-container">
-      <div class="logo-wrapper">
-        <img src="assets/logo-ugr.png" alt="Logo UGR" class="logo-img" onerror="this.style.display='none'" />
-        <div class="logo-texto">
-          <span class="logo-ugr">UNIVERSIDAD DEL GRAN ROSARIO</span>
-          <span class="logo-jornadas">XI Jornadas de Kinesiología y Fisiatría · 2026</span>
-        </div>
-      </div>
+    <!-- ===== FONDO DECORATIVO CON FORMAS ===== -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
+        <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path fill="rgba(0,51,102,0.03)" d="M0,224L60,213.3C120,203,240,181,360,186.7C480,192,600,224,720,229.3C840,235,960,213,1080,192C1200,171,1320,149,1380,138.7L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+        </svg>
+        <svg class="wave wave-2" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path fill="rgba(213,35,51,0.04)" d="M0,128L60,138.7C120,149,240,171,360,165.3C480,160,600,128,720,117.3C840,107,960,117,1080,138.7C1200,160,1320,192,1380,208L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+        </svg>
     </div>
-  </header>
 
-  <main class="container">
-    <section id="bienvenida" class="card">
-      <div class="bienvenida-content">
-        <h2>Bienvenidos</h2>
-        <p>
-          Un espacio de encuentro para profesionales de la Kinesiología y la Fisiatría, con ponencias de vanguardia, talleres prácticos y mesas redondas que marcarán la actualidad de la disciplina.
-        </p>
-        <div class="info-grid">
-          <div><strong>📅 Fechas:</strong> 2 y 3 de septiembre</div>
-          <div><strong>📍 Sede:</strong> Santa Fe · Universidad del Gran Rosario</div>
-          <div><strong>🎯 Modalidad:</strong> Presencial</div>
-          <div><strong>⏳ Inscripción:</strong> Hasta el 31 de agosto</div>
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+    <div class="header-left">
+        <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
+        <img src="assets/logo-ugr.png" alt="UGR" class="logo-img" onerror="this.style.display='none'" />
+        <div>
+            <span class="logo-title">XI Jornadas de Kinesiología y Fisiatría · 2026</span>
         </div>
-        <p class="destacado">¡Cupos limitados para los talleres prácticos! Asegura tu lugar ahora.</p>
-      </div>
-    </section>
-
-    <section id="cronograma" class="card">
-      <h2>Cronograma de Charlas</h2>
-      <div id="charlas-container"></div>
-    </section>
-
-    <section id="inscripcion" class="card">
-      <h2>Inscripción</h2>
-      <form id="form-inscripcion">
-        <div class="form-group">
-          <label for="nombre">Nombre completo:</label>
-          <input type="text" id="nombre" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Correo electrónico:</label>
-          <input type="email" id="email" required />
-        </div>
-        <div class="form-group">
-          <label for="charla">Selecciona una charla:</label>
-          <select id="charla" required>
-            <option value="">-- Elige --</option>
-          </select>
-          <span id="cupo-disponible" class="cupo-info"></span>
-        </div>
-        <button type="submit">Inscribirme</button>
-      </form>
-      <div id="mensaje-inscripcion"></div>
-      <div id="qr-container" style="display:none;">
-        <h3>¡Inscripción exitosa!</h3>
-        <p>Guarda este código QR para verificar tu asistencia el día del evento.</p>
-        <img id="qr-imagen" src="" alt="QR de inscripción" />
-        <p><a id="qr-enlace" href="#" target="_blank">Enlace de verificación</a></p>
-        <button id="descargar-qr">Descargar QR</button>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>© 2026 Universidad del Gran Rosario · Jornadas de Kinesiología y Fisiatría</p>
-      <p class="footer-contact">eventos@ugr.edu.ar</p>
     </div>
-  </footer>
+</header>
 
-  <script src="js/main.js"></script>
+<!-- ===== MENÚ LATERAL ===== -->
+<nav id="sideMenu" class="side-menu">
+    <ul>
+        <li><a href="#" data-section="inicio" class="active">Inicio</a></li>
+        <li><a href="#" data-section="mis-inscripciones">Mis inscripciones</a></li>
+        <li><a href="#" data-section="admin">Admin</a></li>
+    </ul>
+</nav>
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <main class="container">
+        <!-- SECCIÓN INICIO -->
+        <section id="inicio" class="section active">
+            <div class="card bienvenida">
+                <h2>Bienvenidos</h2>
+                <p>Un espacio de encuentro para profesionales de la Kinesiología y la Fisiatría, con ponencias de vanguardia, talleres prácticos y mesas redondas que marcarán la actualidad de la disciplina.</p>
+                <div class="info-grid">
+                    <div><strong>📅 Fechas:</strong> 2 y 3 de septiembre</div>
+                    <div><strong>📍 Sede:</strong> Santa Fe · Universidad del Gran Rosario</div>
+                    <div><strong>🎯 Modalidad:</strong> Presencial</div>
+                    <div><strong>⏳ Inscripción:</strong> Hasta el 31 de agosto</div>
+                </div>
+                <p class="destacado">¡Cupos limitados para los talleres prácticos! Asegura tu lugar ahora.</p>
+            </div>
+
+            <div class="card" id="cronograma-section">
+                <h2>Cronograma de Charlas</h2>
+                <div id="tabla-cronograma">
+                    <!-- Se llena con JavaScript -->
+                </div>
+            </div>
+
+            <div class="card" id="inscripcion-section">
+                <h2>Inscripción</h2>
+                <form id="form-inscripcion">
+                    <div class="form-group">
+                        <label for="nombre">Nombre completo:</label>
+                        <input type="text" id="nombre" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Correo electrónico:</label>
+                        <input type="email" id="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="charla">Selecciona una charla:</label>
+                        <select id="charla" required>
+                            <option value="">-- Elige --</option>
+                        </select>
+                        <span id="cupo-disponible" class="cupo-info"></span>
+                    </div>
+                    <button type="submit">Inscribirme</button>
+                </form>
+                <div id="mensaje-inscripcion"></div>
+                <div id="qr-container" style="display:none;">
+                    <h3>¡Inscripción exitosa!</h3>
+                    <p>Guarda este código QR para verificar tu asistencia.</p>
+                    <img id="qr-imagen" src="" alt="QR" />
+                    <p><a id="qr-enlace" href="#" target="_blank">Enlace de verificación</a></p>
+                    <button id="descargar-qr">Descargar QR</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN CRONOGRAMA (enlace directo) -->
+        <section id="cronograma" class="section">
+            <div class="card">
+                <h2>Cronograma de Charlas</h2>
+                <div id="tabla-cronograma-full">
+                    <!-- Se llena con JavaScript (mismo contenido que el de inicio) -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN MIS INSCRIPCIONES -->
+        <section id="mis-inscripciones" class="section">
+            <div class="card">
+                <h2>Mis inscripciones</h2>
+                <div class="form-group">
+                    <label for="email-consulta">Ingresa tu email:</label>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <input type="email" id="email-consulta" placeholder="tu@email.com" style="flex:1; min-width:200px;" />
+                        <button id="btn-consultar">Consultar</button>
+                    </div>
+                </div>
+                <div id="mis-inscripciones-resultado"></div>
+                <div id="paginacion-mis-inscripciones" style="display:flex; gap:10px; justify-content:center; margin-top:15px;"></div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN ADMIN -->
+        <section id="admin" class="section">
+            <div class="card" id="admin-login-section">
+                <h2>Acceso administrador</h2>
+                <form id="form-login">
+                    <div class="form-group">
+                        <label for="admin-user">Usuario:</label>
+                        <input type="text" id="admin-user" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-pass">Contraseña:</label>
+                        <input type="password" id="admin-pass" required />
+                    </div>
+                    <button type="submit">Ingresar</button>
+                </form>
+                <div id="admin-login-error" style="color:#f85149; margin-top:10px;"></div>
+            </div>
+
+            <div class="card" id="admin-panel-section" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
+                    <h2 style="margin:0;">Panel de administración</h2>
+                    <button id="btn-exportar-excel" class="btn-secundario">📊 Exportar Excel</button>
+                    <button id="btn-logout" class="btn-secundario">Cerrar sesión</button>
+                </div>
+
+                <div style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:20px;">
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Email:</label>
+                        <input type="text" id="filtro-email" placeholder="Filtrar por email" />
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Charla:</label>
+                        <select id="filtro-charla"><option value="">Todas</option></select>
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Escaneado:</label>
+                        <select id="filtro-escaneado">
+                            <option value="">Todos</option>
+                            <option value="true">Sí</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; align-items:flex-end; gap:10px;">
+                        <button id="btn-aplicar-filtros" class="btn-secundario">Aplicar</button>
+                    </div>
+                </div>
+
+                <div id="admin-inscripciones-tabla"></div>
+                <div id="paginacion-admin" style="display:flex; gap:10px; justify-content:center; margin-top:15px;"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <p>© 2026 Universidad del Gran Rosario · Jornadas de Kinesiología y Fisiatría</p>
+            <p class="footer-contact">eventos@ugr.edu.ar</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
 </body>
 </html>

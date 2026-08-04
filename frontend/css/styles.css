@@ -1,385 +1,411 @@
 /* ===== RESET Y BASE ===== */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
-  background: #f5f7fa;
-  color: #1e2a3a;
-  line-height: 1.6;
-  min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
+    font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+    background: #f5f7fa;
+    color: #1e2a3a;
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
 }
 
 .container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-/* ===== FONDO CON FORMAS ABSTRACTAS ===== */
+/* ===== FONDO CON FORMAS ===== */
 .bg-shapes {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
 }
 
 .shape {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.15;
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.08;
 }
 
 .shape-1 {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, #003366 0%, transparent 70%);
-  top: -200px;
-  right: -200px;
-  opacity: 0.08;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #003366 0%, transparent 70%);
+    top: -150px;
+    right: -150px;
 }
 .shape-2 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, #d52333 0%, transparent 70%);
-  bottom: -100px;
-  left: -100px;
-  opacity: 0.1;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #d52333 0%, transparent 70%);
+    bottom: -100px;
+    left: -100px;
 }
 .shape-3 {
-  width: 200px;
-  height: 200px;
-  background: #4a7a9c;
-  top: 30%;
-  left: 5%;
-  opacity: 0.06;
-  border-radius: 30% 70% 50% 50% / 30% 30% 70% 70%;
+    width: 200px;
+    height: 200px;
+    background: #4a7a9c;
+    top: 30%;
+    left: 5%;
+    opacity: 0.05;
+    border-radius: 30% 70% 50% 50% / 30% 30% 70% 70%;
 }
 .shape-4 {
-  width: 150px;
-  height: 150px;
-  background: #e8838a;
-  bottom: 20%;
-  right: 8%;
-  opacity: 0.08;
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    width: 150px;
+    height: 150px;
+    background: #e8838a;
+    bottom: 20%;
+    right: 8%;
+    opacity: 0.06;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
 }
 .shape-5 {
-  width: 80px;
-  height: 80px;
-  background: #003366;
-  top: 60%;
-  left: 15%;
-  opacity: 0.05;
-  border-radius: 20% 80% 50% 50% / 50% 40% 60% 50%;
+    width: 80px;
+    height: 80px;
+    background: #003366;
+    top: 60%;
+    left: 15%;
+    opacity: 0.04;
+    border-radius: 20% 80% 50% 50% / 50% 40% 60% 50%;
 }
 .shape-6 {
-  width: 120px;
-  height: 120px;
-  background: #d52333;
-  top: 10%;
-  left: 70%;
-  opacity: 0.07;
-  border-radius: 70% 30% 50% 50% / 30% 60% 40% 70%;
-}
-
-.wave {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 200px;
-  opacity: 0.3;
-}
-.wave-2 {
-  bottom: 80px;
-  opacity: 0.2;
-  height: 150px;
+    width: 120px;
+    height: 120px;
+    background: #d52333;
+    top: 10%;
+    left: 70%;
+    opacity: 0.05;
+    border-radius: 70% 30% 50% 50% / 30% 60% 40% 70%;
 }
 
 /* ===== HEADER ===== */
-header {
-  position: relative;
-  z-index: 1;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  padding: 25px 0;
-  border-bottom: 4px solid #d52333;
+.site-header {
+    position: relative;
+    z-index: 10;
+    background: #003366;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 4px solid #d52333;
 }
 
-.header-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.logo-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
+.menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 4px 10px;
+    transition: 0.2s;
+}
+.menu-btn:hover {
+    color: #ffcc00;
 }
 
 .logo-img {
-  max-height: 80px;
-  width: auto;
+    max-height: 50px;
+    width: auto;
+}
+.logo-title {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+}
+.logo-sub {
+    display: block;
+    font-size: 0.9rem;
+    color: #ffcc00;
 }
 
-.logo-texto {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+/* ===== MENÚ LATERAL ===== */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100%;
+    background: #003366;
+    padding: 70px 20px 20px;
+    transition: left 0.3s ease;
+    z-index: 100;
+    overflow-y: auto;
+}
+.side-menu.open {
+    left: 0;
+}
+.side-menu ul {
+    list-style: none;
+    padding: 0;
+}
+.side-menu ul li a {
+    display: block;
+    padding: 14px 16px;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.2s;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.side-menu ul li a:hover {
+    background: rgba(255,255,255,0.1);
+}
+.side-menu ul li a.active {
+    background: #d52333;
+    color: white;
 }
 
-.logo-ugr {
-  font-size: 2.2rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #003366;
+/* ===== SECCIONES ===== */
+.section {
+    display: none;
+    position: relative;
+    z-index: 1;
+}
+.section.active {
+    display: block;
 }
 
-.logo-jornadas {
-  font-size: 1.2rem;
-  font-weight: 300;
-  color: #1e2a3a;
-  opacity: 0.85;
-  margin-top: 2px;
-}
-
-/* ===== CARD (secciones) ===== */
 .card {
-  position: relative;
-  z-index: 1;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(8px);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
-  padding: 30px;
-  margin-bottom: 30px;
-  border: 1px solid rgba(255,255,255,0.3);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    padding: 30px;
+    margin-bottom: 30px;
 }
 
 h2 {
-  color: #003366;
-  border-bottom: 3px solid #d52333;
-  padding-bottom: 12px;
-  margin-bottom: 25px;
-  font-weight: 600;
-  font-size: 1.8rem;
+    color: #003366;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #d52333;
 }
 
 /* ===== BIENVENIDA ===== */
-.bienvenida-content p {
-  font-size: 1.1rem;
-  margin-bottom: 20px;
+.bienvenida p {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
 }
 
+/* Tabla de información de bienvenida (como la imagen) */
 .info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 15px;
-  background: #f0f4f8;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 15px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 15px 0;
 }
-
 .info-grid div {
-  font-size: 0.95rem;
+    font-size: 0.95rem;
+    color: #1e2a3a;
+}
+.info-grid strong {
+    color: #003366;
 }
 
 .destacado {
-  background: #eef2f7;
-  padding: 15px 20px;
-  border-radius: 30px;
-  text-align: center;
-  font-weight: 500;
-  color: #003366;
-  border: 1px solid rgba(0,51,102,0.1);
+    background: #eef2f7;
+    padding: 15px 20px;
+    border-radius: 30px;
+    text-align: center;
+    font-weight: 500;
+    color: #003366;
+    border: 1px solid rgba(0,51,102,0.1);
+    margin-top: 15px;
 }
 
-/* ===== CRONOGRAMA ===== */
-#charlas-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 25px;
+/* ===== TABLA CRONOGRAMA ===== */
+#tabla-cronograma, #tabla-cronograma-full {
+    overflow-x: auto;
+}
+.tabla-charlas {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+.tabla-charlas th {
+    background: #003366;
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+}
+.tabla-charlas td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e9ecef;
+    color: #2c3e50;
+}
+.tabla-charlas tr:hover {
+    background: #f8f9fa;
+}
+.tabla-charlas .btn-inscribir {
+    background: #d52333;
+    color: white;
+    border: none;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.tabla-charlas .btn-inscribir:hover {
+    background: #b01a28;
+}
+.tabla-charlas .btn-inscribir:disabled {
+    background: #ced4da;
+    color: #6c757d;
+    cursor: not-allowed;
 }
 
-.charla-card {
-  background: #f9fafc;
-  border-left: 6px solid #003366;
-  padding: 20px;
-  border-radius: 12px;
-  transition: transform 0.25s, box-shadow 0.25s;
-}
-
-.charla-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
-}
-
-.charla-card h3 {
-  color: #003366;
-  margin-bottom: 10px;
-  font-size: 1.2rem;
-}
-
-.charla-card p {
-  margin: 6px 0;
-  font-size: 0.95rem;
-  color: #2c3e50;
-}
-
-.charla-card .cupo {
-  font-weight: 600;
-  color: #d52333;
-}
-.charla-card .cupo.lleno {
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 2px 12px;
-  border-radius: 20px;
-  display: inline-block;
-}
-
-/* ===== FORMULARIO ===== */
+/* ===== FORMULARIOS ===== */
 .form-group {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
-
 label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #003366;
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #003366;
 }
-
 input, select {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e0e6ed;
-  border-radius: 10px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-  background: #fafcfe;
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    background: white;
+    color: #1e2a3a;
 }
-
 input:focus, select:focus {
-  border-color: #003366;
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(0,51,102,0.08);
+    border-color: #003366;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0,51,102,0.08);
 }
-
-.cupo-info {
-  display: block;
-  margin-top: 6px;
-  font-weight: 500;
-  color: #d52333;
-}
-
 button {
-  background: #d52333;
-  color: white;
-  border: none;
-  padding: 14px 36px;
-  border-radius: 40px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.15s;
-  box-shadow: 0 4px 12px rgba(213,35,51,0.25);
+    background: #d52333;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
 }
-
 button:hover {
-  background: #b01a28;
-  transform: scale(1.02);
+    background: #b01a28;
 }
-
-button:active {
-  transform: scale(0.97);
+.btn-secundario {
+    background: #003366;
+    color: white;
+}
+.btn-secundario:hover {
+    background: #002244;
 }
 
 /* ===== QR ===== */
 #qr-container {
-  margin-top: 25px;
-  text-align: center;
-  background: #f9fafc;
-  padding: 25px;
-  border-radius: 16px;
-  border: 2px solid #003366;
+    margin-top: 20px;
+    text-align: center;
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    border: 2px solid #003366;
 }
-
 #qr-imagen {
-  max-width: 220px;
-  border: 4px solid #003366;
-  border-radius: 12px;
-  padding: 8px;
-  background: white;
+    max-width: 200px;
+    border: 3px solid #003366;
+    border-radius: 8px;
+    padding: 5px;
+    background: white;
 }
 
-#qr-container button {
-  background: #003366;
-  margin-top: 12px;
-  box-shadow: none;
+/* ===== ADMIN ===== */
+#admin-inscripciones-tabla {
+    overflow-x: auto;
 }
-
-#qr-container button:hover {
-  background: #002244;
+#admin-inscripciones-tabla table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+#admin-inscripciones-tabla th {
+    background: #003366;
+    color: white;
+    padding: 10px;
+    text-align: left;
+}
+#admin-inscripciones-tabla td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e9ecef;
+    color: #2c3e50;
+}
+.btn-accion {
+    background: transparent;
+    border: none;
+    color: #003366;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 4px 10px;
+}
+.btn-accion:hover {
+    text-decoration: underline;
+}
+.btn-eliminar {
+    color: #d52333;
 }
 
 /* ===== FOOTER ===== */
 footer {
-  position: relative;
-  z-index: 1;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(8px);
-  border-top: 4px solid #d52333;
-  padding: 25px 0;
-  text-align: center;
-  color: #1e2a3a;
-  margin-top: 40px;
+    position: relative;
+    z-index: 1;
+    background: #003366;
+    color: white;
+    padding: 25px 0;
+    text-align: center;
+    margin-top: 30px;
+    border-top: 4px solid #d52333;
 }
-
 footer .footer-contact {
-  font-size: 0.9rem;
-  opacity: 0.7;
-  margin-top: 4px;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 4px;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .logo-ugr { font-size: 1.6rem; }
-  .logo-jornadas { font-size: 1rem; }
-  .logo-img { max-height: 60px; }
-  .info-grid { grid-template-columns: 1fr; }
-  #charlas-container { grid-template-columns: 1fr; }
-  .card { padding: 20px; }
-  header { padding: 15px 0; }
-  .shape-1 { width: 300px; height: 300px; }
-  .shape-2 { width: 250px; height: 250px; }
-  .shape-3, .shape-4, .shape-5, .shape-6 { display: none; }
-  .wave { height: 100px; }
-  .wave-2 { height: 70px; bottom: 30px; }
-}
-
-@media (max-width: 480px) {
-  .logo-ugr { font-size: 1.3rem; }
-  .logo-jornadas { font-size: 0.9rem; }
-  .logo-img { max-height: 50px; }
-  h2 { font-size: 1.4rem; }
-  button { width: 100%; }
+    .logo-title { font-size: 1.2rem; }
+    .logo-sub { font-size: 0.8rem; }
+    .logo-img { max-height: 40px; }
+    .side-menu { width: 240px; left: -240px; }
+    .info-grid { grid-template-columns: 1fr; }
+    .tabla-charlas { font-size: 0.8rem; }
+    .tabla-charlas th, .tabla-charlas td { padding: 8px; }
+    .card { padding: 20px; }
 }
