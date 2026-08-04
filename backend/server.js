@@ -13,7 +13,7 @@ app.use(express.json());
 
 // ========== CONFIGURACIÓN ==========
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'JKF-UGR.2026.Sf';
 const JWT_SECRET = process.env.JWT_SECRET || 'mi_clave_super_secreta_123456';
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
@@ -81,21 +81,21 @@ db.serialize(() => {
       const nuevasCharlas = [
         // Miércoles 2
         ['Robertino Bottaniz', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
-        ['agus elz', 'Miércoles 2', '09:00 - 10:00', 'agus elz', 40],
+        ['Agustin Elz', 'Miércoles 2', '09:00 - 10:00', 'agus elz', 40],
         ['Angelina Tibaldo', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
-        ['rami pioli', 'Miércoles 2', '11:00 - 12:00', 'rami pioli', 40],
-        ['Sofi Mandole, Iara Pereyra', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
+        ['Ramiro Pioli', 'Miércoles 2', '11:00 - 12:00', 'Ramiro Pioli', 40],
+        ['Sofia Mandole, Iara Pereyra', 'Miércoles 2', '12:00 - 13:00', 'Sofia Mandole, Iara Pereyra', 40],
         ['Ana Cristina Piacenza', 'Miércoles 2', '13:00 - 14:00', 'Ana Cristina Piacenza', 40],
-        ['Anto Baldesari', 'Miércoles 2', '14:00 - 15:00', 'Anto Baldesari', 40],
-        ['Carlos fumero', 'Miércoles 2', '15:00 - 16:00', 'Carlos fumero', 40],
-        ['fede uca', 'Miércoles 2', '16:00 - 17:00', 'fede uca', 40],
-        ['brenda lorenz', 'Miércoles 2', '18:00 - 19:00', 'brenda lorenz', 40],
+        ['Antonella Baldesari', 'Miércoles 2', '14:00 - 15:00', 'Antonella Baldesari', 40],
+        ['Carlos Fumero', 'Miércoles 2', '15:00 - 16:00', 'Carlos Fumero', 40],
+        ['Federico uca', 'Miércoles 2', '16:00 - 17:00', 'Federico uca', 40],
+        ['Brenda lorenz', 'Miércoles 2', '18:00 - 19:00', 'Brenda lorenz', 40],
         ['Vanesa Dupertuis', 'Miércoles 2', '19:00 - 20:00', 'Vanesa Dupertuis', 40],
         // Jueves 3
         ['Lucas Orlandi', 'Jueves 3', '08:00 - 09:00', 'Lucas Orlandi', 40],
-        ['Male y Mica Carrizo', 'Jueves 3', '10:00 - 11:00', 'Male y Mica Carrizo', 40],
+        ['Maria Magdalena Escobar Cello y Micaela Carrizo', 'Jueves 3', '10:00 - 11:00', 'Maria Magdalena Escobar Cello y Micaela Carrizo', 40],
         ['Pablo Seguro', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
-        ['Gri Sosa', 'Jueves 3', '12:00 - 13:00', 'Gri Sosa', 40],
+        ['Griselda Sosa', 'Jueves 3', '12:00 - 13:00', 'Gri Sosa', 40],
         ['Carlos Bonino', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino', 40],
         ['Mariela Perugini', 'Jueves 3', '12:00 - 14:30', 'Mariela Perugini', 40]
       ];
