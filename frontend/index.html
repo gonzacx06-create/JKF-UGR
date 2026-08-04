@@ -3,420 +3,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>XI Jornadas de Kinesiología UGR 2026</title>
+  <title>Jornadas Kinesiología UGR 2026</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
+  <!-- Fondo decorativo con formas abstractas -->
+  <div class="bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+    <div class="shape shape-6"></div>
+    <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path fill="rgba(0,51,102,0.03)" d="M0,224L60,213.3C120,203,240,181,360,186.7C480,192,600,224,720,229.3C840,235,960,213,1080,192C1200,171,1320,149,1380,138.7L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+    </svg>
+    <svg class="wave wave-2" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path fill="rgba(213,35,51,0.04)" d="M0,128L60,138.7C120,149,240,171,360,165.3C480,160,600,128,720,117.3C840,107,960,117,1080,138.7C1200,160,1320,192,1380,208L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+    </svg>
+  </div>
 
-  <!-- ===== HEADER ===== -->
-  <header class="site-header">
-    <div class="header-left">
-      <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
-      <img src="assets/logo-ugr.png" alt="UGR" class="logo-ugr" />
-      <span class="brand">JKF-UGR <small>· XI Jornadas</small></span>
-    </div>
-    <div class="header-right">
-      <span class="patient-tag">2 y 3 sep · Santa Fe</span>
+  <!-- Contenido principal -->
+  <header>
+    <div class="container header-container">
+      <div class="logo-wrapper">
+        <img src="assets/logo-ugr.png" alt="Logo UGR" class="logo-img" onerror="this.style.display='none'" />
+        <div class="logo-texto">
+          <span class="logo-ugr">UNIVERSIDAD DEL GRAN ROSARIO</span>
+          <span class="logo-jornadas">XI Jornadas de Kinesiología y Fisiatría · 2026</span>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- ===== SIDEBAR ===== -->
-  <div class="overlay" id="overlay"></div>
-  <aside class="sidebar" id="sidebar">
-    <button class="sidebar-close" id="closeSidebar">✕</button>
-    <div class="sidebar-brand">
-      JKF-UGR
-      <small>Universidad del Gran Rosario</small>
-    </div>
-    <nav>
-      <a data-view="main" data-scroll="hero">🏠 Inicio</a>
-      <a data-view="main" data-scroll="cronograma-section">📅 Cronograma</a>
-      <a data-view="mis-inscripciones" id="linkMisInscripciones">📋 Mis inscripciones</a>
-      <a href="/admin.html" class="admin-link" target="_blank">🔐 Admin</a>
-    </nav>
-  </aside>
-
-  <!-- ============================================= -->
-  <!-- VISTA 1: PÁGINA PRINCIPAL -->
-  <!-- ============================================= -->
-  <div class="page-view active" id="view-main">
-  <div class="hero" id="hero">
-  <p class="hero-eyebrow">· Jornadas Academicas ·</p>
-  <h1>XI Jornadas de <em>Kinesiología y Fisiatría</em><br>UGR · Santa Fe 2026</h1>
-  <p class="hero-subtitle">Un espacio de encuentro para profesionales de la Kinesiología y la Fisiatría, con ponencias de vanguardia, talleres prácticos y mesas redondas que marcarán la actualidad de la disciplina.</p>
-
-  <!-- ===== METADATOS: 4 items sin duplicar "Ponentes" ===== -->
-  <div class="hero-meta">
-    <div class="meta-item">
-      <span class="meta-label">Fechas</span>
-      <span class="meta-value">2 y 3 de septiembre</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Sede Santa Fe</span>
-      <span class="meta-value">Universidad del Gran Rosario</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Modalidad</span>
-      <span class="meta-value">Presencial</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Inscripción</span>
-      <span class="meta-value">Hasta el 31 de agosto</span>
-    </div>
-  </div>
-
-  <div class="alert-box-ugr">
-    <strong>¡Inscripciones abiertas!</strong> Cupos limitados para los talleres prácticos. ¡Asegura tu lugar ahora!
-  </div>
-
-  <!-- ===== STATS: 4 items ===== -->
-  <div class="stats-row">
-    <div class="stat-cell"><span class="val">2</span><span class="lbl">Días</span></div>
-    <div class="stat-cell"><span class="val">+35</span><span class="lbl">Disertantes</span></div>
-    <div class="stat-cell"><span class="val">+20</span><span class="lbl">Talleres</span></div>
-    <div class="stat-cell"><span class="val">35-40</span><span class="lbl">Cupos por charla</span></div>
-  </div>
-</div>
-
-    <div class="page-body">
-      <!-- ===== CRONOGRAMA ===== -->
-      <div id="cronograma-section">
-        <div class="section-header">
-          <span class="section-num">Sección 01</span>
-          <h2 class="section-title">🗓️ Cronograma</h2>
-        </div>
-        <p class="prose">Selecciona una actividad y haz clic en <strong>"Inscribirse"</strong> para reservar tu lugar. Todas las actividades tienen cupo limitado.</p>
-
-        <!-- Día 1: Miércoles 2 -->
-        <div class="sub-title">📆 Miércoles 2 de septiembre</div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Hora</th>
-              <th>Actividad</th>
-              <th>Ponente / Responsable</th>
-              <th style="text-align:center;">Inscribirse</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="fila-charla-1">
-              <td>08:30 - 10:00</td>
-              <td>Recepción y acreditación</td>
-              <td>Secretaría Técnica</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="1" data-titulo="Recepción y acreditación" data-dia="Miércoles 2" data-hora="08:30 - 10:00" data-ponente="Secretaría Técnica">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-2">
-              <td>10:00 - 11:30</td>
-              <td><strong>Conferencia Inaugural</strong>: "Actualización en Dolor Crónico"</td>
-              <td>Dr. Luis Miguel Torres</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="2" data-titulo="Conferencia Inaugural: Actualización en Dolor Crónico" data-dia="Miércoles 2" data-hora="10:00 - 11:30" data-ponente="Dr. Luis Miguel Torres">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-1">
-              <td>11:30 - 13:00</td>
-              <td>Mesa Redonda: "Abordaje Multidisciplinar de la Tendinopatía"</td>
-              <td>Dra. María López / Dr. Javier Pérez</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="3" data-titulo="Mesa Redonda: Abordaje Multidisciplinar de la Tendinopatía" data-dia="Miércoles 2" data-hora="11:30 - 13:00" data-ponente="Dra. María López / Dr. Javier Pérez">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-2">
-              <td>13:00 - 14:30</td>
-              <td>Pausa - Almuerzo</td>
-              <td>—</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="4" data-titulo="Pausa - Almuerzo" data-dia="Miércoles 2" data-hora="13:00 - 14:30" data-ponente="Organización">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-1">
-              <td>14:30 - 16:00</td>
-              <td><strong>Taller Práctico 1:</strong> "Ecografía para Fisioterapeutas"</td>
-              <td>Dr. Carlos García (SERAM)</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="5" data-titulo="Taller Práctico 1: Ecografía para Fisioterapeutas" data-dia="Miércoles 2" data-hora="14:30 - 16:00" data-ponente="Dr. Carlos García (SERAM)">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-2">
-              <td>16:00 - 17:30</td>
-              <td>Comunicaciones Orales Libres</td>
-              <td>Varios autores</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="6" data-titulo="Comunicaciones Orales Libres" data-dia="Miércoles 2" data-hora="16:00 - 17:30" data-ponente="Varios autores">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-1">
-              <td>17:30 - 19:00</td>
-              <td>Conferencia: "Nuevas tendencias en neurorrehabilitación"</td>
-              <td>Dra. Elena Muñoz (UGR)</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="7" data-titulo="Conferencia: Nuevas tendencias en neurorrehabilitación" data-dia="Miércoles 2" data-hora="17:30 - 19:00" data-ponente="Dra. Elena Muñoz (UGR)">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-2">
-              <td>19:00 - 20:30</td>
-              <td>Cóctel de bienvenida y networking</td>
-              <td>Comité Organizador</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="8" data-titulo="Cóctel de bienvenida y networking" data-dia="Miércoles 2" data-hora="19:00 - 20:30" data-ponente="Comité Organizador">Inscribirse</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Día 2: Jueves 3 -->
-        <div class="sub-title">📆 Jueves 3 de septiembre</div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Hora</th>
-              <th>Actividad</th>
-              <th>Ponente / Responsable</th>
-              <th style="text-align:center;">Inscribirse</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="fila-charla-1">
-              <td>08:30 - 10:00</td>
-              <td>Recepción y entrega de materiales</td>
-              <td>Secretaría Técnica</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="9" data-titulo="Recepción y entrega de materiales" data-dia="Jueves 3" data-hora="08:30 - 10:00" data-ponente="Secretaría Técnica">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-2">
-              <td>10:00 - 11:30</td>
-              <td>Conferencia: "Rehabilitación en el Deportista de Élite"</td>
-              <td>Dr. Pedro Martínez (Real Madrid)</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="10" data-titulo="Conferencia: Rehabilitación en el Deportista de Élite" data-dia="Jueves 3" data-hora="10:00 - 11:30" data-ponente="Dr. Pedro Martínez (Real Madrid)">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-1">
-              <td>11:30 - 13:00</td>
-              <td>Mesa Redonda: "Infiltraciones guiadas por ecografía"</td>
-              <td>Dra. Ana Belén Rodríguez</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="11" data-titulo="Mesa Redonda: Infiltraciones guiadas por ecografía" data-dia="Jueves 3" data-hora="11:30 - 13:00" data-ponente="Dra. Ana Belén Rodríguez">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-2">
-              <td>13:00 - 14:30</td>
-              <td>Pausa - Almuerzo</td>
-              <td>—</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="12" data-titulo="Pausa - Almuerzo (Jueves)" data-dia="Jueves 3" data-hora="13:00 - 14:30" data-ponente="Organización">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-1">
-              <td>14:30 - 16:00</td>
-              <td><strong>Taller Práctico 2:</strong> "Punción Seca y Neuromodulación"</td>
-              <td>Dr. Fernando Ramos</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="13" data-titulo="Taller Práctico 2: Punción Seca y Neuromodulación" data-dia="Jueves 3" data-hora="14:30 - 16:00" data-ponente="Dr. Fernando Ramos">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-2">
-              <td>16:00 - 17:30</td>
-              <td>Conferencia: "Innovación en fisioterapia respiratoria"</td>
-              <td>Dra. Laura Fernández</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="14" data-titulo="Conferencia: Innovación en fisioterapia respiratoria" data-dia="Jueves 3" data-hora="16:00 - 17:30" data-ponente="Dra. Laura Fernández">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-1">
-              <td>17:30 - 19:00</td>
-              <td>Conferencia de Clausura</td>
-              <td>Dr. Ricardo Gómez (UGR)</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="15" data-titulo="Conferencia de Clausura" data-dia="Jueves 3" data-hora="17:30 - 19:00" data-ponente="Dr. Ricardo Gómez (UGR)">Inscribirse</button>
-              </td>
-            </tr>
-            <tr class="fila-charla-2">
-              <td>19:00 - 20:30</td>
-              <td>Entrega de premios y cierre oficial</td>
-              <td>Comité Organizador</td>
-              <td style="text-align:center;">
-                <button class="btn-inscribir-cronograma" data-id="16" data-titulo="Entrega de premios y cierre oficial" data-dia="Jueves 3" data-hora="19:00 - 20:30" data-ponente="Comité Organizador">Inscribirse</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- ===== FORMULARIO DE INSCRIPCIÓN ===== -->
-      <div class="section-header">
-        <span class="section-num">Inscripción</span>
-        <h2 class="section-title">✍️ Inscribirse a una charla</h2>
-      </div>
-      <p class="prose">Completa tus datos y selecciona la charla a la que deseas asistir. Recibirás un código QR de acceso.</p>
-
-      <form id="form-inscripcion" class="form-inscripcion">
-        <div class="form-group">
-          <label for="nombre">Nombre completo *</label>
-          <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Correo electrónico *</label>
-          <input type="email" id="email" placeholder="tucorreo@ejemplo.com" required />
-        </div>
-        <div class="form-group">
-          <label for="charla-select">Selecciona una charla *</label>
-          <select id="charla-select" required>
-            <option value="">— Elige una charla —</option>
-          </select>
-          <span class="cupo-info" id="cupo-disponible">Cupos disponibles: <strong>—</strong></span>
-        </div>
-        <button type="submit" class="btn-primary">Inscribirme</button>
-      </form>
-
-      <div id="mensaje-inscripcion"></div>
-
-      <div id="qr-container" class="qr-container" style="display:none;">
-        <h3>✅ ¡Inscripción exitosa!</h3>
-        <p>Esta charla se ha agregado a "Mis inscripciones".</p>
-        <div class="qr-imagen-wrapper">
-          <img id="qr-imagen" src="" alt="Código QR de inscripción" />
-        </div>
-        <div>
-          <a id="qr-enlace" href="#" target="_blank" class="qr-enlace">🔗 Enlace de verificación</a>
-        </div>
-        <button id="descargar-qr" class="btn-secundario">⬇️ Descargar QR</button>
-      </div>
-
-      <!-- ===== SECCIÓN 02: Ponencias y Talleres Destacados ===== -->
-      <div class="section-header">
-        <span class="section-num">Sección 02</span>
-        <h2 class="section-title">🎤 Ponencias y Talleres Destacados</h2>
-      </div>
-      <p class="prose">Inscríbete en los talleres prácticos al realizar la inscripción general. Las plazas son limitadas y se asignarán por orden de inscripción.</p>
-
-      <div class="phase-block p1">
-        <div class="phase-header">
-          <div class="ph-left">
-            <span class="phase-badge badge-azul">Día 1</span>
-            <div>
-              <div class="phase-title">Viernes 2 de septiembre</div>
-              <div class="phase-subtitle">💡 Dolor, Neurociencia y Ecografía</div>
-            </div>
-          </div>
-          <span class="phase-duration">09:00 - 14:00 h</span>
-        </div>
-        <div class="phase-body">
-          <div class="sub-title">Talleres Prácticos del Viernes</div>
-          <div class="ex-grid">
-            <div class="ex-card">
-              <div class="ex-num">T1</div>
-              <div class="ex-content">
-                <div class="ex-title">Ecografía Musculoesquelética: Exploración de Rodilla y Hombro</div>
-                <div class="ex-desc">Taller teórico-práctico de 2 horas con equipos de ecografía de alta resolución.</div>
-                <div class="ex-evidence">📌 Ponente: Dr. Carlos García (SERAM)</div>
-              </div>
-              <div class="ex-dose"><div class="dose-main">⏰ 11:45 h</div><div class="dose-detail">Plazas: 25</div><div class="dose-detail">Aula 1</div></div>
-            </div>
-            <div class="ex-card">
-              <div class="ex-num">T2</div>
-              <div class="ex-content">
-                <div class="ex-title">Punción Seca y Terapia Manual en el Paciente Deportista</div>
-                <div class="ex-desc">Abordaje práctico de la punción seca en puntos gatillo miofasciales combinado con movilización neural.</div>
-                <div class="ex-evidence">📌 Ponente: Dr. Fernando Ramos</div>
-              </div>
-              <div class="ex-dose"><div class="dose-main">⏰ 12:30 h</div><div class="dose-detail">Plazas: 20</div><div class="dose-detail">Aula 2</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="phase-block p2">
-        <div class="phase-header">
-          <div class="ph-left">
-            <span class="phase-badge badge-rojo">Día 2</span>
-            <div>
-              <div class="phase-title">Sábado 3 de septiembre</div>
-              <div class="phase-subtitle">🏅 Deporte de Élite y Rehabilitación Avanzada</div>
-            </div>
-          </div>
-          <span class="phase-duration">09:00 - 14:00 h</span>
-        </div>
-        <div class="phase-body">
-          <div class="sub-title">Talleres Prácticos del Sábado</div>
-          <div class="ex-grid">
-            <div class="ex-card">
-              <div class="ex-num">T3</div>
-              <div class="ex-content">
-                <div class="ex-title">Estrategias de Retorno al Deporte (RTS) en Ligamentoplastias</div>
-                <div class="ex-desc">Protocolos de carga progresiva, tests funcionales y toma de decisiones clínicas para el alta deportiva segura.</div>
-                <div class="ex-evidence">📌 Ponente: Dr. Pedro Martínez (Real Madrid)</div>
-              </div>
-              <div class="ex-dose"><div class="dose-main">⏰ 10:00 h</div><div class="dose-detail">Plazas: 30</div><div class="dose-detail">Sala Audiovisual</div></div>
-            </div>
-            <div class="ex-card">
-              <div class="ex-num">T4</div>
-              <div class="ex-content">
-                <div class="ex-title">Estimulación Magnética Transcraneal (TMS) en Neurorehabilitación</div>
-                <div class="ex-desc">Introducción práctica al uso de la TMS en pacientes con ictus y dolor neuropático.</div>
-                <div class="ex-evidence">📌 Ponente: Dra. Elena Muñoz (UGR)</div>
-              </div>
-              <div class="ex-dose"><div class="dose-main">⏰ 11:30 h</div><div class="dose-detail">Plazas: 15</div><div class="dose-detail">Lab. Neurociencia</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== SECCIÓN 04: FAQ ===== -->
-      <div class="section-header">
-        <span class="section-num">Sección 04</span>
-        <h2 class="section-title">❓ Preguntas Frecuentes</h2>
-      </div>
-      <ul class="dot-list">
-        <li><strong>¿Dónde será el evento?</strong> Las ponencias se celebraran en la <strong>Universidad del Gran Rosario</strong> (Santa Fe, Argentina).</li>
-        <li><strong>¿Se emitirá certificado de asistencia?</strong> No se entregará un certificado digital con las horas lectivas a todos los inscritos que asistan al menos al 80% de las sesiones.</li>
-        <li><strong>¿Hay opción de asistencia online?</strong> No, esta edición será <strong>100% presencial</strong> para fomentar la práctica en talleres.</li>
-        <li><strong>¿Cómo puedo enviar mi comunicación científica?</strong> Debes enviar un resumen de máximo 300 palabras al correo <strong>comunicaciones@jornadasugr.ar</strong> antes del 15 de agosto de 2026.</li>
-        <li><strong>¿Puedo anular mi inscripción?</strong> Sí, se podrá realizar desde la seccion Mis Inscripciones. Se reestableceran los cupos automaticamente.</li>
-      </ul>
-      <div class="highlight-box" style="margin-top:32px;">
-        🏛️ <strong>¡Te esperamos en Santa Fe!</strong><br>
-        La Universidad te abre sus puertas para compartir conocimiento, experiencia y pasión por la Kinesiología y la Fisiatría.<br>
-        <span style="font-size:11px;color:var(--text-dimmer);font-style:normal;margin-top:8px;display:block;">
-        📧 jornadaskinesiosf@gmail.com · <strong>#JKF-2026</strong>
-        </span>
-      </div>
-    </div>
-
-    <footer class="site-footer">
-      <strong>XI Jornadas de Kinesiología y Fisiatría</strong> – JKF.UGR<br>
-      ¡De Estudiantes para Estudiantes! · Santa Fe, Argentina<br>
-      Organiza: Comité de las Jornadas de Kinesiología y Fisiatría<br>
-      <span style="margin-top:6px;display:block;">© 2026 · Todos los derechos reservados · Diseñado con ❤️ por el Comité Organizador</span>
-    </footer>
-  </div>
-
-  <!-- ============================================= -->
-  <!-- VISTA 2: MIS INSCRIPCIONES -->
-  <!-- ============================================= -->
-  <div class="page-view" id="view-mis-inscripciones">
-    <div style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
-      <h2 style="font-family: Georgia, serif; font-size: 28px; color: #fff; margin-bottom: 8px;">📋 Mis inscripciones</h2>
-      <p style="color: #8b949e; font-size: 14px; border-bottom: 1px solid #30363d; padding-bottom: 16px; margin-bottom: 32px;">
-        Ingresa tu correo electrónico para ver todas las charlas a las que te has inscrito.
-      </p>
-      <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
-        <input type="email" id="email-buscador" placeholder="tucorreo@ejemplo.com" style="flex: 1; padding: 10px 14px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 14px;" />
-        <button id="btn-buscar-inscripciones" style="background: #e8a838; color: #0d1117; font-weight: 700; padding: 10px 28px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; white-space: nowrap;">Buscar</button>
-      </div>
-      <div id="lista-mis-inscripciones" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
-        <p style="color: #8b949e; font-size: 14px; grid-column: 1/-1; text-align: center; padding: 20px 0;">
-          Ingresa tu email y presiona "Buscar" para ver tus inscripciones.
+  <main class="container">
+    <section id="bienvenida" class="card">
+      <div class="bienvenida-content">
+        <h2>Bienvenidos</h2>
+        <p>
+          Un espacio de encuentro para profesionales de la Kinesiología y la Fisiatría, con ponencias de vanguardia, talleres prácticos y mesas redondas que marcarán la actualidad de la disciplina.
         </p>
+        <div class="info-grid">
+          <div><strong>📅 Fechas:</strong> 2 y 3 de septiembre</div>
+          <div><strong>📍 Sede:</strong> Santa Fe · Universidad del Gran Rosario</div>
+          <div><strong>🎯 Modalidad:</strong> Presencial</div>
+          <div><strong>⏳ Inscripción:</strong> Hasta el 31 de agosto</div>
+        </div>
+        <p class="destacado">¡Cupos limitados para los talleres prácticos! Asegura tu lugar ahora.</p>
       </div>
-      <div id="paginacion-container" style="margin-top: 20px;"></div>
-    </div>
-  </div>
+    </section>
 
-  <!-- ===== JavaScript ===== -->
+    <section id="cronograma" class="card">
+      <h2>Cronograma de Charlas</h2>
+      <div id="charlas-container"></div>
+    </section>
+
+    <section id="inscripcion" class="card">
+      <h2>Inscripción</h2>
+      <form id="form-inscripcion">
+        <div class="form-group">
+          <label for="nombre">Nombre completo:</label>
+          <input type="text" id="nombre" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Correo electrónico:</label>
+          <input type="email" id="email" required />
+        </div>
+        <div class="form-group">
+          <label for="charla">Selecciona una charla:</label>
+          <select id="charla" required>
+            <option value="">-- Elige --</option>
+          </select>
+          <span id="cupo-disponible" class="cupo-info"></span>
+        </div>
+        <button type="submit">Inscribirme</button>
+      </form>
+      <div id="mensaje-inscripcion"></div>
+      <div id="qr-container" style="display:none;">
+        <h3>¡Inscripción exitosa!</h3>
+        <p>Guarda este código QR para verificar tu asistencia el día del evento.</p>
+        <img id="qr-imagen" src="" alt="QR de inscripción" />
+        <p><a id="qr-enlace" href="#" target="_blank">Enlace de verificación</a></p>
+        <button id="descargar-qr">Descargar QR</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 Universidad del Gran Rosario · Jornadas de Kinesiología y Fisiatría</p>
+      <p class="footer-contact">eventos@ugr.edu.ar</p>
+    </div>
+  </footer>
+
   <script src="js/main.js"></script>
 </body>
 </html>
