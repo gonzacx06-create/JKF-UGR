@@ -60,7 +60,8 @@ async function cargarCharlas() {
 
         let html = '';
         for (const [dia, lista] of Object.entries(grupos)) {
-            html += `<h3 style="color: #003366; margin: 15px 0 10px; border-bottom: 2px solid #d52333; padding-bottom: 5px;">${dia}</h3>`;
+            // Sin estilos inline, solo el texto y la clase (el CSS se encarga)
+            html += `<h3>${dia}</h3>`;
             html += `<table class="tabla-charlas">
                 <thead><tr>
                     <th>Horario</th><th>Título</th><th>Ponente</th><th>Cupos</th><th>Acción</th>
