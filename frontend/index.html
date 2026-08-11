@@ -6,8 +6,10 @@
     <title>Jornadas Kinesiologia UGR 2026</title>
     <!-- Google Fonts (tipografía moderna) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <!-- Favicon (coloca tu logo como favicon.ico en la carpeta assets) -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
     <!-- CSS con versión para forzar actualización de caché -->
-    <link rel="stylesheet" href="css/styles.css?v=2" />
+    <link rel="stylesheet" href="css/styles.css?v=3" />
 </head>
 <body>
     <!-- ===== FONDO DECORATIVO CON FORMAS ===== -->
@@ -34,6 +36,9 @@
             <div>
                 <span class="logo-title">XI Jornadas de Kinesiología y Fisiatría · 2026</span>
             </div>
+        </div>
+        <div class="header-right">
+            <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">🌙</button>
         </div>
     </header>
 
@@ -62,12 +67,28 @@
                         <div><strong>⏳ Inscripción:</strong> Hasta el 31 de agosto</div>
                     </div>
                     <p class="destacado">¡Cupos limitados para los talleres prácticos! Asegura tu lugar ahora.</p>
+
+                    <!-- Contador regresivo -->
+                    <div id="countdown-container">
+                        <h3>⏳ Faltan para el inicio</h3>
+                        <div class="countdown-grid">
+                            <div class="countdown-item"><span id="days">00</span><span>Días</span></div>
+                            <div class="countdown-item"><span id="hours">00</span><span>Horas</span></div>
+                            <div class="countdown-item"><span id="minutes">00</span><span>Minutos</span></div>
+                            <div class="countdown-item"><span id="seconds">00</span><span>Segundos</span></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Cronograma (dentro de la misma tarjeta) -->
                 <div id="cronograma-section">
                     <h2>Cronograma de Charlas</h2>
                     <div id="tabla-cronograma">
+                        <!-- Spinner de carga -->
+                        <div id="loading-spinner" class="spinner-container">
+                            <div class="spinner"></div>
+                            <p>Cargando cronograma...</p>
+                        </div>
                         <!-- Se llena con JavaScript -->
                     </div>
                 </div>
@@ -191,6 +212,13 @@
         <div class="container">
             <p>© 2026 Universidad del Gran Rosario · Jornadas de Kinesiología y Fisiatría</p>
             <p class="footer-contact">eventos@ugr.edu.ar</p>
+            <!-- Botones de compartir -->
+            <div class="share-buttons">
+                <span>Compartir: </span>
+                <a href="#" id="shareWhatsApp" target="_blank" class="share-btn whatsapp">WhatsApp</a>
+                <a href="#" id="shareTwitter" target="_blank" class="share-btn twitter">Twitter</a>
+                <a href="#" id="shareFacebook" target="_blank" class="share-btn facebook">Facebook</a>
+            </div>
         </div>
     </footer>
 

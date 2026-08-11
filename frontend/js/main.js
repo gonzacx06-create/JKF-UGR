@@ -4,6 +4,50 @@ let paginaAdmin = 1;
 let paginaMisIns = 1;
 let currentEmailConsulta = '';
 
+// ========== TEMA OSCURO/CLARO ==========
+const themeToggle = document.getElementById('themeToggle');
+const currentTheme = localStorage.getItem('theme') || 'light';
+
+if (currentTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    themeToggle.textContent = '☀️';
+}
+
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
+
+// ========== CONTADOR REGRESIVO ==========
+function actualizarContador() {
+    const fechaEvento = new Date('2026-09-02T00:00:00').getTime();
+    const ahora = new Date().getTime();
+    const diferencia = fechaEvento - ahora;
+
+    if (diferencia <= 0) {
+        document.getElementById('days').textContent = '00';
+        document.getElementById('hours').textContent = '00';
+        document.getElementById('minutes').textContent = '00';
+        document.getElementById('seconds').textContent = '00';
+        return;
+    }
+
+    const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+    const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+    const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+
+    document.getElementById('days').textContent = String(dias).padStart(2, '0');
+    document.getElementById('hours').textContent = String(horas).padStart(2, '0');
+    document.getElementById('minutes').textContent = String(minutos).padStart(2, '0');
+    document.getElementById('seconds').textContent = String(segundos).padStart(2, '0');
+}
+
+setInterval(actualizarContador, 1000);
+actualizarContador();
+
 // ========== MENÚ HAMBURGUESA ==========
 const menuBtn = document.getElementById('menuBtn');
 const sideMenu = document.getElementById('sideMenu');
@@ -14,7 +58,6 @@ menuBtn.addEventListener('click', () => {
     sideMenu.classList.toggle('open');
 });
 
-// Cerrar menú al hacer clic en un enlace
 document.querySelectorAll('#sideMenu a').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -39,19 +82,21 @@ function cambiarSeccion(id) {
         cargarAdminInscripciones(1);
     }
 }
-// Mostrar Inicio por defecto
 cambiarSeccion('inicio');
 
 // ========== CARGAR CHARLAS (tabla) ==========
 async function cargarCharlas() {
+    const spinner = document.getElementById('loading-spinner');
+    const container = document.getElementById('tabla-cronograma');
+    const containerFull = document.getElementById('tabla-cronograma-full');
+    const select = document.getElementById('charla');
+
+    spinner.style.display = 'flex';
+
     try {
         const resp = await fetch(`${API_URL}/charlas`);
         const charlas = await resp.json();
-        const container = document.getElementById('tabla-cronograma');
-        const containerFull = document.getElementById('tabla-cronograma-full');
-        const select = document.getElementById('charla');
 
-        // Agrupar por día
         const grupos = {};
         charlas.forEach(ch => {
             if (!grupos[ch.dia]) grupos[ch.dia] = [];
@@ -59,32 +104,38 @@ async function cargarCharlas() {
         });
 
         let html = '';
+        let filaIndex = 0;
         for (const [dia, lista] of Object.entries(grupos)) {
-            // Sin estilos inline, solo el texto y la clase (el CSS se encarga)
             html += `<h3>${dia}</h3>`;
             html += `<table class="tabla-charlas">
                 <thead><tr>
-                    <th>Horario</th><th>Título</th><th>Ponente</th><th>Cupos</th><th>Acción</th>
+                    <th>Horario</th><th>Título</th><th>Ponente</th>
+                    <th>Cupos</th>
+                    <th>Acción</th>
                 </tr></thead><tbody>`;
             lista.forEach(ch => {
                 const disponibles = ch.disponibles || 0;
+                const inscritos = ch.inscritos || 0;
+                const total = ch.cupo_maximo || 40;
                 const estado = disponibles > 0 ? `Disponibles: ${disponibles}` : 'LLENO';
                 const disabled = disponibles <= 0 ? 'disabled' : '';
-                html += `<tr>
+                const delay = (filaIndex * 50) % 300; // max 300ms
+                html += `<tr style="animation-delay: ${delay}ms;" class="fila-entrada">
                     <td>${ch.hora}</td>
                     <td>${ch.titulo}</td>
                     <td>${ch.ponente}</td>
-                    <td>${estado}</td>
+                    <td><span class="cupo-detalle">Inscritos: ${inscritos} / ${total}</span></td>
                     <td><button class="btn-inscribir" data-id="${ch.id}" ${disabled}>Inscribirse</button></td>
                 </tr>`;
+                filaIndex++;
             });
             html += '</tbody></table>';
         }
 
+        spinner.style.display = 'none';
         container.innerHTML = html;
         if (containerFull) containerFull.innerHTML = html;
 
-        // Eventos para botones de inscripción
         container.querySelectorAll('.btn-inscribir').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.dataset.id;
@@ -101,7 +152,6 @@ async function cargarCharlas() {
             });
         });
 
-        // Llenar select del formulario
         select.innerHTML = '<option value="">-- Elige --</option>';
         charlas.forEach(ch => {
             if (ch.disponibles > 0) {
@@ -124,7 +174,8 @@ async function cargarCharlas() {
 
     } catch (error) {
         console.error('Error cargando charlas:', error);
-        document.getElementById('tabla-cronograma').innerHTML = '<p style="color:#f85149;">Error al cargar el cronograma.</p>';
+        spinner.style.display = 'none';
+        container.innerHTML = '<p style="color:#f85149;">Error al cargar el cronograma.</p>';
     }
 }
 
@@ -433,6 +484,27 @@ document.getElementById('btn-exportar-excel').addEventListener('click', async ()
     } catch (err) {
         alert('Error al exportar: ' + err.message);
     }
+});
+
+// ========== COMPARTIR EN REDES SOCIALES ==========
+document.getElementById('shareWhatsApp').addEventListener('click', (e) => {
+    e.preventDefault();
+    const url = encodeURIComponent(window.location.href);
+    const msg = encodeURIComponent('¡Inscríbete en las XI Jornadas de Kinesiología y Fisiatría UGR 2026!');
+    window.open(`https://wa.me/?text=${msg}%20${url}`, '_blank');
+});
+
+document.getElementById('shareTwitter').addEventListener('click', (e) => {
+    e.preventDefault();
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('¡Inscríbete en las XI Jornadas de Kinesiología y Fisiatría UGR 2026!');
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+});
+
+document.getElementById('shareFacebook').addEventListener('click', (e) => {
+    e.preventDefault();
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
 });
 
 // ========== INICIALIZAR ==========
