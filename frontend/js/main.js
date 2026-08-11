@@ -21,16 +21,32 @@ themeToggle.addEventListener('click', () => {
 });
 
 // ========== CONTADOR REGRESIVO ==========
+function actualizarDigito(el, nuevoValor) {
+    if (!el) return;
+    if (el.textContent !== nuevoValor) {
+        el.textContent = nuevoValor;
+        el.classList.remove('tick');
+        // fuerza un reflow para poder reiniciar la animación de "latido"
+        void el.offsetWidth;
+        el.classList.add('tick');
+    }
+}
+
 function actualizarContador() {
-    const fechaEvento = new Date('2026-09-02T00:00:00').getTime();
+    const fechaEvento = new Date('2026-09-02T00:00:00-03:00').getTime(); // horario de Argentina (UTC-3)
     const ahora = new Date().getTime();
     const diferencia = fechaEvento - ahora;
 
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
     if (diferencia <= 0) {
-        document.getElementById('days').textContent = '00';
-        document.getElementById('hours').textContent = '00';
-        document.getElementById('minutes').textContent = '00';
-        document.getElementById('seconds').textContent = '00';
+        actualizarDigito(daysEl, '00');
+        actualizarDigito(hoursEl, '00');
+        actualizarDigito(minutesEl, '00');
+        actualizarDigito(secondsEl, '00');
         return;
     }
 
@@ -39,10 +55,10 @@ function actualizarContador() {
     const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
     const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
 
-    document.getElementById('days').textContent = String(dias).padStart(2, '0');
-    document.getElementById('hours').textContent = String(horas).padStart(2, '0');
-    document.getElementById('minutes').textContent = String(minutos).padStart(2, '0');
-    document.getElementById('seconds').textContent = String(segundos).padStart(2, '0');
+    actualizarDigito(daysEl, String(dias).padStart(2, '0'));
+    actualizarDigito(hoursEl, String(horas).padStart(2, '0'));
+    actualizarDigito(minutesEl, String(minutos).padStart(2, '0'));
+    actualizarDigito(secondsEl, String(segundos).padStart(2, '0'));
 }
 
 setInterval(actualizarContador, 1000);
@@ -106,26 +122,25 @@ async function cargarCharlas() {
         let html = '';
         let filaIndex = 0;
         for (const [dia, lista] of Object.entries(grupos)) {
-            html += `<h3>${dia}</h3>`;
+            html += `<h3>🗓️ ${dia}</h3>`;
             html += `<table class="tabla-charlas">
                 <thead><tr>
-                    <th>Horario</th><th>Título</th><th>Ponente</th>
-                    <th>Cupos</th>
+                    <th>🕒 Horario</th><th>📌 Título</th><th>🎙️ Ponente</th>
+                    <th>🎟️ Cupos</th>
                     <th>Acción</th>
                 </tr></thead><tbody>`;
             lista.forEach(ch => {
                 const disponibles = ch.disponibles || 0;
                 const inscritos = ch.inscritos || 0;
                 const total = ch.cupo_maximo || 40;
-                const estado = disponibles > 0 ? `Disponibles: ${disponibles}` : 'LLENO';
                 const disabled = disponibles <= 0 ? 'disabled' : '';
-                const delay = (filaIndex * 50) % 300;
+                const delay = (filaIndex * 60) % 420;
                 html += `<tr style="animation-delay: ${delay}ms;" class="fila-entrada">
                     <td>${ch.hora}</td>
                     <td>${ch.titulo}</td>
                     <td>${ch.ponente}</td>
-                    <td><span class="cupo-detalle">Inscritos: ${inscritos} / ${total}</span></td>
-                    <td><button type="button" class="btn-inscribir" data-id="${ch.id}" ${disabled}>Inscribirse</button></td>
+                    <td><span class="cupo-detalle">👥 Inscritos: ${inscritos} / ${total}</span></td>
+                    <td><button type="button" class="btn-inscribir" data-id="${ch.id}" ${disabled}>${disponibles > 0 ? 'Inscribirse' : 'Agotado'}</button></td>
                 </tr>`;
                 filaIndex++;
             });
@@ -200,7 +215,7 @@ document.getElementById('form-inscripcion').addEventListener('submit', async (e)
         const data = await resp.json();
 
         if (resp.ok) {
-            document.getElementById('mensaje-inscripcion').innerHTML = `<span style="color:#81c784;">✅ ${data.mensaje}</span>`;
+            document.getElementById('mensaje-inscripcion').innerHTML = `<span style="color:#2fc3b8;">✅ ${data.mensaje}</span>`;
             const qrContainer = document.getElementById('qr-container');
             qrContainer.style.display = 'block';
             document.getElementById('qr-imagen').src = data.qr;
