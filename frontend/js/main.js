@@ -33,7 +33,7 @@ function actualizarDigito(el, nuevoValor) {
 }
 
 function actualizarContador() {
-    const fechaEvento = new Date('2026-09-02T00:00:00-03:00').getTime(); // horario de Argentina (UTC-3)
+    const fechaEvento = Date.UTC(2026, 8, 2, 3, 0, 0); // 2 de septiembre 2026, 03:00 UTC = 00:00 (UTC-3)
     const ahora = new Date().getTime();
     const diferencia = fechaEvento - ahora;
 
