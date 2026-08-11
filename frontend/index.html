@@ -4,15 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jornadas Kinesiologia UGR 2026</title>
-    <!-- Google Fonts (tipografía moderna) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-    <!-- Favicon (coloca tu logo como favicon.ico en la carpeta assets) -->
-    <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
-    <!-- CSS con versión para forzar actualización de caché -->
-    <link rel="stylesheet" href="css/styles.css?v=3" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>" />
+    <link rel="stylesheet" href="css/styles.css?v=4" />
 </head>
 <body>
-    <!-- ===== FONDO DECORATIVO CON FORMAS ===== -->
+    <!-- FONDO DECORATIVO -->
     <div class="bg-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
@@ -28,21 +25,19 @@
         </svg>
     </div>
 
-    <!-- ===== HEADER ===== -->
+    <!-- HEADER -->
     <header class="site-header">
         <div class="header-left">
-            <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
+            <button type="button" class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
             <img src="assets/logo-ugr.png" alt="UGR" class="logo-img" onerror="this.style.display='none'" />
-            <div>
-                <span class="logo-title">XI Jornadas de Kinesiología y Fisiatría · 2026</span>
-            </div>
+            <div><span class="logo-title">XI Jornadas de Kinesiología y Fisiatría · 2026</span></div>
         </div>
         <div class="header-right">
-            <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">🌙</button>
+            <button type="button" id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">🌙</button>
         </div>
     </header>
 
-    <!-- ===== MENÚ LATERAL ===== -->
+    <!-- MENÚ LATERAL -->
     <nav id="sideMenu" class="side-menu">
         <ul>
             <li><a href="#" data-section="inicio" class="active">Inicio</a></li>
@@ -51,9 +46,9 @@
         </ul>
     </nav>
 
-    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="container">
-        <!-- SECCIÓN INICIO (Bienvenida + Cronograma unificados) -->
+        <!-- INICIO -->
         <section id="inicio" class="section active">
             <div class="card">
                 <!-- Bienvenida -->
@@ -80,21 +75,19 @@
                     </div>
                 </div>
 
-                <!-- Cronograma (dentro de la misma tarjeta) -->
+                <!-- Cronograma -->
                 <div id="cronograma-section">
                     <h2>Cronograma de Charlas</h2>
                     <div id="tabla-cronograma">
-                        <!-- Spinner de carga -->
                         <div id="loading-spinner" class="spinner-container">
                             <div class="spinner"></div>
                             <p>Cargando cronograma...</p>
                         </div>
-                        <!-- Se llena con JavaScript -->
                     </div>
                 </div>
             </div>
 
-            <!-- Inscripción (en su propia tarjeta, separada pero con el mismo estilo) -->
+            <!-- Inscripción -->
             <div class="card" id="inscripcion-section">
                 <h2>Inscripción</h2>
                 <form id="form-inscripcion">
@@ -121,22 +114,20 @@
                     <p>Guarda este código QR para verificar tu asistencia.</p>
                     <img id="qr-imagen" src="" alt="QR" />
                     <p><a id="qr-enlace" href="#" target="_blank">Enlace de verificación</a></p>
-                    <button id="descargar-qr">Descargar QR</button>
+                    <button type="button" id="descargar-qr">Descargar QR</button>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN CRONOGRAMA (enlace directo, solo por si se necesita) -->
+        <!-- SECCIÓN CRONOGRAMA (directa) -->
         <section id="cronograma" class="section">
             <div class="card">
                 <h2>Cronograma de Charlas</h2>
-                <div id="tabla-cronograma-full">
-                    <!-- Se llena con JavaScript (mismo contenido que el de inicio) -->
-                </div>
+                <div id="tabla-cronograma-full"></div>
             </div>
         </section>
 
-        <!-- SECCIÓN MIS INSCRIPCIONES -->
+        <!-- MIS INSCRIPCIONES -->
         <section id="mis-inscripciones" class="section">
             <div class="card">
                 <h2>Mis inscripciones</h2>
@@ -144,7 +135,7 @@
                     <label for="email-consulta">Ingresa tu email:</label>
                     <div style="display:flex; gap:10px; flex-wrap:wrap;">
                         <input type="email" id="email-consulta" placeholder="tu@email.com" style="flex:1; min-width:200px;" />
-                        <button id="btn-consultar">Consultar</button>
+                        <button type="button" id="btn-consultar">Consultar</button>
                     </div>
                 </div>
                 <div id="mis-inscripciones-resultado"></div>
@@ -152,7 +143,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN ADMIN -->
+        <!-- ADMIN -->
         <section id="admin" class="section">
             <div class="card" id="admin-login-section">
                 <h2>Acceso administrador</h2>
@@ -163,7 +154,7 @@
                     </div>
                     <div class="form-group">
                         <label for="admin-pass">Contraseña:</label>
-                        <input type="password" id="admin-pass" aria-label="Contraseña administrador" required />
+                        <input type="password" id="admin-pass" autocomplete="current-password" aria-label="Contraseña administrador" required />
                     </div>
                     <button type="submit">Ingresar</button>
                 </form>
@@ -173,8 +164,8 @@
             <div class="card" id="admin-panel-section" style="display:none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
                     <h2 style="margin:0;">Panel de administración</h2>
-                    <button id="btn-exportar-excel" class="btn-secundario">📊 Exportar Excel</button>
-                    <button id="btn-logout" class="btn-secundario">Cerrar sesión</button>
+                    <button type="button" id="btn-exportar-excel" class="btn-secundario">📊 Exportar Excel</button>
+                    <button type="button" id="btn-logout" class="btn-secundario">Cerrar sesión</button>
                 </div>
 
                 <div style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:20px;">
@@ -197,7 +188,7 @@
                         </select>
                     </div>
                     <div style="display:flex; align-items:flex-end; gap:10px;">
-                        <button id="btn-aplicar-filtros" class="btn-secundario">Aplicar</button>
+                        <button type="button" id="btn-aplicar-filtros" class="btn-secundario">Aplicar</button>
                     </div>
                 </div>
 
@@ -207,12 +198,11 @@
         </section>
     </main>
 
-    <!-- ===== FOOTER ===== -->
+    <!-- FOOTER -->
     <footer>
         <div class="container">
             <p>© 2026 Universidad del Gran Rosario · Jornadas de Kinesiología y Fisiatría</p>
             <p class="footer-contact">eventos@ugr.edu.ar</p>
-            <!-- Botones de compartir -->
             <div class="share-buttons">
                 <span>Compartir: </span>
                 <a href="#" id="shareWhatsApp" target="_blank" class="share-btn whatsapp">WhatsApp</a>

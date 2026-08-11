@@ -626,6 +626,6 @@ footer .footer-contact {
 }
 
 @media (max-width: 600px) {
-    .tabla-charlas td:nth-child(2), .tabla-charlas th:nth-child(2) { display: none; } /* Ocultar Título en móvil */
+    .tabla-charlas td:nth-child(2), .tabla-charlas th:nth-child(2) { display: none; }
     .tabla-charlas td:nth-child(4), .tabla-charlas th:nth-child(4) { min-width: 80px; }
 }

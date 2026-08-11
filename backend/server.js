@@ -10,17 +10,12 @@ const ExcelJS = require('exceljs');
 const app = express();
 
 // ========== SEGURIDAD Y CABECERAS ==========
-app.disable('x-powered-by'); // Elimina X-Powered-By
-
-// Middleware para cabeceras de seguridad y caché
+app.disable('x-powered-by');
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  
-  // Cache para recursos estáticos (1 año)
   if (req.url.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/)) {
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   } else {
-    // Sin caché para HTML y API
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   }
   next();
@@ -40,7 +35,6 @@ const db = new sqlite3.Database('./jornadas.db');
 
 // ========== INICIALIZAR TABLAS Y MIGRACIONES ==========
 db.serialize(() => {
-  // Tabla charlas
   db.run(`
     CREATE TABLE IF NOT EXISTS charlas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,12 +45,8 @@ db.serialize(() => {
       cupo_maximo INTEGER,
       inscritos INTEGER DEFAULT 0
     )
-  `, (err) => {
-    if (err) console.error('Error creando charlas:', err.message);
-    else console.log('✅ Tabla charlas lista');
-  });
+  `);
 
-  // Tabla inscripciones
   db.run(`
     CREATE TABLE IF NOT EXISTS inscripciones (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,12 +59,8 @@ db.serialize(() => {
       fecha_escaneo DATETIME,
       FOREIGN KEY (charla_id) REFERENCES charlas(id)
     )
-  `, (err) => {
-    if (err) console.error('Error creando inscripciones:', err.message);
-    else console.log('✅ Tabla inscripciones lista');
-  });
+  `);
 
-  // Migración: agregar columnas si no existen
   db.all("PRAGMA table_info(inscripciones)", (err, rows) => {
     if (err) return;
     const columns = rows.map(r => r.name);
@@ -91,7 +77,7 @@ db.serialize(() => {
   db.run("DELETE FROM inscripciones");
   console.log('✅ Cupos reseteados a 0 y inscripciones eliminadas');
 
-  // ========== NUEVA LISTA DE CHARLAS ==========
+  // Insertar charlas
   db.run("DELETE FROM charlas", (err) => {
     if (err) console.error('Error al eliminar charlas:', err.message);
     else {
@@ -116,7 +102,6 @@ db.serialize(() => {
         ['Carlos Bonino', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino', 40],
         ['Mariela Perugini', 'Jueves 3', '12:00 - 14:30', 'Mariela Perugini', 40]
       ];
-
       const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
       nuevasCharlas.forEach(ch => stmt.run(ch));
       stmt.finalize(() => {
@@ -240,7 +225,7 @@ app.delete('/api/inscripciones/:codigo', (req, res) => {
   });
 });
 
-// ========== PÁGINA DE VERIFICACIÓN DE QR (ESTILO CLARO) ==========
+// ========== PÁGINA DE VERIFICACIÓN DE QR ==========
 app.get('/verificar/:codigo', (req, res) => {
   const codigo = req.params.codigo;
 
