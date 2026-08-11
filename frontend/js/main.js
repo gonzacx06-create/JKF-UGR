@@ -84,7 +84,7 @@ function cambiarSeccion(id) {
 }
 cambiarSeccion('inicio');
 
-// ========== CARGAR CHARLAS (tabla) ==========
+// ========== CARGAR CHARLAS ==========
 async function cargarCharlas() {
     const spinner = document.getElementById('loading-spinner');
     const container = document.getElementById('tabla-cronograma');
@@ -119,13 +119,13 @@ async function cargarCharlas() {
                 const total = ch.cupo_maximo || 40;
                 const estado = disponibles > 0 ? `Disponibles: ${disponibles}` : 'LLENO';
                 const disabled = disponibles <= 0 ? 'disabled' : '';
-                const delay = (filaIndex * 50) % 300; // max 300ms
+                const delay = (filaIndex * 50) % 300;
                 html += `<tr style="animation-delay: ${delay}ms;" class="fila-entrada">
                     <td>${ch.hora}</td>
                     <td>${ch.titulo}</td>
                     <td>${ch.ponente}</td>
                     <td><span class="cupo-detalle">Inscritos: ${inscritos} / ${total}</span></td>
-                    <td><button class="btn-inscribir" data-id="${ch.id}" ${disabled}>Inscribirse</button></td>
+                    <td><button type="button" class="btn-inscribir" data-id="${ch.id}" ${disabled}>Inscribirse</button></td>
                 </tr>`;
                 filaIndex++;
             });
@@ -250,7 +250,7 @@ async function cargarMisInscripciones(email, page = 1) {
             html += `<tr>
                 <td>${ins.titulo}</td><td>${ins.dia}</td><td>${ins.hora}</td>
                 <td><code>${ins.codigo}</code></td><td>${esc}</td>
-                <td><button class="btn-accion btn-eliminar" data-codigo="${ins.codigo}">Cancelar</button></td>
+                <td><button type="button" class="btn-accion btn-eliminar" data-codigo="${ins.codigo}">Cancelar</button></td>
             </tr>`;
         });
         html += '</tbody></table>';
@@ -278,7 +278,7 @@ async function cargarMisInscripciones(email, page = 1) {
         if (totalPages > 1) {
             let pagHtml = '';
             for (let i = 1; i <= totalPages; i++) {
-                pagHtml += `<button class="btn-secundario" data-page="${i}" style="${i===page?'background:#e8a838;color:#0d1117;':''}">${i}</button>`;
+                pagHtml += `<button type="button" class="btn-secundario" data-page="${i}" style="${i===page?'background:#e8a838;color:#0d1117;':''}">${i}</button>`;
             }
             pag.innerHTML = pagHtml;
             pag.querySelectorAll('[data-page]').forEach(btn => {
@@ -391,8 +391,8 @@ function renderAdminTabla(data) {
             <td><code>${ins.codigo}</code></td>
             <td>${esc}</td>
             <td>
-                <button class="btn-accion" data-id="${ins.id}" data-esc="${ins.escaneado}">${ins.escaneado ? 'Marcar no escaneado' : 'Marcar escaneado'}</button>
-                <button class="btn-accion btn-eliminar" data-id="${ins.id}" data-eliminar>Eliminar</button>
+                <button type="button" class="btn-accion" data-id="${ins.id}" data-esc="${ins.escaneado}">${ins.escaneado ? 'Marcar no escaneado' : 'Marcar escaneado'}</button>
+                <button type="button" class="btn-accion btn-eliminar" data-id="${ins.id}" data-eliminar>Eliminar</button>
             </td>
         </tr>`;
     });
@@ -445,7 +445,7 @@ function renderAdminTabla(data) {
     if (totalPages > 1) {
         let pagHtml = '';
         for (let i = 1; i <= totalPages; i++) {
-            pagHtml += `<button class="btn-secundario" data-page="${i}" style="${i===paginaAdmin?'background:#e8a838;color:#0d1117;':''}">${i}</button>`;
+            pagHtml += `<button type="button" class="btn-secundario" data-page="${i}" style="${i===paginaAdmin?'background:#e8a838;color:#0d1117;':''}">${i}</button>`;
         }
         pag.innerHTML = pagHtml;
         pag.querySelectorAll('[data-page]').forEach(btn => {
