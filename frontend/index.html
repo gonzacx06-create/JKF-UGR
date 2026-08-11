@@ -23,48 +23,54 @@
         </svg>
     </div>
 
-<!-- ===== HEADER ===== -->
-<header class="site-header">
-    <div class="header-left">
-        <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
-        <img src="assets/logo-ugr.png" alt="UGR" class="logo-img" onerror="this.style.display='none'" />
-        <div>
-            <span class="logo-title">XI Jornadas de Kinesiología y Fisiatría · 2026</span>
+    <!-- ===== HEADER ===== -->
+    <header class="site-header">
+        <div class="header-left">
+            <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
+            <img src="assets/logo-ugr.png" alt="UGR" class="logo-img" onerror="this.style.display='none'" />
+            <div>
+                <span class="logo-title">XI Jornadas de Kinesiología y Fisiatría · 2026</span>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<!-- ===== MENÚ LATERAL ===== -->
-<nav id="sideMenu" class="side-menu">
-    <ul>
-        <li><a href="#" data-section="inicio" class="active">Inicio</a></li>
-        <li><a href="#" data-section="mis-inscripciones">Mis inscripciones</a></li>
-        <li><a href="#" data-section="admin">Admin</a></li>
-    </ul>
-</nav>
+    <!-- ===== MENÚ LATERAL ===== -->
+    <nav id="sideMenu" class="side-menu">
+        <ul>
+            <li><a href="#" data-section="inicio" class="active">Inicio</a></li>
+            <li><a href="#" data-section="mis-inscripciones">Mis inscripciones</a></li>
+            <li><a href="#" data-section="admin">Admin</a></li>
+        </ul>
+    </nav>
+
     <!-- ===== CONTENIDO PRINCIPAL ===== -->
     <main class="container">
-        <!-- SECCIÓN INICIO -->
+        <!-- SECCIÓN INICIO (Bienvenida + Cronograma unificados) -->
         <section id="inicio" class="section active">
-            <div class="card bienvenida">
-                <h2>Bienvenidos</h2>
-                <p>Un espacio de encuentro para profesionales de la Kinesiología y la Fisiatría, con ponencias de vanguardia, talleres prácticos y mesas redondas que marcarán la actualidad de la disciplina.</p>
-                <div class="info-grid">
-                    <div><strong>📅 Fechas:</strong> 2 y 3 de septiembre</div>
-                    <div><strong>📍 Sede:</strong> Santa Fe · Universidad del Gran Rosario</div>
-                    <div><strong>🎯 Modalidad:</strong> Presencial</div>
-                    <div><strong>⏳ Inscripción:</strong> Hasta el 31 de agosto</div>
+            <div class="card">
+                <!-- Bienvenida -->
+                <div class="bienvenida">
+                    <h2>Bienvenidos</h2>
+                    <p>Un espacio de encuentro para profesionales de la Kinesiología y la Fisiatría, con ponencias de vanguardia, talleres prácticos y mesas redondas que marcarán la actualidad de la disciplina.</p>
+                    <div class="info-grid">
+                        <div><strong>📅 Fechas:</strong> 2 y 3 de septiembre</div>
+                        <div><strong>📍 Sede:</strong> Santa Fe · Universidad del Gran Rosario</div>
+                        <div><strong>🎯 Modalidad:</strong> Presencial</div>
+                        <div><strong>⏳ Inscripción:</strong> Hasta el 31 de agosto</div>
+                    </div>
+                    <p class="destacado">¡Cupos limitados para los talleres prácticos! Asegura tu lugar ahora.</p>
                 </div>
-                <p class="destacado">¡Cupos limitados para los talleres prácticos! Asegura tu lugar ahora.</p>
+
+                <!-- Cronograma (dentro de la misma tarjeta) -->
+                <div id="cronograma-section">
+                    <h2>Cronograma de Charlas</h2>
+                    <div id="tabla-cronograma">
+                        <!-- Se llena con JavaScript -->
+                    </div>
+                </div>
             </div>
 
-            <div class="card" id="cronograma-section">
-                <h2>Cronograma de Charlas</h2>
-                <div id="tabla-cronograma">
-                    <!-- Se llena con JavaScript -->
-                </div>
-            </div>
-
+            <!-- Inscripción (en su propia tarjeta, separada pero con el mismo estilo) -->
             <div class="card" id="inscripcion-section">
                 <h2>Inscripción</h2>
                 <form id="form-inscripcion">
@@ -96,7 +102,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN CRONOGRAMA (enlace directo) -->
+        <!-- SECCIÓN CRONOGRAMA (enlace directo, solo por si se necesita) -->
         <section id="cronograma" class="section">
             <div class="card">
                 <h2>Cronograma de Charlas</h2>
