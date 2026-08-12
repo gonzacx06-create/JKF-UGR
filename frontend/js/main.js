@@ -111,7 +111,7 @@ function cambiarSeccion(id) {
 }
 cambiarSeccion('inicio');
 
-// ========== FUNCIONES PARA AVATAR CON FOTO REAL ==========
+// ========== FUNCIONES PARA AVATAR ==========
 function generarColor(nombre) {
     if (!nombre) return '#6ea8fe';
     let hash = 0;
@@ -132,7 +132,6 @@ function obtenerIniciales(nombre) {
 }
 
 function normalizarNombreParaFoto(nombre) {
-    // Convierte "Agustin Elz" -> "agustin-elz"
     return nombre.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
@@ -141,12 +140,11 @@ function generarAvatarHTML(ponente) {
     const iniciales = obtenerIniciales(nombre);
     const color = generarColor(nombre);
     const nombreFoto = normalizarNombreParaFoto(nombre);
-    // Ruta donde se esperan las fotos: assets/ponentes/nombre-normalizado.png
     const fotoPath = `assets/ponentes/${nombreFoto}.png`;
 
-    // Intentamos cargar la imagen; si falla, mostramos iniciales
-    return `<div class="avatar" style="background:${color};">
-        <img src="${fotoPath}" alt="${nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'iniciales\\'>${iniciales}</span>';" />
+    // El div ahora tiene fondo transparente; el span de iniciales tendrá su propio fondo
+    return `<div class="avatar">
+        <img src="${fotoPath}" alt="${nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'iniciales\\' style=\\'background:${color};\\'>${iniciales}</span>';" />
     </div>`;
 }
 
