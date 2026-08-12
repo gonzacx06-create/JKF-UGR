@@ -111,7 +111,7 @@ function cambiarSeccion(id) {
 }
 cambiarSeccion('inicio');
 
-// ========== FUNCIONES PARA AVATAR ==========
+// ========== FUNCIONES PARA AVATAR CON FOTO REAL ==========
 function generarColor(nombre) {
     if (!nombre) return '#6ea8fe';
     let hash = 0;
@@ -132,6 +132,7 @@ function obtenerIniciales(nombre) {
 }
 
 function normalizarNombreParaFoto(nombre) {
+    if (!nombre) return 'ponente';
     return nombre.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
@@ -142,7 +143,6 @@ function generarAvatarHTML(ponente) {
     const nombreFoto = normalizarNombreParaFoto(nombre);
     const fotoPath = `assets/ponentes/${nombreFoto}.png`;
 
-    // El div ahora tiene fondo transparente; el span de iniciales tendrá su propio fondo
     return `<div class="avatar">
         <img src="${fotoPath}" alt="${nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'iniciales\\' style=\\'background:${color};\\'>${iniciales}</span>';" />
     </div>`;
@@ -162,7 +162,6 @@ async function cargarCharlas() {
         if (!resp.ok) throw new Error('Error ' + resp.status + ': ' + resp.statusText);
         const charlas = await resp.json();
 
-        // Agrupar por día
         const grupos = {};
         charlas.forEach(function(ch) {
             if (!grupos[ch.dia]) grupos[ch.dia] = [];
@@ -216,7 +215,6 @@ async function cargarCharlas() {
         if (spinner) spinner.style.display = 'none';
         if (container) container.innerHTML = html;
 
-        // Eventos de inscripción desde tarjeta
         container.querySelectorAll('.btn-inscribir-tarjeta:not([disabled])').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 const charlaId = this.dataset.id;
@@ -230,7 +228,6 @@ async function cargarCharlas() {
             });
         });
 
-        // Llenar select del formulario tradicional
         if (select) {
             select.innerHTML = '<option value="">-- Elige --</option>';
             charlas.forEach(function(ch) {
@@ -275,7 +272,6 @@ function mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula) {
     modal.style.display = 'flex';
 }
 
-// Cerrar modal
 document.getElementById('modal-close').addEventListener('click', function() {
     document.getElementById('modal-inscripcion').style.display = 'none';
 });
@@ -286,7 +282,6 @@ window.addEventListener('click', function(e) {
     }
 });
 
-// Envío del formulario del modal
 document.getElementById('modal-form-inscripcion').addEventListener('submit', async function(e) {
     e.preventDefault();
     const nombre = document.getElementById('modal-nombre').value.trim();

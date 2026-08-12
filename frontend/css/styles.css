@@ -596,7 +596,7 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     background: var(--accent-violet);
 }
 
-/* TARJETA INDIVIDUAL - más grande y con avatar sin fondo */
+/* TARJETA INDIVIDUAL */
 .charla-card-horizontal {
     flex: 0 0 340px;
     max-width: 340px;
@@ -618,22 +618,20 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     box-shadow: 0 12px 32px var(--shadow);
 }
 
-/* Header de la tarjeta */
+/* Avatar - sin fondo de color, solo la imagen con sombra */
 .charla-card-horizontal .card-header {
     display: flex;
     gap: 16px;
     align-items: center;
     margin-bottom: 14px;
 }
-
-/* Avatar - sin fondo de color, solo la imagen con sombra */
 .charla-card-horizontal .avatar {
     width: 90px;
     height: 90px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
-    background: transparent !important; /* Sin fondo de color */
+    background: transparent !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     display: flex;
     align-items: center;
@@ -657,7 +655,6 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     font-weight: 600;
     color: white;
     text-transform: uppercase;
-    /* El color de fondo se asigna desde JavaScript */
 }
 
 .charla-card-horizontal .ponente-info {
@@ -722,7 +719,7 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     transition: transform 0.2s, box-shadow 0.25s;
     box-shadow: 0 4px 12px rgba(213,35,51,0.2);
     width: 100%;
-    margin-top: auto;  /* Empuja el botón hacia abajo */
+    margin-top: auto;
     font-family: 'Inter', sans-serif;
 }
 .charla-card-horizontal .btn-inscribir-tarjeta:hover {
@@ -1011,8 +1008,8 @@ footer .footer-contact {
         min-height: 380px;
     }
     .charla-card-horizontal .avatar {
-        width: 70px;
-        height: 70px;
+        width: 72px;
+        height: 72px;
     }
     .modal-content {
         padding: 20px;
@@ -1027,8 +1024,8 @@ footer .footer-contact {
         padding: 12px;
     }
     .charla-card-horizontal .avatar {
-        width: 60px;
-        height: 60px;
+        width: 64px;
+        height: 64px;
     }
     .charla-card-horizontal .ponente-nombre {
         font-size: 1rem;
