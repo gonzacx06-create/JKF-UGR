@@ -111,7 +111,7 @@ function cambiarSeccion(id) {
 }
 cambiarSeccion('inicio');
 
-// ========== FUNCIONES AUXILIARES PARA AVATAR ==========
+// ========== FUNCIONES PARA AVATAR CON FOTO REAL ==========
 function generarColor(nombre) {
     if (!nombre) return '#6ea8fe';
     let hash = 0;
@@ -129,6 +129,25 @@ function obtenerIniciales(nombre) {
         return (partes[0][0] + partes[1][0]).toUpperCase();
     }
     return nombre.substring(0, 2).toUpperCase();
+}
+
+function normalizarNombreParaFoto(nombre) {
+    // Convierte "Agustin Elz" -> "agustin-elz"
+    return nombre.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+function generarAvatarHTML(ponente) {
+    const nombre = ponente || 'Ponente';
+    const iniciales = obtenerIniciales(nombre);
+    const color = generarColor(nombre);
+    const nombreFoto = normalizarNombreParaFoto(nombre);
+    // Ruta donde se esperan las fotos: assets/ponentes/nombre-normalizado.png
+    const fotoPath = `assets/ponentes/${nombreFoto}.png`;
+
+    // Intentamos cargar la imagen; si falla, mostramos iniciales
+    return `<div class="avatar" style="background:${color};">
+        <img src="${fotoPath}" alt="${nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'iniciales\\'>${iniciales}</span>';" />
+    </div>`;
 }
 
 // ========== CARGAR CHARLAS (tarjetas horizontales) ==========
@@ -152,7 +171,6 @@ async function cargarCharlas() {
             grupos[ch.dia].push(ch);
         });
 
-        // Ordenar días
         const ordenDias = ['Miércoles 2', 'Jueves 3'];
         let html = '';
         for (const dia of ordenDias) {
@@ -168,15 +186,13 @@ async function cargarCharlas() {
                 const inscritos = ch.inscritos || 0;
                 const total = ch.cupo_maximo || 40;
                 const disabled = disponibles <= 0 ? 'disabled' : '';
-                const avatarColor = generarColor(ch.ponente);
-                const iniciales = obtenerIniciales(ch.ponente);
                 const tituloProf = 'Lic. en Kinesiología y Fisiatría';
-                const aula = 'Aula 3'; // Fijo, puedes cambiarlo
+                const aula = 'Aula 3';
 
                 html += `
                     <div class="charla-card-horizontal" data-id="${ch.id}" data-dia="${ch.dia}" data-hora="${ch.hora}">
                         <div class="card-header">
-                            <div class="avatar" style="background:${avatarColor};">${iniciales}</div>
+                            ${generarAvatarHTML(ch.ponente)}
                             <div class="ponente-info">
                                 <div class="ponente-nombre">${ch.ponente || 'Ponente'}</div>
                                 <div class="ponente-titulo">${tituloProf}</div>
@@ -196,7 +212,7 @@ async function cargarCharlas() {
                 `;
             });
 
-            html += `</div>`; // cierre carrusel
+            html += `</div>`;
         }
 
         if (spinner) spinner.style.display = 'none';
@@ -301,7 +317,6 @@ document.getElementById('modal-form-inscripcion').addEventListener('submit', asy
                 link.href = data.qr;
                 link.click();
             };
-            // Recargar cronograma para actualizar cupos
             cargarCharlas();
         } else {
             document.getElementById('modal-mensaje').innerHTML = '<span style="color:#f85149;">❌ ' + (data.error || 'Error') + '</span>';
@@ -662,7 +677,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ========== INICIALIZAR ==========
-// Cargar charlas después de que el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
     cargarCharlas();
 });

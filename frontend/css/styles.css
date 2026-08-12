@@ -988,3 +988,295 @@ footer .footer-contact {
         scroll-behavior: auto !important;
     }
 }
+
+/* ===== CRONOGRAMA TARJETAS HORIZONTALES ===== */
+.cronograma-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cronograma-cards-container .dia-titulo {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--primary);
+    margin: 6px 0 4px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid var(--secondary-light);
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+.cronograma-cards-container .carrusel {
+    display: flex;
+    overflow-x: auto;
+    padding: 8px 4px 16px 4px;
+    gap: 20px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    width: 100%;
+}
+.cronograma-cards-container .carrusel::-webkit-scrollbar {
+    height: 8px;
+}
+.cronograma-cards-container .carrusel::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.04);
+    border-radius: 8px;
+}
+.cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
+    background: var(--accent-orange);
+    border-radius: 8px;
+}
+body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.06);
+}
+body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
+    background: var(--accent-violet);
+}
+
+/* TARJETA INDIVIDUAL - simétrica y con imagen */
+.charla-card-horizontal {
+    flex: 0 0 320px;
+    max-width: 320px;
+    min-height: 380px;
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 6px 20px var(--shadow);
+    padding: 18px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    scroll-snap-align: start;
+    transition: transform 0.25s, box-shadow 0.3s;
+    font-family: 'Inter', sans-serif;
+}
+.charla-card-horizontal:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px var(--shadow);
+}
+
+/* Avatar con foto real (cuadrado 4x4) */
+.charla-card-horizontal .card-header {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.charla-card-horizontal .avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--grad-cta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.charla-card-horizontal .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.charla-card-horizontal .avatar .iniciales {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+}
+
+.charla-card-horizontal .ponente-info {
+    flex: 1;
+    min-width: 0;
+}
+.charla-card-horizontal .ponente-nombre {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary);
+    line-height: 1.2;
+}
+.charla-card-horizontal .ponente-titulo {
+    font-size: 0.8rem;
+    color: var(--text);
+    opacity: 0.7;
+    line-height: 1.2;
+}
+
+.charla-card-horizontal .charla-titulo {
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin: 8px 0 10px;
+    color: var(--text);
+    line-height: 1.3;
+    flex: 1;
+    max-height: 3.9rem;
+    overflow: hidden;
+}
+
+.charla-card-horizontal .charla-detalle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 0.85rem;
+    color: var(--text);
+    opacity: 0.85;
+    margin-bottom: 12px;
+}
+.charla-card-horizontal .charla-detalle span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.charla-card-horizontal .cupos-disponibles {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--accent-turquoise);
+    margin-bottom: 12px;
+}
+
+.charla-card-horizontal .btn-inscribir-tarjeta {
+    background: var(--grad-cta);
+    color: white;
+    border: none;
+    padding: 10px 0;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.25s;
+    box-shadow: 0 4px 12px rgba(213,35,51,0.2);
+    width: 100%;
+    margin-top: auto;  /* Empuja el botón hacia abajo */
+    font-family: 'Inter', sans-serif;
+}
+.charla-card-horizontal .btn-inscribir-tarjeta:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(213,35,51,0.3);
+}
+.charla-card-horizontal .btn-inscribir-tarjeta:disabled {
+    background: #ced4da;
+    color: #6c757d;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-content {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    max-width: 480px;
+    width: 100%;
+    padding: 30px 28px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    border: 1px solid var(--card-border);
+    max-height: 90vh;
+    overflow-y: auto;
+    font-family: 'Inter', sans-serif;
+}
+.modal-close {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--text);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.modal-close:hover {
+    opacity: 1;
+}
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: var(--primary);
+    font-family: 'Inter', sans-serif;
+}
+#modal-charla-info {
+    background: rgba(0,0,0,0.03);
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--accent-coral);
+}
+#modal-charla-info strong {
+    color: var(--primary);
+}
+#modal-qr-container {
+    text-align: center;
+    margin-top: 16px;
+}
+#modal-qr-container img {
+    max-width: 180px;
+    border-radius: 12px;
+    border: 3px solid var(--primary);
+    padding: 4px;
+    background: white;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .logo-title { font-size: 1.2rem; }
+    .logo-img { max-height: 40px; }
+    .side-menu { width: 240px; left: -240px; }
+    .info-grid { grid-template-columns: 1fr; }
+    .card { padding: 20px; }
+    .hero-title { font-size: 1.8rem; }
+    .countdown-item { min-width: 52px; padding: 8px 12px; }
+    .countdown-item span:first-child { font-size: 1.3rem; }
+    .shape-7, .shape-8 { display: none; }
+    .charla-card-horizontal {
+        flex: 0 0 280px;
+        max-width: 280px;
+        padding: 14px;
+        min-height: 340px;
+    }
+    .charla-card-horizontal .avatar {
+        width: 56px;
+        height: 56px;
+    }
+    .modal-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .charla-card-horizontal {
+        flex: 0 0 260px;
+        max-width: 260px;
+        min-height: 320px;
+        padding: 12px;
+    }
+    .charla-card-horizontal .avatar {
+        width: 48px;
+        height: 48px;
+    }
+    .charla-card-horizontal .ponente-nombre {
+        font-size: 1rem;
+    }
+    .charla-card-horizontal .charla-titulo {
+        font-size: 0.85rem;
+    }
+}
