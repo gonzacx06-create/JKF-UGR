@@ -45,49 +45,26 @@ db.serialize(() => {
   db.run("DELETE FROM charlas", (err) => {
     if (err) console.error('Error al eliminar charlas:', err.message);
     else {
-      // ========== NUEVA LISTA DE CHARLAS (según los datos proporcionados) ==========
       const nuevasCharlas = [
-        // ===== MIÉRCOLES 2 =====
-        // 8 HS
         ['Abordaje Osteopatico de la "Pubalgia" (Dolor de cadera). Evaluación y tratamiento.', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
-        // 9 HS
         ['', 'Miércoles 2', '09:00 - 10:00', 'agus elz', 40],
-        // 10 HS
         ['*Cuando la postura no mejora: el papel de las vísceras en el dolor y la disfunción* Evaluación y tratamiento integrando Osteopatía Visceral y Posturoterapia.', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
-        // 11 HS
         ['', 'Miércoles 2', '11:00 - 12:00', 'rami pioli', 40],
-        // 12 HS
         ['Posicionamiento y estrategias de autorregulación en recien nacidos', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
-        // 13 HS (múltiples ponentes)
         ['', 'Miércoles 2', '13:00 - 14:00', 'Ana Cristina Piacenza, Meli Yobe, Martin Larramendi', 40],
-        // 14 HS
         ['"Descubriendo el suelo pelvico"', 'Miércoles 2', '14:00 - 15:00', 'Anto Baldesari', 40],
-        // 15 HS (taller de 15 a 17)
         ['Taller práctico (15:00 - 17:00)', 'Miércoles 2', '15:00 - 17:00', 'Carlos fumero', 40],
-        // 16 HS (ya cubierto por el taller, pero se deja como espacio libre)
         ['', 'Miércoles 2', '16:00 - 17:00', 'fede uca', 40],
-        // 17 HS
         ['Quiropraxia: detección y análisis de la subluxacion vertebral', 'Miércoles 2', '17:00 - 18:00', 'Ignacio Guastavino', 40],
-        // 18 HS
         ['', 'Miércoles 2', '18:00 - 19:00', 'brenda lorenz', 40],
-        // 19 HS
         ['Pilates aplicado al deporte', 'Miércoles 2', '19:00 - 20:00', 'Vanesa Dupertuis', 40],
-
-        // ===== JUEVES 3 =====
-        // 8 HS
         ['Mecanismos neurobiologicos del movimiento sobre la cognición: el cerebelo como órgano de predicción y modelos internos', 'Jueves 3', '08:00 - 09:00', 'Lucas Orlandi', 40],
-        // 9 HS (vacío)
         ['', 'Jueves 3', '09:00 - 10:00', '', 40],
-        // 10 HS
         ['Caso clínico y taller práctico de rehabilitación pulmonar', 'Jueves 3', '10:00 - 11:00', 'Male y Mica Carrizo, Ulises Magallanes', 40],
-        // 11 HS
         ['', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
-        // 12 HS
         ['', 'Jueves 3', '12:00 - 13:00', 'Gri Sosa', 40],
-        // 13 HS
         ['El alcance: una orquesta de articulaciones, músculos y sistema nervioso', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino + Cami Gasser', 40]
       ];
-
       const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
       nuevasCharlas.forEach(ch => stmt.run(ch));
       stmt.finalize(() => {
@@ -97,7 +74,7 @@ db.serialize(() => {
   });
 });
 
-// ========== ENDPOINTS PÚBLICOS (NO requieren autenticación) ==========
+// ========== ENDPOINTS PÚBLICOS ==========
 app.get('/api/charlas', (req, res) => {
   db.all("SELECT *, (cupo_maximo - inscritos) as disponibles FROM charlas", (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -172,13 +149,129 @@ app.delete('/api/inscripciones/:codigo', (req, res) => {
   });
 });
 
-// ========== PÁGINA DE VERIFICACIÓN QR (pública) ==========
+// ========== PÁGINA DE VERIFICACIÓN QR ==========
 app.get('/verificar/:codigo', (req, res) => {
-  // Aquí va tu código de verificación (el que ya tenías)
-  // Lo dejo fuera por brevedad, pero debe estar presente
+  const codigo = req.params.codigo;
+  db.get(`
+    SELECT i.nombre, i.email, i.fecha_inscripcion, i.escaneado, i.fecha_escaneo,
+           c.titulo, c.dia, c.hora
+    FROM inscripciones i
+    JOIN charlas c ON i.charla_id = c.id
+    WHERE i.codigo_unico = ?
+  `, [codigo], (err, row) => {
+    if (err || !row) {
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Verificación - Jornadas UGR</title>
+          <style>
+            body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 20px; }
+            .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); max-width: 500px; width: 100%; text-align: center; border: 1px solid rgba(0,0,0,0.04); }
+            .icon { font-size: 4rem; margin-bottom: 10px; }
+            h1 { color: #d52333; margin-bottom: 10px; }
+            p { color: #2c3e50; }
+            .btn { display: inline-block; background: #003366; color: white; padding: 12px 30px; border-radius: 40px; text-decoration: none; margin-top: 15px; font-weight: 600; transition: background 0.2s; }
+            .btn:hover { background: #002244; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="icon">❌</div>
+            <h1>Código no válido</h1>
+            <p>No se encontró ninguna inscripción con este código.</p>
+            <a href="/" class="btn">Volver al inicio</a>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+
+    if (row.escaneado) {
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>QR ya utilizado</title>
+          <style>
+            body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 20px; }
+            .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); max-width: 500px; width: 100%; text-align: center; border: 1px solid rgba(0,0,0,0.04); }
+            .icon { font-size: 4rem; margin-bottom: 10px; }
+            h1 { color: #d52333; margin-bottom: 10px; }
+            .fecha { background: #f0f4f8; padding: 10px; border-radius: 10px; margin: 15px 0; }
+            p { color: #2c3e50; }
+            .btn { display: inline-block; background: #003366; color: white; padding: 12px 30px; border-radius: 40px; text-decoration: none; margin-top: 15px; font-weight: 600; transition: background 0.2s; }
+            .btn:hover { background: #002244; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="icon">⛔</div>
+            <h1>Este QR ya fue utilizado</h1>
+            <div class="fecha">
+              <p><strong>Primer escaneo:</strong> ${new Date(row.fecha_escaneo).toLocaleString('es-AR')}</p>
+            </div>
+            <p style="margin-top:10px;">Si tienes dudas, consulta con el organizador.</p>
+            <a href="/" class="btn">Volver al inicio</a>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+
+    const ahora = new Date().toISOString();
+    db.run("UPDATE inscripciones SET escaneado = 1, fecha_escaneo = ? WHERE codigo_unico = ?", [ahora, codigo]);
+
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>✅ Inscripción confirmada</title>
+        <style>
+          body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+          .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); max-width: 500px; width: 100%; border: 1px solid rgba(0,0,0,0.04); }
+          .icon { font-size: 4rem; text-align: center; margin-bottom: 10px; }
+          h1 { color: #003366; border-bottom: 4px solid #d52333; padding-bottom: 12px; margin-bottom: 20px; font-size: 1.8rem; text-align: center; }
+          .datos { background: #f9fafc; padding: 20px; border-radius: 12px; margin: 15px 0; }
+          .datos p { margin: 8px 0; color: #2c3e50; }
+          .datos strong { color: #003366; }
+          .escaneo { background: #eef2f7; padding: 12px; border-radius: 10px; font-size: 0.95rem; color: #1e2a3a; margin: 15px 0; text-align: center; }
+          .btn { display: inline-block; background: #d52333; color: white; padding: 12px 30px; border-radius: 40px; text-decoration: none; margin-top: 15px; font-weight: 600; transition: background 0.2s; }
+          .btn:hover { background: #b01a28; }
+          .footer-text { text-align: center; color: #8b949e; font-size: 0.9rem; margin-top: 15px; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="icon">✅</div>
+          <h1>Inscripción confirmada</h1>
+          <div class="datos">
+            <p><strong>Nombre:</strong> ${row.nombre}</p>
+            <p><strong>Email:</strong> ${row.email}</p>
+            <p><strong>Charla:</strong> ${row.titulo}</p>
+            <p><strong>Día:</strong> ${row.dia} - ${row.hora}</p>
+            <p><strong>Fecha de inscripción:</strong> ${new Date(row.fecha_inscripcion).toLocaleString('es-AR')}</p>
+          </div>
+          <div class="escaneo">🔹 Escaneado el: ${new Date(ahora).toLocaleString('es-AR')}</div>
+          <p style="color:#2c3e50; text-align:center;">Este QR es válido para el acceso al evento.</p>
+          <div style="text-align:center;">
+            <a href="/" class="btn">Volver al inicio</a>
+          </div>
+          <div class="footer-text">XI Jornadas de Kinesiología y Fisiatría · UGR 2026</div>
+        </div>
+      </body>
+      </html>
+    `);
+  });
 });
 
-// ========== MIDDLEWARE DE AUTENTICACIÓN (solo para admin) ==========
+// ========== MIDDLEWARE DE AUTENTICACIÓN ==========
 function verificarToken(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Token no proporcionado' });
@@ -193,7 +286,7 @@ function verificarToken(req, res, next) {
   }
 }
 
-// ========== ENDPOINTS PROTEGIDOS (requieren autenticación) ==========
+// ========== ADMIN ==========
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
@@ -205,19 +298,103 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 app.get('/api/admin/inscripciones', verificarToken, (req, res) => {
-  // ... (código de admin)
+  const { email, charla_id, escaneado, page = 1, limit = 20 } = req.query;
+  const offset = (parseInt(page) - 1) * parseInt(limit);
+  let where = '1=1';
+  const params = [];
+  if (email) { where += ' AND i.email LIKE ?'; params.push(`%${email}%`); }
+  if (charla_id) { where += ' AND i.charla_id = ?'; params.push(parseInt(charla_id)); }
+  if (escaneado !== undefined && escaneado !== '') { where += ' AND i.escaneado = ?'; params.push(escaneado === 'true' ? 1 : 0); }
+
+  const countSQL = `SELECT COUNT(*) as total FROM inscripciones i WHERE ${where}`;
+  db.get(countSQL, params, (err, countRow) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const total = countRow ? countRow.total : 0;
+
+    const query = `
+      SELECT i.id, i.nombre, i.email, i.codigo_unico AS codigo, i.fecha_inscripcion, i.escaneado, i.fecha_escaneo,
+             c.titulo AS charla_titulo, c.dia, c.hora, c.ponente
+      FROM inscripciones i
+      JOIN charlas c ON i.charla_id = c.id
+      WHERE ${where}
+      ORDER BY i.fecha_inscripcion DESC
+      LIMIT ? OFFSET ?
+    `;
+    db.all(query, [...params, parseInt(limit), offset], (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({
+        data: rows,
+        pagination: { total, page: parseInt(page), limit: parseInt(limit), totalPages: Math.ceil(total / parseInt(limit)) }
+      });
+    });
+  });
 });
 
 app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, (req, res) => {
-  // ... (código de admin)
+  const id = parseInt(req.params.id);
+  const { escaneado } = req.body;
+  if (isNaN(id) || typeof escaneado !== 'boolean') {
+    return res.status(400).json({ error: 'Datos inválidos' });
+  }
+  db.run(
+    "UPDATE inscripciones SET escaneado = ?, fecha_escaneo = CASE WHEN ? THEN CURRENT_TIMESTAMP ELSE NULL END WHERE id = ?",
+    [escaneado ? 1 : 0, escaneado ? 1 : 0, id],
+    function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (this.changes === 0) return res.status(404).json({ error: 'Inscripción no encontrada' });
+      res.json({ mensaje: 'Actualizado correctamente' });
+    }
+  );
 });
 
 app.delete('/api/admin/inscripciones/:id', verificarToken, (req, res) => {
-  // ... (código de admin)
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+  db.run("BEGIN TRANSACTION");
+  db.get("SELECT charla_id FROM inscripciones WHERE id = ?", [id], (err, row) => {
+    if (err) { db.run("ROLLBACK"); return res.status(500).json({ error: err.message }); }
+    if (!row) { db.run("ROLLBACK"); return res.status(404).json({ error: 'Inscripción no encontrada' }); }
+    db.run("DELETE FROM inscripciones WHERE id = ?", [id], function(err) {
+      if (err) { db.run("ROLLBACK"); return res.status(500).json({ error: err.message }); }
+      db.run("UPDATE charlas SET inscritos = inscritos - 1 WHERE id = ? AND inscritos > 0", [row.charla_id], function(err) {
+        if (err) { db.run("ROLLBACK"); return res.status(500).json({ error: err.message }); }
+        db.run("COMMIT");
+        res.json({ mensaje: 'Inscripción eliminada y cupo liberado' });
+      });
+    });
+  });
 });
 
 app.get('/api/admin/exportar-excel', verificarToken, (req, res) => {
-  // ... (código de admin)
+  db.all(`
+    SELECT i.nombre, i.email, c.titulo AS charla, c.dia, c.hora, i.codigo_unico AS codigo,
+           i.fecha_inscripcion, CASE WHEN i.escaneado THEN 'Sí' ELSE 'No' END AS escaneado, i.fecha_escaneo
+    FROM inscripciones i
+    JOIN charlas c ON i.charla_id = c.id
+    ORDER BY i.fecha_inscripcion DESC
+  `, (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (rows.length === 0) return res.status(404).json({ error: 'No hay inscripciones' });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Inscripciones');
+    worksheet.columns = [
+      { header: 'Nombre', key: 'nombre', width: 25 },
+      { header: 'Email', key: 'email', width: 30 },
+      { header: 'Charla', key: 'charla', width: 40 },
+      { header: 'Día', key: 'dia', width: 15 },
+      { header: 'Hora', key: 'hora', width: 15 },
+      { header: 'Código', key: 'codigo', width: 15 },
+      { header: 'Fecha Inscripción', key: 'fecha_inscripcion', width: 22 },
+      { header: 'Escaneado', key: 'escaneado', width: 12 },
+      { header: 'Fecha Escaneo', key: 'fecha_escaneo', width: 22 }
+    ];
+    worksheet.addRows(rows);
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=inscripciones-${new Date().toISOString().split('T')[0]}.xlsx`);
+    workbook.xlsx.writeBuffer().then(buffer => res.send(buffer));
+  });
 });
 
 // ========== SERVIR FRONTEND ==========

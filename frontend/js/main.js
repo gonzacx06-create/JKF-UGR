@@ -9,13 +9,11 @@ let modalCharlaId = null;
 document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('themeToggle');
     if (!themeToggle) return;
-    
     const currentTheme = localStorage.getItem('theme') || 'light';
     if (currentTheme === 'dark') {
         document.body.classList.add('dark-mode');
         themeToggle.textContent = '☀️';
     }
-
     themeToggle.addEventListener('click', function() {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
@@ -34,17 +32,14 @@ function actualizarDigito(el, nuevoValor) {
         el.classList.add('tick');
     }
 }
-
 function actualizarContador() {
     const fechaEvento = Date.UTC(2026, 8, 2, 3, 0, 0);
     const ahora = new Date().getTime();
     const diferencia = fechaEvento - ahora;
-
     const daysEl = document.getElementById('days');
     const hoursEl = document.getElementById('hours');
     const minutesEl = document.getElementById('minutes');
     const secondsEl = document.getElementById('seconds');
-
     if (diferencia <= 0) {
         if (daysEl) daysEl.textContent = '00';
         if (hoursEl) hoursEl.textContent = '00';
@@ -52,18 +47,15 @@ function actualizarContador() {
         if (secondsEl) secondsEl.textContent = '00';
         return;
     }
-
     const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
     const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
     const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
-
     actualizarDigito(daysEl, String(dias).padStart(2, '0'));
     actualizarDigito(hoursEl, String(horas).padStart(2, '0'));
     actualizarDigito(minutesEl, String(minutos).padStart(2, '0'));
     actualizarDigito(secondsEl, String(segundos).padStart(2, '0'));
 }
-
 setInterval(actualizarContador, 1000);
 actualizarContador();
 
@@ -72,13 +64,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuBtn = document.getElementById('menuBtn');
     const sideMenu = document.getElementById('sideMenu');
     let menuOpen = false;
-
     if (menuBtn && sideMenu) {
         menuBtn.addEventListener('click', function() {
             menuOpen = !menuOpen;
             sideMenu.classList.toggle('open');
         });
-
         document.querySelectorAll('#sideMenu a').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -111,7 +101,7 @@ function cambiarSeccion(id) {
 }
 cambiarSeccion('inicio');
 
-// ========== FUNCIONES PARA AVATAR CON FOTO REAL ==========
+// ========== FUNCIONES PARA AVATAR ==========
 function generarColor(nombre) {
     if (!nombre) return '#6ea8fe';
     let hash = 0;
@@ -121,7 +111,6 @@ function generarColor(nombre) {
     const colores = ['#ff8a5b', '#ff6b8b', '#f7b733', '#2fc3b8', '#9b7fe0', '#6ea8fe', '#f78166', '#56d4c8'];
     return colores[Math.abs(hash) % colores.length];
 }
-
 function obtenerIniciales(nombre) {
     if (!nombre) return '?';
     const partes = nombre.trim().split(' ');
@@ -130,62 +119,52 @@ function obtenerIniciales(nombre) {
     }
     return nombre.substring(0, 2).toUpperCase();
 }
-
 function normalizarNombreParaFoto(nombre) {
     if (!nombre) return 'ponente';
     return nombre.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
-
 function generarAvatarHTML(ponente) {
     const nombre = ponente || 'Ponente';
     const iniciales = obtenerIniciales(nombre);
     const color = generarColor(nombre);
     const nombreFoto = normalizarNombreParaFoto(nombre);
     const fotoPath = `assets/ponentes/${nombreFoto}.png`;
-
     return `<div class="avatar">
         <img src="${fotoPath}" alt="${nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'iniciales\\' style=\\'background:${color};\\'>${iniciales}</span>';" />
     </div>`;
 }
 
-// ========== CARGAR CHARLAS (tarjetas horizontales) ==========
+// ========== CARGAR CHARLAS ==========
 async function cargarCharlas() {
     const spinner = document.getElementById('loading-spinner');
     const container = document.getElementById('cronograma-cards');
     const select = document.getElementById('charla');
-
     if (spinner) spinner.style.display = 'flex';
     if (container) container.innerHTML = '';
-
     try {
         const resp = await fetch(API_URL + '/charlas');
         if (!resp.ok) throw new Error('Error ' + resp.status + ': ' + resp.statusText);
         const charlas = await resp.json();
-
         const grupos = {};
         charlas.forEach(function(ch) {
             if (!grupos[ch.dia]) grupos[ch.dia] = [];
             grupos[ch.dia].push(ch);
         });
-
         const ordenDias = ['Miércoles 2', 'Jueves 3'];
         let html = '';
         for (const dia of ordenDias) {
             if (!grupos[dia]) continue;
             const lista = grupos[dia];
             lista.sort((a, b) => a.hora.localeCompare(b.hora));
-
             html += `<div class="dia-titulo">🗓️ ${dia}</div>`;
             html += `<div class="carrusel">`;
-
             lista.forEach(function(ch) {
                 const disponibles = ch.disponibles || 0;
-                const inscritos = ch.inscritos || 0;
+                const inscriptos = ch.inscritos || 0;
                 const total = ch.cupo_maximo || 40;
                 const disabled = disponibles <= 0 ? 'disabled' : '';
                 const tituloProf = 'Lic. en Kinesiología y Fisiatría';
                 const aula = 'Aula 3';
-
                 html += `
                     <div class="charla-card-horizontal" data-id="${ch.id}" data-dia="${ch.dia}" data-hora="${ch.hora}">
                         <div class="card-header">
@@ -201,20 +180,17 @@ async function cargarCharlas() {
                             <span>🕒 ${ch.hora}</span>
                             <span>🏛️ ${aula}</span>
                         </div>
-                        <div class="cupos-disponibles">👥 ${inscritos} / ${total} inscritos</div>
+                        <div class="cupos-disponibles">👥 ${inscriptos} / ${total} inscriptos</div>
                         <button type="button" class="btn-inscribir-tarjeta" data-id="${ch.id}" ${disabled}>
                             ${disponibles > 0 ? '🎯 Inscribirse' : 'Agotado'}
                         </button>
                     </div>
                 `;
             });
-
             html += `</div>`;
         }
-
         if (spinner) spinner.style.display = 'none';
         if (container) container.innerHTML = html;
-
         container.querySelectorAll('.btn-inscribir-tarjeta:not([disabled])').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 const charlaId = this.dataset.id;
@@ -227,7 +203,6 @@ async function cargarCharlas() {
                 mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
             });
         });
-
         if (select) {
             select.innerHTML = '<option value="">-- Elige --</option>';
             charlas.forEach(function(ch) {
@@ -248,7 +223,6 @@ async function cargarCharlas() {
                 }
             });
         }
-
     } catch (error) {
         console.error('Error cargando charlas:', error);
         if (spinner) spinner.style.display = 'none';
@@ -271,7 +245,6 @@ function mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula) {
     document.getElementById('modal-qr-container').style.display = 'none';
     modal.style.display = 'flex';
 }
-
 document.getElementById('modal-close').addEventListener('click', function() {
     document.getElementById('modal-inscripcion').style.display = 'none';
 });
@@ -281,7 +254,6 @@ window.addEventListener('click', function(e) {
         modal.style.display = 'none';
     }
 });
-
 document.getElementById('modal-form-inscripcion').addEventListener('submit', async function(e) {
     e.preventDefault();
     const nombre = document.getElementById('modal-nombre').value.trim();
@@ -319,56 +291,6 @@ document.getElementById('modal-form-inscripcion').addEventListener('submit', asy
     }
 });
 
-// ========== INSCRIPCIÓN TRADICIONAL ==========
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('form-inscripcion');
-    if (form) {
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const nombre = document.getElementById('nombre').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const charla_id = parseInt(document.getElementById('charla').value);
-
-            if (!nombre || !email || !charla_id) {
-                alert('Completa todos los campos');
-                return;
-            }
-
-            try {
-                const resp = await fetch(API_URL + '/inscribir', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre, email, charla_id })
-                });
-                const data = await resp.json();
-
-                if (resp.ok) {
-                    document.getElementById('mensaje-inscripcion').innerHTML = '<span style="color:#2fc3b8;">✅ ' + data.mensaje + '</span>';
-                    const qrContainer = document.getElementById('qr-container');
-                    if (qrContainer) {
-                        qrContainer.style.display = 'block';
-                        document.getElementById('qr-imagen').src = data.qr;
-                        document.getElementById('qr-enlace').href = data.url;
-                        document.getElementById('qr-enlace').textContent = data.url;
-                        document.getElementById('descargar-qr').onclick = function() {
-                            const link = document.createElement('a');
-                            link.download = 'qr-' + data.codigo + '.png';
-                            link.href = data.qr;
-                            link.click();
-                        };
-                    }
-                    document.getElementById('form-inscripcion').reset();
-                    cargarCharlas();
-                } else {
-                    document.getElementById('mensaje-inscripcion').innerHTML = '<span style="color:#f85149;">❌ ' + (data.error || 'Error') + '</span>';
-                }
-            } catch (error) {
-                document.getElementById('mensaje-inscripcion').innerHTML = '<span style="color:#f85149;">❌ Error de conexión</span>';
-            }
-        });
-    }
-});
-
 // ========== MIS INSCRIPCIONES ==========
 document.addEventListener('DOMContentLoaded', function() {
     const btnConsultar = document.getElementById('btn-consultar');
@@ -382,7 +304,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
 async function cargarMisInscripciones(email, page) {
     page = page || 1;
     const limit = 5;
@@ -403,7 +324,6 @@ async function cargarMisInscripciones(email, page) {
         });
         html += '</tbody></table>';
         container.innerHTML = html;
-
         container.querySelectorAll('[data-codigo]').forEach(function(btn) {
             btn.addEventListener('click', async function() {
                 if (!confirm('¿Cancelar esta inscripción?')) return;
@@ -420,7 +340,6 @@ async function cargarMisInscripciones(email, page) {
                 } catch (err) { alert('Error de conexión'); }
             });
         });
-
         const pag = document.getElementById('paginacion-mis-inscripciones');
         const totalPages = data.pagination.totalPages;
         if (totalPages > 1) {
@@ -471,7 +390,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
         btnLogout.addEventListener('click', function() {
@@ -481,14 +399,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('admin-login-error').textContent = '';
         });
     }
-
     const btnAplicarFiltros = document.getElementById('btn-aplicar-filtros');
     if (btnAplicarFiltros) {
         btnAplicarFiltros.addEventListener('click', function() {
             cargarAdminInscripciones(1);
         });
     }
-
     const btnExportarExcel = document.getElementById('btn-exportar-excel');
     if (btnExportarExcel) {
         btnExportarExcel.addEventListener('click', async function() {
@@ -516,7 +432,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
 async function cargarSelectCharlasAdmin() {
     try {
         const resp = await fetch(API_URL + '/charlas');
@@ -531,7 +446,6 @@ async function cargarSelectCharlasAdmin() {
         });
     } catch (err) { console.error(err); }
 }
-
 async function cargarAdminInscripciones(page) {
     page = page || 1;
     if (!adminToken) return;
@@ -540,13 +454,11 @@ async function cargarAdminInscripciones(page) {
     const charla_id = document.getElementById('filtro-charla').value;
     const escaneado = document.getElementById('filtro-escaneado').value;
     const limit = 10;
-
     try {
         const params = new URLSearchParams({ page: page, limit: limit });
         if (email) params.append('email', email);
         if (charla_id) params.append('charla_id', charla_id);
         if (escaneado !== '') params.append('escaneado', escaneado);
-
         const resp = await fetch(API_URL + '/admin/inscripciones?' + params.toString(), {
             headers: { 'Authorization': 'Bearer ' + adminToken }
         });
@@ -562,7 +474,6 @@ async function cargarAdminInscripciones(page) {
         document.getElementById('admin-inscripciones-tabla').innerHTML = '<p style="color:#f85149;">Error: ' + err.message + '</p>';
     }
 }
-
 function renderAdminTabla(data) {
     const container = document.getElementById('admin-inscripciones-tabla');
     if (data.data.length === 0) {
@@ -577,7 +488,6 @@ function renderAdminTabla(data) {
     });
     html += '</tbody></table>';
     container.innerHTML = html;
-
     container.querySelectorAll('[data-id]').forEach(function(btn) {
         if (btn.dataset.eliminar) {
             btn.addEventListener('click', async function() {
@@ -618,7 +528,6 @@ function renderAdminTabla(data) {
             });
         }
     });
-
     const pag = document.getElementById('paginacion-admin');
     const totalPages = data.pagination.totalPages;
     if (totalPages > 1) {
@@ -636,38 +545,6 @@ function renderAdminTabla(data) {
         pag.innerHTML = '';
     }
 }
-
-// ========== COMPARTIR EN REDES SOCIALES ==========
-document.addEventListener('DOMContentLoaded', function() {
-    const shareWhatsApp = document.getElementById('shareWhatsApp');
-    if (shareWhatsApp) {
-        shareWhatsApp.addEventListener('click', function(e) {
-            e.preventDefault();
-            const url = encodeURIComponent(window.location.href);
-            const msg = encodeURIComponent('¡Inscríbete en las XI Jornadas de Kinesiología y Fisiatría UGR 2026!');
-            window.open('https://wa.me/?text=' + msg + '%20' + url, '_blank');
-        });
-    }
-
-    const shareTwitter = document.getElementById('shareTwitter');
-    if (shareTwitter) {
-        shareTwitter.addEventListener('click', function(e) {
-            e.preventDefault();
-            const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent('¡Inscríbete en las XI Jornadas de Kinesiología y Fisiatría UGR 2026!');
-            window.open('https://twitter.com/intent/tweet?text=' + text + '&url=' + url, '_blank');
-        });
-    }
-
-    const shareFacebook = document.getElementById('shareFacebook');
-    if (shareFacebook) {
-        shareFacebook.addEventListener('click', function(e) {
-            e.preventDefault();
-            const url = encodeURIComponent(window.location.href);
-            window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, '_blank');
-        });
-    }
-});
 
 // ========== INICIALIZAR ==========
 document.addEventListener('DOMContentLoaded', function() {
