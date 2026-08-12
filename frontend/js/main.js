@@ -3,6 +3,7 @@ let adminToken = null;
 let paginaAdmin = 1;
 let paginaMisIns = 1;
 let currentEmailConsulta = '';
+let modalCharlaId = null;
 
 // ========== TEMA OSCURO/CLARO ==========
 document.addEventListener('DOMContentLoaded', function() {
@@ -29,15 +30,13 @@ function actualizarDigito(el, nuevoValor) {
     if (el.textContent !== nuevoValor) {
         el.textContent = nuevoValor;
         el.classList.remove('tick');
-        // Forzar reflow para reiniciar la animación
         void el.offsetWidth;
         el.classList.add('tick');
     }
 }
 
 function actualizarContador() {
-    // Fecha del evento: 2 de septiembre de 2026, 00:00 (UTC-3)
-    const fechaEvento = Date.UTC(2026, 8, 2, 3, 0, 0); // 03:00 UTC = 00:00 (UTC-3)
+    const fechaEvento = Date.UTC(2026, 8, 2, 3, 0, 0);
     const ahora = new Date().getTime();
     const diferencia = fechaEvento - ahora;
 
@@ -65,7 +64,6 @@ function actualizarContador() {
     actualizarDigito(secondsEl, String(segundos).padStart(2, '0'));
 }
 
-// Iniciar contador
 setInterval(actualizarContador, 1000);
 actualizarContador();
 
@@ -111,81 +109,114 @@ function cambiarSeccion(id) {
         cargarAdminInscripciones(1);
     }
 }
-// Mostrar Inicio por defecto
 cambiarSeccion('inicio');
 
-// ========== CARGAR CHARLAS ==========
+// ========== FUNCIONES AUXILIARES PARA AVATAR ==========
+function generarColor(nombre) {
+    if (!nombre) return '#6ea8fe';
+    let hash = 0;
+    for (let i = 0; i < nombre.length; i++) {
+        hash = nombre.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const colores = ['#ff8a5b', '#ff6b8b', '#f7b733', '#2fc3b8', '#9b7fe0', '#6ea8fe', '#f78166', '#56d4c8'];
+    return colores[Math.abs(hash) % colores.length];
+}
+
+function obtenerIniciales(nombre) {
+    if (!nombre) return '?';
+    const partes = nombre.trim().split(' ');
+    if (partes.length >= 2) {
+        return (partes[0][0] + partes[1][0]).toUpperCase();
+    }
+    return nombre.substring(0, 2).toUpperCase();
+}
+
+// ========== CARGAR CHARLAS (tarjetas horizontales) ==========
 async function cargarCharlas() {
     const spinner = document.getElementById('loading-spinner');
-    const container = document.getElementById('tabla-cronograma');
-    const containerFull = document.getElementById('tabla-cronograma-full');
+    const container = document.getElementById('cronograma-cards');
     const select = document.getElementById('charla');
 
     if (spinner) spinner.style.display = 'flex';
+    if (container) container.innerHTML = '';
 
     try {
         const resp = await fetch(API_URL + '/charlas');
-        if (!resp.ok) {
-            throw new Error('Error ' + resp.status + ': ' + resp.statusText);
-        }
+        if (!resp.ok) throw new Error('Error ' + resp.status + ': ' + resp.statusText);
         const charlas = await resp.json();
 
+        // Agrupar por día
         const grupos = {};
         charlas.forEach(function(ch) {
             if (!grupos[ch.dia]) grupos[ch.dia] = [];
             grupos[ch.dia].push(ch);
         });
 
+        // Ordenar días
+        const ordenDias = ['Miércoles 2', 'Jueves 3'];
         let html = '';
-        let filaIndex = 0;
-        for (const [dia, lista] of Object.entries(grupos)) {
-            html += '<h3>🗓️ ' + dia + '</h3>';
-            html += '<table class="tabla-charlas"><thead><tr>';
-            html += '<th>🕒 Horario</th><th>📌 Título</th><th>🎙️ Ponente</th>';
-            html += '<th>🎟️ Cupos</th><th>Acción</th>';
-            html += '</tr></thead><tbody>';
+        for (const dia of ordenDias) {
+            if (!grupos[dia]) continue;
+            const lista = grupos[dia];
+            lista.sort((a, b) => a.hora.localeCompare(b.hora));
+
+            html += `<div class="dia-titulo">🗓️ ${dia}</div>`;
+            html += `<div class="carrusel">`;
+
             lista.forEach(function(ch) {
                 const disponibles = ch.disponibles || 0;
                 const inscritos = ch.inscritos || 0;
                 const total = ch.cupo_maximo || 40;
                 const disabled = disponibles <= 0 ? 'disabled' : '';
-                const delay = (filaIndex * 60) % 420;
-                html += '<tr style="animation-delay: ' + delay + 'ms;" class="fila-entrada">';
-                html += '<td>' + ch.hora + '</td>';
-                html += '<td>' + ch.titulo + '</td>';
-                html += '<td>' + ch.ponente + '</td>';
-                html += '<td><span class="cupo-detalle">👥 Inscritos: ' + inscritos + ' / ' + total + '</span></td>';
-                html += '<td><button type="button" class="btn-inscribir" data-id="' + ch.id + '" ' + disabled + '>' + (disponibles > 0 ? 'Inscribirse' : 'Agotado') + '</button></td>';
-                html += '</tr>';
-                filaIndex++;
+                const avatarColor = generarColor(ch.ponente);
+                const iniciales = obtenerIniciales(ch.ponente);
+                const tituloProf = 'Lic. en Kinesiología y Fisiatría';
+                const aula = 'Aula 3'; // Fijo, puedes cambiarlo
+
+                html += `
+                    <div class="charla-card-horizontal" data-id="${ch.id}" data-dia="${ch.dia}" data-hora="${ch.hora}">
+                        <div class="card-header">
+                            <div class="avatar" style="background:${avatarColor};">${iniciales}</div>
+                            <div class="ponente-info">
+                                <div class="ponente-nombre">${ch.ponente || 'Ponente'}</div>
+                                <div class="ponente-titulo">${tituloProf}</div>
+                            </div>
+                        </div>
+                        <div class="charla-titulo">${ch.titulo || 'Título no especificado'}</div>
+                        <div class="charla-detalle">
+                            <span>📅 ${ch.dia}</span>
+                            <span>🕒 ${ch.hora}</span>
+                            <span>🏛️ ${aula}</span>
+                        </div>
+                        <div class="cupos-disponibles">👥 ${inscritos} / ${total} inscritos</div>
+                        <button type="button" class="btn-inscribir-tarjeta" data-id="${ch.id}" ${disabled}>
+                            ${disponibles > 0 ? '🎯 Inscribirse' : 'Agotado'}
+                        </button>
+                    </div>
+                `;
             });
-            html += '</tbody></table>';
+
+            html += `</div>`; // cierre carrusel
         }
 
         if (spinner) spinner.style.display = 'none';
         if (container) container.innerHTML = html;
-        if (containerFull) containerFull.innerHTML = html;
 
-        if (container) {
-            container.querySelectorAll('.btn-inscribir').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    const id = this.dataset.id;
-                    const selectCharla = document.getElementById('charla');
-                    if (selectCharla) {
-                        for (let opt of selectCharla.options) {
-                            if (opt.value == id) {
-                                selectCharla.value = id;
-                                break;
-                            }
-                        }
-                        const event = new Event('change');
-                        selectCharla.dispatchEvent(event);
-                        document.getElementById('inscripcion-section').scrollIntoView({ behavior: 'smooth' });
-                    }
-                });
+        // Eventos de inscripción desde tarjeta
+        container.querySelectorAll('.btn-inscribir-tarjeta:not([disabled])').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const charlaId = this.dataset.id;
+                const card = this.closest('.charla-card-horizontal');
+                const dia = card.dataset.dia;
+                const hora = card.dataset.hora;
+                const ponente = card.querySelector('.ponente-nombre').textContent;
+                const titulo = card.querySelector('.charla-titulo').textContent;
+                const aula = card.querySelector('.charla-detalle span:last-child')?.textContent.replace('🏛️ ', '') || 'Aula 3';
+                mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
             });
-        }
+        });
 
+        // Llenar select del formulario tradicional
         if (select) {
             select.innerHTML = '<option value="">-- Elige --</option>';
             charlas.forEach(function(ch) {
@@ -196,11 +227,10 @@ async function cargarCharlas() {
                     select.appendChild(opt);
                 }
             });
-
             select.addEventListener('change', function() {
                 const id = parseInt(this.value);
                 if (id) {
-                    const ch = charlas.find(function(c) { return c.id === id; });
+                    const ch = charlas.find(c => c.id === id);
                     document.getElementById('cupo-disponible').textContent = ch ? 'Disponibles: ' + ch.disponibles : '';
                 } else {
                     document.getElementById('cupo-disponible').textContent = '';
@@ -215,7 +245,73 @@ async function cargarCharlas() {
     }
 }
 
-// ========== INSCRIPCIÓN ==========
+// ========== MODAL DE INSCRIPCIÓN ==========
+function mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula) {
+    modalCharlaId = charlaId;
+    const modal = document.getElementById('modal-inscripcion');
+    const info = document.getElementById('modal-charla-info');
+    info.innerHTML = `
+        <strong>${titulo}</strong><br>
+        🎙️ ${ponente} · 📅 ${dia} · 🕒 ${hora} · 🏛️ ${aula}
+    `;
+    document.getElementById('modal-nombre').value = '';
+    document.getElementById('modal-email').value = '';
+    document.getElementById('modal-mensaje').innerHTML = '';
+    document.getElementById('modal-qr-container').style.display = 'none';
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal
+document.getElementById('modal-close').addEventListener('click', function() {
+    document.getElementById('modal-inscripcion').style.display = 'none';
+});
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('modal-inscripcion');
+    if (e.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+// Envío del formulario del modal
+document.getElementById('modal-form-inscripcion').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const nombre = document.getElementById('modal-nombre').value.trim();
+    const email = document.getElementById('modal-email').value.trim();
+    if (!nombre || !email) {
+        document.getElementById('modal-mensaje').innerHTML = '<span style="color:#f85149;">Completa todos los campos.</span>';
+        return;
+    }
+    try {
+        const resp = await fetch(API_URL + '/inscribir', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, email, charla_id: modalCharlaId })
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+            document.getElementById('modal-mensaje').innerHTML = '<span style="color:#2fc3b8;">✅ ' + data.mensaje + '</span>';
+            const qrContainer = document.getElementById('modal-qr-container');
+            qrContainer.style.display = 'block';
+            document.getElementById('modal-qr-imagen').src = data.qr;
+            document.getElementById('modal-qr-enlace').href = data.url;
+            document.getElementById('modal-qr-enlace').textContent = data.url;
+            document.getElementById('modal-descargar-qr').onclick = function() {
+                const link = document.createElement('a');
+                link.download = 'qr-' + data.codigo + '.png';
+                link.href = data.qr;
+                link.click();
+            };
+            // Recargar cronograma para actualizar cupos
+            cargarCharlas();
+        } else {
+            document.getElementById('modal-mensaje').innerHTML = '<span style="color:#f85149;">❌ ' + (data.error || 'Error') + '</span>';
+        }
+    } catch (error) {
+        document.getElementById('modal-mensaje').innerHTML = '<span style="color:#f85149;">❌ Error de conexión</span>';
+    }
+});
+
+// ========== INSCRIPCIÓN TRADICIONAL ==========
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('form-inscripcion');
     if (form) {
@@ -570,7 +666,6 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     cargarCharlas();
 });
-// También ejecutar por si el DOM ya está cargado
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     cargarCharlas();
 }

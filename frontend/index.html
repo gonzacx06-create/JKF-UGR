@@ -6,7 +6,7 @@
     <title>Jornadas Kinesiologia UGR 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,500;1,500&display=swap" rel="stylesheet" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>" />
-    <link rel="stylesheet" href="css/styles.css?v=6" />
+    <link rel="stylesheet" href="css/styles.css?v=7" />
 </head>
 <body>
     <!-- FONDO DECORATIVO -->
@@ -78,19 +78,20 @@
                     </div>
                 </div>
 
-                <!-- Cronograma -->
+                <!-- Cronograma en tarjetas horizontales -->
                 <div id="cronograma-section">
                     <h2>📋 Cronograma de Charlas</h2>
-                    <div id="tabla-cronograma">
-                        <div id="loading-spinner" class="spinner-container">
-                            <div class="spinner"></div>
-                            <p>Cargando cronograma...</p>
-                        </div>
+                    <div id="loading-spinner" class="spinner-container">
+                        <div class="spinner"></div>
+                        <p>Cargando cronograma...</p>
+                    </div>
+                    <div id="cronograma-cards" class="cronograma-cards-container">
+                        <!-- Las tarjetas se generan dinámicamente -->
                     </div>
                 </div>
             </div>
 
-            <!-- Inscripción -->
+            <!-- Inscripción tradicional (opcional, se mantiene) -->
             <div class="card" id="inscripcion-section">
                 <h2>📝 Inscripción</h2>
                 <form id="form-inscripcion">
@@ -122,7 +123,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN CRONOGRAMA (directa) -->
+        <!-- SECCIÓN CRONOGRAMA (directa) - ya no se usa, pero la mantenemos por si acaso -->
         <section id="cronograma" class="section">
             <div class="card">
                 <h2>📋 Cronograma de Charlas</h2>
@@ -200,6 +201,34 @@
             </div>
         </section>
     </main>
+
+    <!-- MODAL DE INSCRIPCIÓN DESDE TARJETA -->
+    <div id="modal-inscripcion" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <span class="modal-close" id="modal-close">&times;</span>
+            <h3>📝 Inscribirse a la charla</h3>
+            <div id="modal-charla-info"></div>
+            <form id="modal-form-inscripcion">
+                <div class="form-group">
+                    <label for="modal-nombre">Nombre completo:</label>
+                    <input type="text" id="modal-nombre" autocomplete="given-name" required />
+                </div>
+                <div class="form-group">
+                    <label for="modal-email">Correo electrónico:</label>
+                    <input type="email" id="modal-email" autocomplete="email" required />
+                </div>
+                <button type="submit">Inscribirme</button>
+            </form>
+            <div id="modal-mensaje"></div>
+            <div id="modal-qr-container" style="display:none;">
+                <h4>🎉 ¡Inscripción exitosa!</h4>
+                <p>Guarda este código QR para verificar tu asistencia.</p>
+                <img id="modal-qr-imagen" src="" alt="QR" />
+                <p><a id="modal-qr-enlace" href="#" target="_blank">Enlace de verificación</a></p>
+                <button type="button" id="modal-descargar-qr">Descargar QR</button>
+            </div>
+        </div>
+    </div>
 
     <!-- FOOTER -->
     <footer>
