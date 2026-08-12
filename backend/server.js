@@ -41,31 +41,58 @@ db.serialize(() => {
   db.run("DELETE FROM inscripciones");
   db.run("UPDATE charlas SET inscritos = 0");
 
-  // Insertar charlas de ejemplo si no existen
-  db.get("SELECT COUNT(*) as count FROM charlas", (err, row) => {
-    if (row.count === 0) {
-      const charlas = [
-        ['Robertino Bottaniz', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
-        ['Agustin Elz', 'Miércoles 2', '09:00 - 10:00', 'agus elz', 40],
-        ['Angelina Tibaldo', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
-        ['Ramiro Pioli', 'Miércoles 2', '11:00 - 12:00', 'Ramiro Pioli', 40],
-        ['Sofia Mandole, Iara Pereyra', 'Miércoles 2', '12:00 - 13:00', 'Sofia Mandole, Iara Pereyra', 40],
-        ['Ana Cristina Piacenza', 'Miércoles 2', '13:00 - 14:00', 'Ana Cristina Piacenza', 40],
-        ['Antonella Baldesari', 'Miércoles 2', '14:00 - 15:00', 'Antonella Baldesari', 40],
-        ['Carlos Fumero', 'Miércoles 2', '15:00 - 16:00', 'Carlos Fumero', 40],
-        ['Federico uca', 'Miércoles 2', '16:00 - 17:00', 'Federico uca', 40],
-        ['Brenda lorenz', 'Miércoles 2', '18:00 - 19:00', 'Brenda lorenz', 40],
-        ['Vanesa Dupertuis', 'Miércoles 2', '19:00 - 20:00', 'Vanesa Dupertuis', 40],
-        ['Lucas Orlandi', 'Jueves 3', '08:00 - 09:00', 'Lucas Orlandi', 40],
-        ['Maria Magdalena Escobar Cello y Micaela Carrizo', 'Jueves 3', '10:00 - 11:00', 'Maria Magdalena Escobar Cello y Micaela Carrizo', 40],
-        ['Pablo Seguro', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
-        ['Griselda Sosa', 'Jueves 3', '12:00 - 13:00', 'Gri Sosa', 40],
-        ['Carlos Bonino', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino', 40],
-        ['Mariela Perugini', 'Jueves 3', '12:00 - 14:30', 'Mariela Perugini', 40]
+  // Eliminar charlas existentes y cargar las nuevas
+  db.run("DELETE FROM charlas", (err) => {
+    if (err) console.error('Error al eliminar charlas:', err.message);
+    else {
+      // ========== NUEVA LISTA DE CHARLAS (según los datos proporcionados) ==========
+      const nuevasCharlas = [
+        // ===== MIÉRCOLES 2 =====
+        // 8 HS
+        ['Abordaje Osteopatico de la "Pubalgia" (Dolor de cadera). Evaluación y tratamiento.', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
+        // 9 HS
+        ['', 'Miércoles 2', '09:00 - 10:00', 'agus elz', 40],
+        // 10 HS
+        ['*Cuando la postura no mejora: el papel de las vísceras en el dolor y la disfunción* Evaluación y tratamiento integrando Osteopatía Visceral y Posturoterapia.', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
+        // 11 HS
+        ['', 'Miércoles 2', '11:00 - 12:00', 'rami pioli', 40],
+        // 12 HS
+        ['Posicionamiento y estrategias de autorregulación en recien nacidos', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
+        // 13 HS (múltiples ponentes)
+        ['', 'Miércoles 2', '13:00 - 14:00', 'Ana Cristina Piacenza, Meli Yobe, Martin Larramendi', 40],
+        // 14 HS
+        ['"Descubriendo el suelo pelvico"', 'Miércoles 2', '14:00 - 15:00', 'Anto Baldesari', 40],
+        // 15 HS (taller de 15 a 17)
+        ['Taller práctico (15:00 - 17:00)', 'Miércoles 2', '15:00 - 17:00', 'Carlos fumero', 40],
+        // 16 HS (ya cubierto por el taller, pero se deja como espacio libre)
+        ['', 'Miércoles 2', '16:00 - 17:00', 'fede uca', 40],
+        // 17 HS
+        ['Quiropraxia: detección y análisis de la subluxacion vertebral', 'Miércoles 2', '17:00 - 18:00', 'Ignacio Guastavino', 40],
+        // 18 HS
+        ['', 'Miércoles 2', '18:00 - 19:00', 'brenda lorenz', 40],
+        // 19 HS
+        ['Pilates aplicado al deporte', 'Miércoles 2', '19:00 - 20:00', 'Vanesa Dupertuis', 40],
+
+        // ===== JUEVES 3 =====
+        // 8 HS
+        ['Mecanismos neurobiologicos del movimiento sobre la cognición: el cerebelo como órgano de predicción y modelos internos', 'Jueves 3', '08:00 - 09:00', 'Lucas Orlandi', 40],
+        // 9 HS (vacío)
+        ['', 'Jueves 3', '09:00 - 10:00', '', 40],
+        // 10 HS
+        ['Caso clínico y taller práctico de rehabilitación pulmonar', 'Jueves 3', '10:00 - 11:00', 'Male y Mica Carrizo, Ulises Magallanes', 40],
+        // 11 HS
+        ['', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
+        // 12 HS
+        ['', 'Jueves 3', '12:00 - 13:00', 'Gri Sosa', 40],
+        // 13 HS
+        ['El alcance: una orquesta de articulaciones, músculos y sistema nervioso', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino + Cami Gasser', 40]
       ];
+
       const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
-      charlas.forEach(c => stmt.run(c));
-      stmt.finalize();
+      nuevasCharlas.forEach(ch => stmt.run(ch));
+      stmt.finalize(() => {
+        console.log('✅ Cronograma actualizado con los nuevos datos (Miércoles 2 y Jueves 3)');
+      });
     }
   });
 });
@@ -147,7 +174,8 @@ app.delete('/api/inscripciones/:codigo', (req, res) => {
 
 // ========== PÁGINA DE VERIFICACIÓN QR (pública) ==========
 app.get('/verificar/:codigo', (req, res) => {
-  // ... (código ya lo tienes, no lo modifico)
+  // Aquí va tu código de verificación (el que ya tenías)
+  // Lo dejo fuera por brevedad, pero debe estar presente
 });
 
 // ========== MIDDLEWARE DE AUTENTICACIÓN (solo para admin) ==========
