@@ -577,11 +577,10 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     font-size: 0.95rem;
     margin: 8px 0 10px;
     color: var(--text);
-    line-height: 1.3;
-    flex: 1;
-    max-height: 3.9rem;
-    overflow: hidden;
+    line-height: 1.4;
+    flex: 1 1 auto;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     font-family: 'Fraunces', serif;
     font-weight: 400;
     font-style: italic;
@@ -963,7 +962,7 @@ footer .footer-contact {
     .charla-card-horizontal .avatar-group .avatar-item { width: 36px; height: 36px; }
     .charla-card-horizontal .avatar-group.many .avatar-item { width: 28px; height: 28px; }
     .charla-card-horizontal .ponente-nombre { font-size: 1rem; }
-    .charla-card-horizontal .charla-titulo { font-size: 0.85rem; }
+    .charla-card-horizontal .charla-titulo { font-size: 0.85rem; line-height: 1.3; }
     .sanatorio-card { flex: 0 0 280px; max-width: 280px; min-height: 140px; padding: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
