@@ -225,21 +225,21 @@ async function cargarCharlas() {
             });
         }
 
-        // --- Generar tarjetas del Sanatorio ---
+        // --- Generar tarjetas del Sanatorio (con ubicación corregida) ---
         if (sanatorio.length > 0) {
             let sanHtml = `<div class="carrusel-sanatorio">`;
             sanatorio.sort((a, b) => a.hora.localeCompare(b.hora));
             sanatorio.forEach(ch => {
                 const disponibles = ch.disponibles || 0;
                 const inscriptos = ch.inscritos || 0;
-                const total = ch.cupo_maximo || 60;
+                const total = ch.cupo_maximo || 40;
                 const disabled = disponibles <= 0 ? 'disabled' : '';
                 sanHtml += `
                     <div class="sanatorio-card" data-id="${ch.id}" data-dia="${ch.dia}" data-hora="${ch.hora}">
                         <div class="sanatorio-titulo">${ch.titulo || 'Título'}</div>
                         <div class="sanatorio-ponentes">🎙️ ${ch.ponente || 'Ponentes'}</div>
                         <div class="sanatorio-detalle">
-                            <span>📅 ${ch.dia}</span>
+                            <span>📅 Jueves 3 - 📍 Suipacha 2251 - SSF</span>
                             <span>🕒 ${ch.hora}</span>
                             <span>👥 ${inscriptos} / ${total} inscriptos</span>
                         </div>

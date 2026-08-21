@@ -21,7 +21,6 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 // Base de datos SQLite
 const db = new sqlite3.Database('./jornadas.db');
 
-// ========== INICIALIZAR TABLAS Y DATOS ==========
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS charlas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,11 +67,11 @@ db.serialize(() => {
         ['"ABORDAJE KINÉSICO ONCOLÓGICO" Charla a la carta...', 'Jueves 3', '13:00 - 14:00', 'Mariela Perugini', 40],
         ['El alcance: una orquesta de articulaciones, músculos y sistema nervioso', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino, Camila Gasser', 40],
 
-        // ===== JUEVES 3 - SANATORIO =====
-        ['Desafío ventilatorio en la UTI pediátrica: presentación de un caso.', 'Jueves 3 - Sanatorio', '15:30 - 16:30', 'Residentes SSF, Lic. Quintana Carla, Lic. Imoberdorf Emilio', 60],
-        ['Protocolo pop de cirugía cardiovascular en UCO sanatorio Santa Fe', 'Jueves 3 - Sanatorio', '16:30 - 17:30', 'Lic.Díaz Parodi Agustín, Lic.Kolmann Barbara, Lic.Ponce Angelica, Lic.Suarez Araceli', 60],
-        ['Evaluaciones de ingreso al programa de rehabilitación cardiopulmonar.', 'Jueves 3 - Sanatorio', '17:30 - 18:30', 'Dr. Luisina Gómez, Lic. Luisina Rey', 60],
-        ['Return to Play: Conversatorio con el staff del Club Atlético Colón', 'Jueves 3 - Sanatorio', '18:30 - 19:30', 'Dr. Francisco Vega, PF. Matías bustos, Lic. Alejandro Enjuto, Lic. Juan Manuel Madero', 60]
+        // ===== JUEVES 3 - SANATORIO (cupo 40, ubicación fija en frontend) =====
+        ['Desafío ventilatorio en la UTI pediátrica: presentación de un caso.', 'Jueves 3 - Sanatorio', '15:30 - 16:30', 'Residentes SSF, Lic. Quintana Carla, Lic. Imoberdorf Emilio', 40],
+        ['Protocolo pop de cirugía cardiovascular en UCO sanatorio Santa Fe', 'Jueves 3 - Sanatorio', '16:30 - 17:30', 'Lic.Díaz Parodi Agustín, Lic.Kolmann Barbara, Lic.Ponce Angelica, Lic.Suarez Araceli', 40],
+        ['Evaluaciones de ingreso al programa de rehabilitación cardiopulmonar.', 'Jueves 3 - Sanatorio', '17:30 - 18:30', 'Dr. Luisina Gómez, Lic. Luisina Rey', 40],
+        ['Return to Play: Conversatorio con el staff del Club Atlético Colón', 'Jueves 3 - Sanatorio', '18:30 - 19:30', 'Dr. Francisco Vega, PF. Matías Bustos, Lic. Alejandro Enjuto, Lic. Juan Manuel Madoery', 40]
       ];
 
       const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
