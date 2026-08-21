@@ -123,30 +123,48 @@ function normalizarNombreParaFoto(nombre) {
     if (!nombre) return 'ponente';
     return nombre.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
-function generarAvatarHTML(ponente) {
-    const nombre = ponente || 'Ponente';
-    const iniciales = obtenerIniciales(nombre);
-    const color = generarColor(nombre);
-    const nombreFoto = normalizarNombreParaFoto(nombre);
-    const fotoPath = `assets/ponentes/${nombreFoto}.png`;
-    return `<div class="avatar">
-        <img src="${fotoPath}" alt="${nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'iniciales\\' style=\\'background:${color};\\'>${iniciales}</span>';" />
-    </div>`;
+
+function generarAvatares(ponenteStr) {
+    if (!ponenteStr) return '<div class="avatar-group"><div class="avatar-item"><span class="iniciales" style="background:#6ea8fe;">?</span></div></div>';
+    const nombres = ponenteStr.split(',').map(s => s.trim());
+    const muchos = nombres.length > 2 ? 'many' : '';
+    let html = `<div class="avatar-group ${muchos}">`;
+    nombres.forEach(nombre => {
+        const iniciales = obtenerIniciales(nombre);
+        const color = generarColor(nombre);
+        const nombreFoto = normalizarNombreParaFoto(nombre);
+        const fotoPath = `assets/ponentes/${nombreFoto}.png`;
+        html += `<div class="avatar-item">
+            <img src="${fotoPath}" alt="${nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'iniciales\\' style=\\'background:${color};\\'>${iniciales}</span>';" />
+        </div>`;
+    });
+    html += '</div>';
+    return html;
 }
 
-// ========== CARGAR CHARLAS ==========
+// ========== CARGAR CHARLAS (incluyendo Sanatorio) ==========
 async function cargarCharlas() {
     const spinner = document.getElementById('loading-spinner');
     const container = document.getElementById('cronograma-cards');
+    const sanatorioContainer = document.getElementById('sanatorio-cards');
     const select = document.getElementById('charla');
+
     if (spinner) spinner.style.display = 'flex';
     if (container) container.innerHTML = '';
+    if (sanatorioContainer) sanatorioContainer.innerHTML = '';
+
     try {
         const resp = await fetch(API_URL + '/charlas');
         if (!resp.ok) throw new Error('Error ' + resp.status + ': ' + resp.statusText);
         const charlas = await resp.json();
+
+        // Separar normales y Sanatorio
+        const normales = charlas.filter(ch => ch.dia !== 'Jueves 3 - Sanatorio');
+        const sanatorio = charlas.filter(ch => ch.dia === 'Jueves 3 - Sanatorio');
+
+        // --- Generar tarjetas normales ---
         const grupos = {};
-        charlas.forEach(function(ch) {
+        normales.forEach(ch => {
             if (!grupos[ch.dia]) grupos[ch.dia] = [];
             grupos[ch.dia].push(ch);
         });
@@ -158,7 +176,7 @@ async function cargarCharlas() {
             lista.sort((a, b) => a.hora.localeCompare(b.hora));
             html += `<div class="dia-titulo">🗓️ ${dia}</div>`;
             html += `<div class="carrusel">`;
-            lista.forEach(function(ch) {
+            lista.forEach(ch => {
                 const disponibles = ch.disponibles || 0;
                 const inscriptos = ch.inscritos || 0;
                 const total = ch.cupo_maximo || 40;
@@ -168,7 +186,7 @@ async function cargarCharlas() {
                 html += `
                     <div class="charla-card-horizontal" data-id="${ch.id}" data-dia="${ch.dia}" data-hora="${ch.hora}">
                         <div class="card-header">
-                            ${generarAvatarHTML(ch.ponente)}
+                            ${generarAvatares(ch.ponente)}
                             <div class="ponente-info">
                                 <div class="ponente-nombre">${ch.ponente || 'Ponente'}</div>
                                 <div class="ponente-titulo">${tituloProf}</div>
@@ -189,23 +207,72 @@ async function cargarCharlas() {
             });
             html += `</div>`;
         }
-        if (spinner) spinner.style.display = 'none';
         if (container) container.innerHTML = html;
-        container.querySelectorAll('.btn-inscribir-tarjeta:not([disabled])').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                const charlaId = this.dataset.id;
-                const card = this.closest('.charla-card-horizontal');
-                const dia = card.dataset.dia;
-                const hora = card.dataset.hora;
-                const ponente = card.querySelector('.ponente-nombre').textContent;
-                const titulo = card.querySelector('.charla-titulo').textContent;
-                const aula = card.querySelector('.charla-detalle span:last-child')?.textContent.replace('🏛️ ', '') || 'Aula 3';
-                mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
+
+        // Eventos para tarjetas normales
+        if (container) {
+            container.querySelectorAll('.btn-inscribir-tarjeta:not([disabled])').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const charlaId = this.dataset.id;
+                    const card = this.closest('.charla-card-horizontal');
+                    const dia = card.dataset.dia;
+                    const hora = card.dataset.hora;
+                    const ponente = card.querySelector('.ponente-nombre').textContent;
+                    const titulo = card.querySelector('.charla-titulo').textContent;
+                    const aula = card.querySelector('.charla-detalle span:last-child')?.textContent.replace('🏛️ ', '') || 'Aula 3';
+                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
+                });
             });
-        });
+        }
+
+        // --- Generar tarjetas del Sanatorio ---
+        if (sanatorio.length > 0) {
+            let sanHtml = `<div class="carrusel-sanatorio">`;
+            sanatorio.sort((a, b) => a.hora.localeCompare(b.hora));
+            sanatorio.forEach(ch => {
+                const disponibles = ch.disponibles || 0;
+                const inscriptos = ch.inscritos || 0;
+                const total = ch.cupo_maximo || 60;
+                const disabled = disponibles <= 0 ? 'disabled' : '';
+                sanHtml += `
+                    <div class="sanatorio-card" data-id="${ch.id}" data-dia="${ch.dia}" data-hora="${ch.hora}">
+                        <div class="sanatorio-titulo">${ch.titulo || 'Título'}</div>
+                        <div class="sanatorio-ponentes">🎙️ ${ch.ponente || 'Ponentes'}</div>
+                        <div class="sanatorio-detalle">
+                            <span>📅 ${ch.dia}</span>
+                            <span>🕒 ${ch.hora}</span>
+                            <span>👥 ${inscriptos} / ${total} inscriptos</span>
+                        </div>
+                        <button type="button" class="btn-inscribir-sanatorio" data-id="${ch.id}" ${disabled}>
+                            ${disponibles > 0 ? '🎯 Inscribirse' : 'Agotado'}
+                        </button>
+                    </div>
+                `;
+            });
+            sanHtml += `</div>`;
+            if (sanatorioContainer) sanatorioContainer.innerHTML = sanHtml;
+
+            // Eventos para Sanatorio
+            sanatorioContainer.querySelectorAll('.btn-inscribir-sanatorio:not([disabled])').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const charlaId = this.dataset.id;
+                    const card = this.closest('.sanatorio-card');
+                    const dia = card.dataset.dia;
+                    const hora = card.dataset.hora;
+                    const ponente = card.querySelector('.sanatorio-ponentes').textContent.replace('🎙️ ', '');
+                    const titulo = card.querySelector('.sanatorio-titulo').textContent;
+                    const aula = 'Sanatorio Santa Fe';
+                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
+                });
+            });
+        }
+
+        if (spinner) spinner.style.display = 'none';
+
+        // Llenar select del formulario (si existe)
         if (select) {
             select.innerHTML = '<option value="">-- Elige --</option>';
-            charlas.forEach(function(ch) {
+            charlas.forEach(ch => {
                 if (ch.disponibles > 0) {
                     const opt = document.createElement('option');
                     opt.value = ch.id;
@@ -223,10 +290,11 @@ async function cargarCharlas() {
                 }
             });
         }
+
     } catch (error) {
         console.error('Error cargando charlas:', error);
         if (spinner) spinner.style.display = 'none';
-        if (container) container.innerHTML = '<p style="color:#f85149;">Error al cargar el cronograma. Intenta de nuevo más tarde.</p>';
+        if (container) container.innerHTML = '<p style="color:#f85149;">Error al cargar el cronograma.</p>';
     }
 }
 
