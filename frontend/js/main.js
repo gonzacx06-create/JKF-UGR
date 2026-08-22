@@ -59,22 +59,38 @@ function actualizarContador() {
 setInterval(actualizarContador, 1000);
 actualizarContador();
 
-// ========== MENÚ HAMBURGUESA ==========
+// ========== MENÚ HAMBURGUESA (CORREGIDO) ==========
 document.addEventListener('DOMContentLoaded', function() {
     const menuBtn = document.getElementById('menuBtn');
     const sideMenu = document.getElementById('sideMenu');
     let menuOpen = false;
+
     if (menuBtn && sideMenu) {
         menuBtn.addEventListener('click', function() {
             menuOpen = !menuOpen;
-            sideMenu.classList.toggle('open');
+            if (menuOpen) {
+                sideMenu.style.display = '';
+                sideMenu.classList.add('open');
+            } else {
+                sideMenu.classList.remove('open');
+                sideMenu.style.display = 'none';
+            }
         });
+
         document.querySelectorAll('#sideMenu a').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const section = this.dataset.section;
                 cambiarSeccion(section);
-                sideMenu.classList.remove('open');
+                // Cerrar menú forzadamente
+                if (sideMenu) {
+                    sideMenu.classList.remove('open');
+                    sideMenu.style.display = 'none';
+                    // Restaurar display después de la transición para futuras aperturas
+                    setTimeout(() => {
+                        sideMenu.style.display = '';
+                    }, 400);
+                }
                 menuOpen = false;
             });
         });
