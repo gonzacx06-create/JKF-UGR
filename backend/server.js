@@ -50,8 +50,13 @@ db.serialize(() => {
         ['Mas allá del Salto Frontal: una evaluación integral para el retorno al deporte tras una reconstrucción del LCA.', 'Miércoles 2', '11:00 - 12:00', 'Ramiro Pioli', 40],
         ['Posicionamiento y Estrategias de autorregulación en recién nacidos.', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
         ['El niño con ECNE. Historia de Evolución Natural e Intervención según la etapa de desarrollo.', 'Miércoles 2', '12:00 - 13:00', 'M. Victoria Carignan', 40],
-        ['Principios y Fundamentos de la Equinoterapia.', 'Miércoles 2', '12:00 - 13:00', 'Ana Cristina Piacenza', 40],
-        ['Descubriendo el suelo pélvico.', 'Miércoles 2', '13:00 - 14:00', 'Melissa Yobe, Martin Larramendi', 40],
+        // Ana Cristina Piacenza ahora a las 13:00 (movida desde las 12)
+        ['Principios y Fundamentos de la Equinoterapia.', 'Miércoles 2', '13:00 - 14:00', 'Ana Cristina Piacenza', 40],
+        // Melissa Yobe y Martin Larramendi con nuevo título
+        ['Vapeo y Daño Pulmonar: del Aerosol a la Insuficiencia Respiratoria. Rol del Kinesiólogo.', 'Miércoles 2', '13:00 - 14:00', 'Melissa Yobe, Martin Larramendi', 40],
+        // Antonella Baldesari a las 14:00 (se mantiene)
+        ['Descubriendo el Suelo Pélvico.', 'Miércoles 2', '14:00 - 15:00', 'Antonella Baldesari', 40],
+        // 15:00 en adelante sin cambios
         ['Eutonía, otra forma de brindar kinesiología.', 'Miércoles 2', '15:00 - 17:00', 'Carlos Fumero', 40],
         ['Hablemos de ELA.', 'Miércoles 2', '16:00 - 17:00', 'Federico Schmidhalter', 40],
         ['Quiropraxia: detección y análisis de la Subluxación Vertebral.', 'Miércoles 2', '17:00 - 18:00', 'Ignacio Guastavino', 40],
@@ -78,7 +83,7 @@ db.serialize(() => {
       const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
       nuevasCharlas.forEach(ch => stmt.run(ch));
       stmt.finalize(() => {
-        console.log('✅ Cronograma actualizado con todos los títulos (incluyendo Sanatorio)');
+        console.log('✅ Cronograma actualizado con correcciones (Ana Cristina movida, nuevo título para Martin Larramendi)');
       });
     }
   });
