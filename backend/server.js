@@ -50,13 +50,9 @@ db.serialize(() => {
         ['Mas allá del Salto Frontal: una evaluación integral para el retorno al deporte tras una reconstrucción del LCA.', 'Miércoles 2', '11:00 - 12:00', 'Ramiro Pioli', 40],
         ['Posicionamiento y Estrategias de autorregulación en recién nacidos.', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
         ['El niño con ECNE. Historia de Evolución Natural e Intervención según la etapa de desarrollo.', 'Miércoles 2', '12:00 - 13:00', 'M. Victoria Carignan', 40],
-        // Ana Cristina Piacenza ahora a las 13:00 (movida desde las 12)
         ['Principios y Fundamentos de la Equinoterapia.', 'Miércoles 2', '13:00 - 14:00', 'Ana Cristina Piacenza', 40],
-        // Melissa Yobe y Martin Larramendi con nuevo título
         ['Vapeo y Daño Pulmonar: del Aerosol a la Insuficiencia Respiratoria. Rol del Kinesiólogo.', 'Miércoles 2', '13:00 - 14:00', 'Melissa Yobe, Martin Larramendi', 40],
-        // Antonella Baldesari a las 14:00 (se mantiene)
         ['Descubriendo el Suelo Pélvico.', 'Miércoles 2', '14:00 - 15:00', 'Antonella Baldesari', 40],
-        // 15:00 en adelante sin cambios
         ['Eutonía, otra forma de brindar kinesiología.', 'Miércoles 2', '15:00 - 17:00', 'Carlos Fumero', 40],
         ['Hablemos de ELA.', 'Miércoles 2', '16:00 - 17:00', 'Federico Schmidhalter', 40],
         ['Quiropraxia: detección y análisis de la Subluxación Vertebral.', 'Miércoles 2', '17:00 - 18:00', 'Ignacio Guastavino', 40],
@@ -70,7 +66,9 @@ db.serialize(() => {
         ['Respirar no alcanza: "Estrategias en la rehabilitación respiratoria".', 'Jueves 3', '10:30 - 11:30', 'Maria Magdalena Escobar Cello, Micaela Carrizo', 40],
         ['Caso Clínico: Retorno a la cancha de una lesión parcial de LCA.', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
         ['El Videofrenzel como herramienta en la rehabilitación vestibular. De la observación del nistagmo a la toma de decisiones clínicas.', 'Jueves 3', '12:00 - 13:00', 'Griselda Sosa', 40],
-        ['Abordaje Kinésico Oncológico. Charla a la carta...', 'Jueves 3', '13:00 - 14:00', 'Mariela Perugini', 40],
+        // ===== Mariela Perugini movida a las 12:00 =====
+        ['Abordaje Kinésico Oncológico. Charla a la carta...', 'Jueves 3', '12:00 - 13:00', 'Mariela Perugini', 40],
+        // ===== Carlos Bonino se queda a las 13:00 =====
         ['El alcance: una orquesta de articulaciones, músculos y sistema nervioso.', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino, Camila Gasser', 40],
 
         // ===== JUEVES 3 - SANATORIO =====
@@ -83,13 +81,13 @@ db.serialize(() => {
       const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
       nuevasCharlas.forEach(ch => stmt.run(ch));
       stmt.finalize(() => {
-        console.log('✅ Cronograma actualizado con correcciones (Ana Cristina movida, nuevo título para Martin Larramendi)');
+        console.log('✅ Cronograma actualizado: Mariela Perugini movida a las 12:00');
       });
     }
   });
 });
 
-// ========== ENDPOINTS PÚBLICOS ==========
+// ========== ENDPOINTS PÚBLICOS (no cambian) ==========
 app.get('/api/charlas', (req, res) => {
   db.all("SELECT *, (cupo_maximo - inscritos) as disponibles FROM charlas", (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
