@@ -44,30 +44,31 @@ db.serialize(() => {
     else {
       const nuevasCharlas = [
         // ===== MIÉRCOLES 2 =====
-        ['Abordaje Osteopático de la "Pubalgia" (Dolor de cadera). Evaluación y tratamiento.', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
+        ['Abordaje Osteopático de la Pubalgia (Dolor de Cadera). Evaluación y Tratamiento.', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
         ['', 'Miércoles 2', '09:00 - 10:00', 'Agustin Elz', 40],
-        ['Cuando la postura no mejora: el papel de las vísceras en el dolor y la disfunción. Evaluación y tratamiento integrando Osteopatía Visceral y Posturoterapia.', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
-        ['', 'Miércoles 2', '11:00 - 12:00', 'Ramiro Pioli', 40],
-        ['Posicionamiento y estrategias de autorregulación en recién nacidos', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
-        ['El niño con ECNE. Historia de evolución natural e intervenciones según la etapa de desarrollo.', 'Miércoles 2', '12:00 - 13:00', 'M. Victoria Carignan', 40],
-        ['Principios y fundamentos de la equinoterapia', 'Miércoles 2', '12:00 - 13:00', 'Ana Cristina Piacenza', 40],
-        ['Descubriendo el suelo pélvico', 'Miércoles 2', '13:00 - 14:00', 'Melissa Yobe, Martin Larramendi', 40],
-        ['Taller práctico (15:00 - 17:00)', 'Miércoles 2', '15:00 - 17:00', 'Carlos Fumero', 40],
-        ['Quiropraxia: detección y análisis de la subluxacion vertebral', 'Miércoles 2', '17:00 - 18:00', 'Ignacio Guastavino', 40],
-        ['Pilates aplicado al deporte', 'Miércoles 2', '18:00 - 19:00', 'Brenda Lorenz', 40],
-        ['', 'Miércoles 2', '19:00 - 20:00', 'Vanesa Dupertuis', 40],
+        ['Cuando la Postura no mejora: el papel de las vísceras en el Dolor y la Disfunción. Evaluación y Tratamiento Integrando Osteopatía Visceral y Posturoterapia.', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
+        ['Mas allá del Salto Frontal: una evaluación integral para el retorno al deporte tras una reconstrucción del LCA.', 'Miércoles 2', '11:00 - 12:00', 'Ramiro Pioli', 40],
+        ['Posicionamiento y Estrategias de autorregulación en recién nacidos.', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
+        ['El niño con ECNE. Historia de Evolución Natural e Intervención según la etapa de desarrollo.', 'Miércoles 2', '12:00 - 13:00', 'M. Victoria Carignan', 40],
+        ['Principios y Fundamentos de la Equinoterapia.', 'Miércoles 2', '12:00 - 13:00', 'Ana Cristina Piacenza', 40],
+        ['Descubriendo el suelo pélvico.', 'Miércoles 2', '13:00 - 14:00', 'Melissa Yobe, Martin Larramendi', 40],
+        ['Eutonía, otra forma de brindar kinesiología.', 'Miércoles 2', '15:00 - 17:00', 'Carlos Fumero', 40],
+        ['Hablemos de ELA.', 'Miércoles 2', '16:00 - 17:00', 'Federico Schmidhalter', 40],
+        ['Quiropraxia: detección y análisis de la Subluxación Vertebral.', 'Miércoles 2', '17:00 - 18:00', 'Ignacio Guastavino', 40],
+        ['Enfermedad de Parkinson y su abordaje en el agua mediante el Método Ai Chi.', 'Miércoles 2', '18:00 - 19:00', 'Brenda Lorenz', 40],
+        ['Pilates aplicada al deporte.', 'Miércoles 2', '19:00 - 20:00', 'Vanesa Dupertuis', 40],
 
         // ===== JUEVES 3 (Universidad) =====
-        ['Mecanismos neurobiologicos del movimiento sobre la cognición: el cerebelo como órgano de predicción y modelos internos', 'Jueves 3', '08:00 - 09:00', 'Lucas Orlandi', 40],
-        ['', 'Jueves 3', '09:00 - 10:00', 'Franco Riboldi', 40],
+        ['Mecanismos Neurobiológicos del movimiento sobre la cognición: el cerebro como órgano de predicción y modelos internos.', 'Jueves 3', '08:00 - 09:00', 'Lucas Orlandi', 40],
+        ['Taller de kinefilaxia. Gimnasia Postural.', 'Jueves 3', '09:00 - 10:00', 'Franco Riboldi', 40],
         ['', 'Jueves 3', '10:00 - 11:00', 'Ulises Magallanes', 40],
-        ['Respirar no alcanza. "Estrategias en la rehabilitación respiratoria"', 'Jueves 3', '10:30 - 11:30', 'Maria Magdalena Escobar Cello, Micaela Carrizo', 40],
-        ['', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
-        ['El Videofrenzel como herramienta en la rehabilitación vestibular. De la observación del instagmo a la toma de decisiones clínicas', 'Jueves 3', '12:00 - 13:00', 'Griselda Sosa', 40],
-        ['"ABORDAJE KINÉSICO ONCOLÓGICO" Charla a la carta...', 'Jueves 3', '13:00 - 14:00', 'Mariela Perugini', 40],
-        ['El alcance: una orquesta de articulaciones, músculos y sistema nervioso', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino, Camila Gasser', 40],
+        ['Respirar no alcanza: "Estrategias en la rehabilitación respiratoria".', 'Jueves 3', '10:30 - 11:30', 'Maria Magdalena Escobar Cello, Micaela Carrizo', 40],
+        ['Caso Clínico: Retorno a la cancha de una lesión parcial de LCA.', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
+        ['El Videofrenzel como herramienta en la rehabilitación vestibular. De la observación del nistagmo a la toma de decisiones clínicas.', 'Jueves 3', '12:00 - 13:00', 'Griselda Sosa', 40],
+        ['Abordaje Kinésico Oncológico. Charla a la carta...', 'Jueves 3', '13:00 - 14:00', 'Mariela Perugini', 40],
+        ['El alcance: una orquesta de articulaciones, músculos y sistema nervioso.', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino, Camila Gasser', 40],
 
-        // ===== JUEVES 3 - SANATORIO (cupo 40, ubicación fija en frontend) =====
+        // ===== JUEVES 3 - SANATORIO =====
         ['Desafío ventilatorio en la UTI pediátrica: presentación de un caso.', 'Jueves 3 - Sanatorio', '15:30 - 16:30', 'Residentes SSF, Lic. Quintana Carla, Lic. Imoberdorf Emilio', 40],
         ['Protocolo pop de cirugía cardiovascular en UCO sanatorio Santa Fe', 'Jueves 3 - Sanatorio', '16:30 - 17:30', 'Lic.Díaz Parodi Agustín, Lic.Kolmann Barbara, Lic.Ponce Angelica, Lic.Suarez Araceli', 40],
         ['Evaluaciones de ingreso al programa de rehabilitación cardiopulmonar.', 'Jueves 3 - Sanatorio', '17:30 - 18:30', 'Dr. Luisina Gómez, Lic. Luisina Rey', 40],
@@ -77,7 +78,7 @@ db.serialize(() => {
       const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
       nuevasCharlas.forEach(ch => stmt.run(ch));
       stmt.finalize(() => {
-        console.log('✅ Cronograma actualizado con todos los datos (incluyendo Sanatorio)');
+        console.log('✅ Cronograma actualizado con todos los títulos (incluyendo Sanatorio)');
       });
     }
   });
