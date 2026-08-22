@@ -202,7 +202,6 @@
 <!-- ===== PANEL DE ADMINISTRACIÓN ===== -->
 <div id="admin-content" style="display:none;">
   <div class="admin-wrapper">
-    <!-- Header -->
     <div class="admin-header">
       <h1>🔐 Panel de Administración</h1>
       <div>
@@ -210,11 +209,7 @@
         <button id="btn-logout" style="margin-left:10px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);padding:8px 16px;border-radius:var(--radius-sm);cursor:pointer;">Cerrar sesión</button>
       </div>
     </div>
-
-    <!-- Mensajes -->
     <div id="auth-message" class="mensaje"></div>
-
-    <!-- Filtros -->
     <div class="filtros">
       <input type="text" id="filtro-email" placeholder="Buscar por email..." />
       <select id="filtro-charla">
@@ -229,8 +224,6 @@
       <button id="btn-exportar" class="btn-exportar">📊 Exportar Excel</button>
       <button id="btn-limpiar" style="background: var(--surface2); color: var(--text-dim);">Limpiar filtros</button>
     </div>
-
-    <!-- Tabla de inscripciones -->
     <div class="tabla-container">
       <div id="tabla-cargando" class="cargando">Cargando inscripciones...</div>
       <div id="tabla-contenido" style="display:none;">
@@ -250,7 +243,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -259,15 +251,17 @@
     'use strict';
 
     // ============================================
-    // CONFIGURACIÓN (usamos sessionStorage)
+    // CONFIGURACIÓN
     // ============================================
     let paginaActual = 1;
     const limite = 20;
     let totalPaginas = 1;
     let tokenActual = sessionStorage.getItem('adminToken') || null;
-    const API_BASE = window.location.origin; // Obtiene la base de la URL (ej. https://jornadas-ugr.onrender.com)
+    const API_BASE = window.location.origin;
 
-    // Elementos DOM
+    // ============================================
+    // DOM
+    // ============================================
     const loginContainer = document.getElementById('login-container');
     const adminContent = document.getElementById('admin-content');
     const loginUsuario = document.getElementById('login-usuario');
@@ -276,7 +270,6 @@
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
     const authMessage = document.getElementById('auth-message');
-
     const tablaBody = document.getElementById('tabla-body');
     const tablaCargando = document.getElementById('tabla-cargando');
     const tablaContenido = document.getElementById('tabla-contenido');
@@ -291,7 +284,7 @@
     const infoPagina = document.getElementById('info-pagina');
 
     // ============================================
-    // FUNCIONES DE AUTENTICACIÓN
+    // AUTENTICACIÓN
     // ============================================
     function mostrarLogin() {
       loginContainer.style.display = 'block';
@@ -324,9 +317,6 @@
       }
     }
 
-    // ============================================
-    // FUNCIONES AUXILIARES
-    // ============================================
     function mostrarMensaje(texto, tipo) {
       authMessage.textContent = texto;
       authMessage.className = 'mensaje ' + tipo;
@@ -378,7 +368,7 @@
     btnLogout.addEventListener('click', mostrarLogin);
 
     // ============================================
-    // FILTRO: Cargar charlas desde el endpoint público
+    // FILTRO
     // ============================================
     async function cargarCharlasFiltro() {
       try {
@@ -445,55 +435,73 @@
     }
 
     // ============================================
-    // RENDERIZAR TABLA
+    // RENDERIZAR TABLA (con delegación de eventos)
     // ============================================
     function renderizarTabla(inscripciones) {
       if (inscripciones.length === 0) {
         tablaBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-dim);">No hay inscripciones.</td></tr>`;
         return;
       }
-      tablaBody.innerHTML = '';
+      let html = '';
       inscripciones.forEach(ins => {
-        const tr = document.createElement('tr');
         const escaneadoClass = ins.escaneado ? 'estado-escaneado' : 'estado-no-escaneado';
         const escaneadoText = ins.escaneado ? '✅ Sí' : '❌ No';
-        tr.innerHTML = `
-          <td>${ins.id}</td>
-          <td><strong>${ins.nombre}</strong></td>
-          <td>${ins.email}</td>
-          <td>${ins.charla_titulo}</td>
-          <td>${ins.dia}</td>
-          <td>${ins.hora}</td>
-          <td><code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px;">${ins.codigo}</code></td>
-          <td class="${escaneadoClass}">${escaneadoText}</td>
-          <td style="font-size:11px;">${ins.fecha_inscripcion}</td>
-          <td>
-            <div class="acciones">
-              <button class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-escaneado="${ins.escaneado}">
-                ${ins.escaneado ? 'Desmarcar' : 'Marcar'}
-              </button>
-              <button class="btn-eliminar" data-id="${ins.id}">Eliminar</button>
-            </div>
-          </td>
+        html += `
+          <tr>
+            <td>${ins.id}</td>
+            <td><strong>${ins.nombre}</strong></td>
+            <td>${ins.email}</td>
+            <td>${ins.charla_titulo}</td>
+            <td>${ins.dia}</td>
+            <td>${ins.hora}</td>
+            <td><code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px;">${ins.codigo}</code></td>
+            <td class="${escaneadoClass}">${escaneadoText}</td>
+            <td style="font-size:11px;">${ins.fecha_inscripcion}</td>
+            <td>
+              <div class="acciones">
+                <button class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-escaneado="${ins.escaneado}">
+                  ${ins.escaneado ? 'Desmarcar' : 'Marcar'}
+                </button>
+                <button class="btn-eliminar" data-id="${ins.id}">Eliminar</button>
+              </div>
+            </td>
+          </tr>
         `;
-        tablaBody.appendChild(tr);
       });
+      tablaBody.innerHTML = html;
 
-      document.querySelectorAll('.btn-toggle').forEach(btn => {
-        btn.addEventListener('click', async function() {
-          const id = this.dataset.id;
-          const actual = this.dataset.escaneado === 'true';
-          await toggleEscaneado(id, !actual);
-        });
-      });
-
-      document.querySelectorAll('.btn-eliminar').forEach(btn => {
-        btn.addEventListener('click', async function() {
-          const id = this.dataset.id;
-          if (confirm('¿Eliminar esta inscripción?')) await eliminarInscripcion(id);
-        });
-      });
+      // La delegación de eventos se hace en el contenedor (tablaBody)
+      // Eliminamos listeners previos para evitar duplicados
     }
+
+    // ============================================
+    // DELEGACIÓN DE EVENTOS (clicks en tablaBody)
+    // ============================================
+    tablaBody.addEventListener('click', function(e) {
+      const target = e.target.closest('button');
+      if (!target) return;
+
+      // Botón "Marcar/Desmarcar"
+      if (target.classList.contains('btn-toggle')) {
+        e.preventDefault();
+        const id = target.dataset.id;
+        const escaneadoActual = target.dataset.escaneado === 'true';
+        console.log(`🔄 Click en toggle: id=${id}, actual=${escaneadoActual}`);
+        toggleEscaneado(id, !escaneadoActual);
+        return;
+      }
+
+      // Botón "Eliminar"
+      if (target.classList.contains('btn-eliminar')) {
+        e.preventDefault();
+        const id = target.dataset.id;
+        console.log(`🗑️ Click en eliminar: id=${id}`);
+        if (confirm('¿Eliminar esta inscripción?')) {
+          eliminarInscripcion(id);
+        }
+        return;
+      }
+    });
 
     // ============================================
     // PAGINACIÓN
@@ -508,9 +516,10 @@
     }
 
     // ============================================
-    // ACCIONES: TOGGLE ESCANEADO
+    // ACCIONES (con logs en consola)
     // ============================================
     async function toggleEscaneado(id, nuevoEstado) {
+      console.log(`🔄 toggleEscaneado: id=${id}, nuevoEstado=${nuevoEstado}`);
       try {
         const res = await fetch(API_BASE + `/api/admin/inscripciones/${id}/escaneado`, {
           method: 'PUT',
@@ -518,42 +527,48 @@
           body: JSON.stringify({ escaneado: nuevoEstado })
         });
         if (!res.ok) {
+          const errorText = await res.text();
+          console.error('❌ Error en toggleEscaneado:', res.status, errorText);
           if (res.status === 401 || res.status === 403) {
             mostrarMensaje('❌ Sesión expirada.', 'error');
             mostrarLogin();
             return;
           }
-          throw new Error('Error al actualizar');
+          throw new Error(`Error ${res.status}: ${errorText}`);
         }
+        const data = await res.json();
+        console.log('✅ toggleEscaneado éxito:', data);
         mostrarMensaje('✅ Estado de escaneo actualizado', 'exito');
         cargarInscripciones(paginaActual);
       } catch (err) {
-        console.error(err);
+        console.error('❌ Error en toggleEscaneado:', err.message);
         mostrarMensaje('❌ Error al actualizar: ' + err.message, 'error');
       }
     }
 
-    // ============================================
-    // ACCIONES: ELIMINAR
-    // ============================================
     async function eliminarInscripcion(id) {
+      console.log(`🗑️ eliminarInscripcion: id=${id}`);
       try {
         const res = await fetch(API_BASE + `/api/admin/inscripciones/${id}`, {
           method: 'DELETE',
           headers: obtenerHeaders()
         });
         if (!res.ok) {
+          const errorText = await res.text();
+          console.error('❌ Error en eliminarInscripcion:', res.status, errorText);
           if (res.status === 401 || res.status === 403) {
             mostrarMensaje('❌ Sesión expirada.', 'error');
             mostrarLogin();
             return;
           }
-          throw new Error('Error al eliminar');
+          throw new Error(`Error ${res.status}: ${errorText}`);
         }
+        const data = await res.json();
+        console.log('✅ eliminarInscripcion éxito:', data);
         mostrarMensaje('✅ Inscripción eliminada', 'exito');
         cargarInscripciones(paginaActual);
       } catch (err) {
-        console.error(err);
+        console.error('❌ Error en eliminarInscripcion:', err.message);
         mostrarMensaje('❌ Error al eliminar: ' + err.message, 'error');
       }
     }
@@ -562,9 +577,12 @@
     // EXPORTAR EXCEL
     // ============================================
     async function exportarExcel() {
+      console.log('📊 exportarExcel');
       try {
         const res = await fetch(API_BASE + '/api/admin/exportar-excel', { headers: obtenerHeaders() });
         if (!res.ok) {
+          const errorText = await res.text();
+          console.error('❌ Error en exportarExcel:', res.status, errorText);
           if (res.status === 401 || res.status === 403) {
             mostrarMensaje('❌ Sesión expirada.', 'error');
             mostrarLogin();
@@ -574,7 +592,7 @@
             mostrarMensaje('⚠️ No hay inscripciones para exportar', 'error');
             return;
           }
-          throw new Error('Error al exportar');
+          throw new Error(`Error ${res.status}: ${errorText}`);
         }
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
@@ -586,8 +604,9 @@
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
         mostrarMensaje('✅ Exportación a Excel exitosa', 'exito');
+        console.log('✅ exportarExcel éxito');
       } catch (err) {
-        console.error(err);
+        console.error('❌ Error en exportarExcel:', err.message);
         mostrarMensaje('❌ Error al exportar: ' + err.message, 'error');
       }
     }
@@ -622,7 +641,7 @@
     }
 
     initAdmin();
-    console.log('🔐 Panel de administración con exportación a Excel');
+    console.log('🔐 Panel de administración con delegación de eventos y logs');
   })();
 </script>
 </body>
