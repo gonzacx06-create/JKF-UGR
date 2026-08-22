@@ -66,9 +66,7 @@ db.serialize(() => {
         ['Respirar no alcanza: "Estrategias en la rehabilitación respiratoria".', 'Jueves 3', '10:30 - 11:30', 'Maria Magdalena Escobar Cello, Micaela Carrizo', 40],
         ['Caso Clínico: Retorno a la cancha de una lesión parcial de LCA.', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
         ['El Videofrenzel como herramienta en la rehabilitación vestibular. De la observación del nistagmo a la toma de decisiones clínicas.', 'Jueves 3', '12:00 - 13:00', 'Griselda Sosa', 40],
-        // ===== Mariela Perugini movida a las 12:00 =====
         ['Abordaje Kinésico Oncológico. Charla a la carta...', 'Jueves 3', '12:00 - 13:00', 'Mariela Perugini', 40],
-        // ===== Carlos Bonino se queda a las 13:00 =====
         ['El alcance: una orquesta de articulaciones, músculos y sistema nervioso.', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino, Camila Gasser', 40],
 
         // ===== JUEVES 3 - SANATORIO =====
@@ -87,7 +85,7 @@ db.serialize(() => {
   });
 });
 
-// ========== ENDPOINTS PÚBLICOS (no cambian) ==========
+// ========== ENDPOINTS PÚBLICOS ==========
 app.get('/api/charlas', (req, res) => {
   db.all("SELECT *, (cupo_maximo - inscritos) as disponibles FROM charlas", (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -310,8 +308,11 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
+// ===== GET /api/admin/inscripciones (con logs) =====
 app.get('/api/admin/inscripciones', verificarToken, (req, res) => {
   const { email, charla_id, escaneado, page = 1, limit = 20 } = req.query;
+  console.log(`📋 GET /admin/inscripciones?page=${page}&limit=${limit}&email=${email || 'none'}&charla_id=${charla_id || 'none'}&escaneado=${escaneado || 'none'}`);
+
   const offset = (parseInt(page) - 1) * parseInt(limit);
   let where = '1=1';
   const params = [];
@@ -321,7 +322,10 @@ app.get('/api/admin/inscripciones', verificarToken, (req, res) => {
 
   const countSQL = `SELECT COUNT(*) as total FROM inscripciones i WHERE ${where}`;
   db.get(countSQL, params, (err, countRow) => {
-    if (err) return res.status(500).json({ error: err.message });
+    if (err) {
+      console.error(`❌ Error en GET /admin/inscripciones (count):`, err.message);
+      return res.status(500).json({ error: err.message });
+    }
     const total = countRow ? countRow.total : 0;
 
     const query = `
@@ -334,7 +338,11 @@ app.get('/api/admin/inscripciones', verificarToken, (req, res) => {
       LIMIT ? OFFSET ?
     `;
     db.all(query, [...params, parseInt(limit), offset], (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
+      if (err) {
+        console.error(`❌ Error en GET /admin/inscripciones (data):`, err.message);
+        return res.status(500).json({ error: err.message });
+      }
+      console.log(`✅ GET /admin/inscripciones: ${rows.length} registros encontrados (total: ${total})`);
       res.json({
         data: rows,
         pagination: { total, page: parseInt(page), limit: parseInt(limit), totalPages: Math.ceil(total / parseInt(limit)) }
@@ -343,42 +351,84 @@ app.get('/api/admin/inscripciones', verificarToken, (req, res) => {
   });
 });
 
+// ===== PUT /api/admin/inscripciones/:id/escaneado (con logs) =====
 app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, (req, res) => {
   const id = parseInt(req.params.id);
   const { escaneado } = req.body;
+  console.log(`🔄 PUT /admin/inscripciones/${id}/escaneado, escaneado=${escaneado}`);
+
   if (isNaN(id) || typeof escaneado !== 'boolean') {
+    console.warn(`❌ Datos inválidos: id=${id}, escaneado=${escaneado}`);
     return res.status(400).json({ error: 'Datos inválidos' });
   }
+
   db.run(
     "UPDATE inscripciones SET escaneado = ?, fecha_escaneo = CASE WHEN ? THEN CURRENT_TIMESTAMP ELSE NULL END WHERE id = ?",
     [escaneado ? 1 : 0, escaneado ? 1 : 0, id],
     function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      if (this.changes === 0) return res.status(404).json({ error: 'Inscripción no encontrada' });
+      if (err) {
+        console.error(`❌ Error en PUT /admin/inscripciones/${id}:`, err.message);
+        return res.status(500).json({ error: err.message });
+      }
+      if (this.changes === 0) {
+        console.warn(`❌ PUT /admin/inscripciones/${id}: inscripción no encontrada`);
+        return res.status(404).json({ error: 'Inscripción no encontrada' });
+      }
+      console.log(`✅ PUT /admin/inscripciones/${id} actualizado correctamente`);
       res.json({ mensaje: 'Actualizado correctamente' });
     }
   );
 });
 
+// ===== DELETE /api/admin/inscripciones/:id (con logs) =====
 app.delete('/api/admin/inscripciones/:id', verificarToken, (req, res) => {
   const id = parseInt(req.params.id);
-  if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+  console.log(`🗑️ DELETE /admin/inscripciones/${id}`);
+
+  if (isNaN(id)) {
+    console.warn(`❌ ID inválido: ${id}`);
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
   db.run("BEGIN TRANSACTION");
   db.get("SELECT charla_id FROM inscripciones WHERE id = ?", [id], (err, row) => {
-    if (err) { db.run("ROLLBACK"); return res.status(500).json({ error: err.message }); }
-    if (!row) { db.run("ROLLBACK"); return res.status(404).json({ error: 'Inscripción no encontrada' }); }
+    if (err) {
+      console.error(`❌ Error en DELETE /admin/inscripciones/${id}:`, err.message);
+      db.run("ROLLBACK");
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      console.warn(`❌ DELETE /admin/inscripciones/${id}: inscripción no encontrada`);
+      db.run("ROLLBACK");
+      return res.status(404).json({ error: 'Inscripción no encontrada' });
+    }
+
     db.run("DELETE FROM inscripciones WHERE id = ?", [id], function(err) {
-      if (err) { db.run("ROLLBACK"); return res.status(500).json({ error: err.message }); }
+      if (err) {
+        console.error(`❌ Error en DELETE /admin/inscripciones/${id} (delete):`, err.message);
+        db.run("ROLLBACK");
+        return res.status(500).json({ error: err.message });
+      }
+
       db.run("UPDATE charlas SET inscritos = inscritos - 1 WHERE id = ? AND inscritos > 0", [row.charla_id], function(err) {
-        if (err) { db.run("ROLLBACK"); return res.status(500).json({ error: err.message }); }
+        if (err) {
+          console.error(`❌ Error en DELETE /admin/inscripciones/${id} (update cupo):`, err.message);
+          db.run("ROLLBACK");
+          return res.status(500).json({ error: err.message });
+        }
+
         db.run("COMMIT");
+        console.log(`✅ DELETE /admin/inscripciones/${id} exitoso`);
         res.json({ mensaje: 'Inscripción eliminada y cupo liberado' });
       });
     });
   });
 });
 
+// ===== GET /api/admin/exportar-excel (con logs) =====
 app.get('/api/admin/exportar-excel', verificarToken, (req, res) => {
+  console.log(`📊 GET /admin/exportar-excel`);
+
   db.all(`
     SELECT i.nombre, i.email, c.titulo AS charla, c.dia, c.hora, i.codigo_unico AS codigo,
            i.fecha_inscripcion, CASE WHEN i.escaneado THEN 'Sí' ELSE 'No' END AS escaneado, i.fecha_escaneo
@@ -386,8 +436,14 @@ app.get('/api/admin/exportar-excel', verificarToken, (req, res) => {
     JOIN charlas c ON i.charla_id = c.id
     ORDER BY i.fecha_inscripcion DESC
   `, (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (rows.length === 0) return res.status(404).json({ error: 'No hay inscripciones' });
+    if (err) {
+      console.error(`❌ Error en GET /admin/exportar-excel:`, err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    if (rows.length === 0) {
+      console.warn(`⚠️ GET /admin/exportar-excel: No hay inscripciones`);
+      return res.status(404).json({ error: 'No hay inscripciones' });
+    }
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Inscripciones');
@@ -406,7 +462,13 @@ app.get('/api/admin/exportar-excel', verificarToken, (req, res) => {
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename=inscripciones-${new Date().toISOString().split('T')[0]}.xlsx`);
-    workbook.xlsx.writeBuffer().then(buffer => res.send(buffer));
+    workbook.xlsx.writeBuffer().then(buffer => {
+      console.log(`✅ GET /admin/exportar-excel: ${rows.length} registros exportados`);
+      res.send(buffer);
+    }).catch(err => {
+      console.error(`❌ Error en GET /admin/exportar-excel (writeBuffer):`, err.message);
+      res.status(500).json({ error: err.message });
+    });
   });
 });
 
