@@ -968,3 +968,48 @@ footer .footer-contact {
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
 }
+
+/* ===== TABLAS RESPONSIVE ===== */
+.tabla-responsive {
+    overflow-x: auto;
+    margin: 10px 0;
+}
+
+.tabla-charlas {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+.tabla-charlas th {
+    background: rgba(0,51,102,0.08);
+    color: var(--primary);
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--secondary-light);
+    font-weight: 600;
+}
+.tabla-charlas td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text);
+    vertical-align: middle;
+}
+.tabla-charlas tr:hover td {
+    background: rgba(0,51,102,0.02);
+}
+body.dark-mode .tabla-charlas th {
+    background: rgba(255,255,255,0.06);
+    color: var(--primary);
+}
+body.dark-mode .tabla-charlas td {
+    border-bottom-color: var(--border-light);
+}
+.tabla-charlas code {
+    background: rgba(0,0,0,0.04);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+body.dark-mode .tabla-charlas code {
+    background: rgba(255,255,255,0.06);
+}

@@ -435,7 +435,7 @@
     }
 
     // ============================================
-    // RENDERIZAR TABLA (con delegación de eventos)
+    // RENDERIZAR TABLA (con eventos directos)
     // ============================================
     function renderizarTabla(inscripciones) {
       if (inscripciones.length === 0) {
@@ -459,10 +459,10 @@
             <td style="font-size:11px;">${ins.fecha_inscripcion}</td>
             <td>
               <div class="acciones">
-                <button class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-escaneado="${ins.escaneado}">
+                <button type="button" class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-esc="${ins.escaneado}">
                   ${ins.escaneado ? 'Desmarcar' : 'Marcar'}
                 </button>
-                <button class="btn-eliminar" data-id="${ins.id}">Eliminar</button>
+                <button type="button" class="btn-eliminar" data-id="${ins.id}">Eliminar</button>
               </div>
             </td>
           </tr>
@@ -470,38 +470,29 @@
       });
       tablaBody.innerHTML = html;
 
-      // La delegación de eventos se hace en el contenedor (tablaBody)
-      // Eliminamos listeners previos para evitar duplicados
+      // Asignar eventos a los botones (directamente)
+      tablaBody.querySelectorAll('.btn-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const id = this.dataset.id;
+          const escActual = this.dataset.esc === 'true';
+          const nuevo = !escActual;
+          console.log(`🔄 Click en toggle: id=${id}, actual=${escActual}, nuevo=${nuevo}`);
+          if (confirm(`¿${escActual ? 'Desmarcar' : 'Marcar'} esta inscripción?`)) {
+            toggleEscaneado(id, nuevo);
+          }
+        });
+      });
+
+      tablaBody.querySelectorAll('.btn-eliminar').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const id = this.dataset.id;
+          console.log(`🗑️ Click en eliminar: id=${id}`);
+          if (confirm('¿Eliminar esta inscripción permanentemente?')) {
+            eliminarInscripcion(id);
+          }
+        });
+      });
     }
-
-    // ============================================
-    // DELEGACIÓN DE EVENTOS (clicks en tablaBody)
-    // ============================================
-    tablaBody.addEventListener('click', function(e) {
-      const target = e.target.closest('button');
-      if (!target) return;
-
-      // Botón "Marcar/Desmarcar"
-      if (target.classList.contains('btn-toggle')) {
-        e.preventDefault();
-        const id = target.dataset.id;
-        const escaneadoActual = target.dataset.escaneado === 'true';
-        console.log(`🔄 Click en toggle: id=${id}, actual=${escaneadoActual}`);
-        toggleEscaneado(id, !escaneadoActual);
-        return;
-      }
-
-      // Botón "Eliminar"
-      if (target.classList.contains('btn-eliminar')) {
-        e.preventDefault();
-        const id = target.dataset.id;
-        console.log(`🗑️ Click en eliminar: id=${id}`);
-        if (confirm('¿Eliminar esta inscripción?')) {
-          eliminarInscripcion(id);
-        }
-        return;
-      }
-    });
 
     // ============================================
     // PAGINACIÓN
@@ -516,7 +507,7 @@
     }
 
     // ============================================
-    // ACCIONES (con logs en consola)
+    // ACCIONES (con logs y confirmación)
     // ============================================
     async function toggleEscaneado(id, nuevoEstado) {
       console.log(`🔄 toggleEscaneado: id=${id}, nuevoEstado=${nuevoEstado}`);
@@ -641,7 +632,7 @@
     }
 
     initAdmin();
-    console.log('🔐 Panel de administración con delegación de eventos y logs');
+    console.log('🔐 Panel de administración con eventos directos y confirmación');
   })();
 </script>
 </body>

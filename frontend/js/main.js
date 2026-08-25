@@ -59,7 +59,7 @@ function actualizarContador() {
 setInterval(actualizarContador, 1000);
 actualizarContador();
 
-// ========== MENÚ HAMBURGUESA ==========
+// ========== MENÚ HAMBURGUESA (CORREGIDO) ==========
 document.addEventListener('DOMContentLoaded', function() {
     const menuBtn = document.getElementById('menuBtn');
     const sideMenu = document.getElementById('sideMenu');
@@ -67,14 +67,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (menuBtn && sideMenu) {
         menuBtn.addEventListener('click', function() {
             menuOpen = !menuOpen;
-            sideMenu.classList.toggle('open');
+            if (menuOpen) {
+                sideMenu.style.display = '';
+                sideMenu.classList.add('open');
+            } else {
+                sideMenu.classList.remove('open');
+                sideMenu.style.display = 'none';
+            }
         });
         document.querySelectorAll('#sideMenu a').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const section = this.dataset.section;
                 cambiarSeccion(section);
-                sideMenu.classList.remove('open');
+                // Cerrar menú forzadamente
+                if (sideMenu) {
+                    sideMenu.classList.remove('open');
+                    sideMenu.style.display = 'none';
+                    setTimeout(() => { sideMenu.style.display = ''; }, 400);
+                }
                 menuOpen = false;
             });
         });
@@ -158,11 +169,9 @@ async function cargarCharlas() {
         if (!resp.ok) throw new Error('Error ' + resp.status + ': ' + resp.statusText);
         const charlas = await resp.json();
 
-        // Separar normales y Sanatorio
         const normales = charlas.filter(ch => ch.dia !== 'Jueves 3 - Sanatorio');
         const sanatorio = charlas.filter(ch => ch.dia === 'Jueves 3 - Sanatorio');
 
-        // --- Generar tarjetas normales (sin aula) ---
         const grupos = {};
         normales.forEach(ch => {
             if (!grupos[ch.dia]) grupos[ch.dia] = [];
@@ -207,7 +216,6 @@ async function cargarCharlas() {
         }
         if (container) container.innerHTML = html;
 
-        // Eventos para tarjetas normales
         if (container) {
             container.querySelectorAll('.btn-inscribir-tarjeta:not([disabled])').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -217,13 +225,12 @@ async function cargarCharlas() {
                     const hora = card.dataset.hora;
                     const ponente = card.querySelector('.ponente-nombre').textContent;
                     const titulo = card.querySelector('.charla-titulo').textContent;
-                    const aula = ''; // Ya no se usa el aula
+                    const aula = '';
                     mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
                 });
             });
         }
 
-        // --- Generar tarjetas del Sanatorio (sin aula) ---
         if (sanatorio.length > 0) {
             let sanHtml = `<div class="carrusel-sanatorio">`;
             sanatorio.sort((a, b) => a.hora.localeCompare(b.hora));
@@ -250,7 +257,6 @@ async function cargarCharlas() {
             sanHtml += `</div>`;
             if (sanatorioContainer) sanatorioContainer.innerHTML = sanHtml;
 
-            // Eventos para Sanatorio
             sanatorioContainer.querySelectorAll('.btn-inscribir-sanatorio:not([disabled])').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const charlaId = this.dataset.id;
@@ -267,7 +273,6 @@ async function cargarCharlas() {
 
         if (spinner) spinner.style.display = 'none';
 
-        // Llenar select del formulario (si existe)
         if (select) {
             select.innerHTML = '<option value="">-- Elige --</option>';
             charlas.forEach(ch => {
@@ -357,7 +362,7 @@ document.getElementById('modal-form-inscripcion').addEventListener('submit', asy
     }
 });
 
-// ========== MIS INSCRIPCIONES ==========
+// ========== MIS INSCRIPCIONES (CORREGIDO: tabla con estilos) ==========
 document.addEventListener('DOMContentLoaded', function() {
     const btnConsultar = document.getElementById('btn-consultar');
     if (btnConsultar) {
@@ -383,13 +388,22 @@ async function cargarMisInscripciones(email, page) {
             document.getElementById('paginacion-mis-inscripciones').innerHTML = '';
             return;
         }
-        let html = '<table class="tabla-charlas"><thead><tr><th>Charla</th><th>Día</th><th>Hora</th><th>Código</th><th>Estado</th><th>Acción</th></tr></thead><tbody>';
+        let html = `<div class="tabla-responsive"><table class="tabla-charlas">
+            <thead><tr><th>Charla</th><th>Día</th><th>Hora</th><th>Código</th><th>Estado</th><th>Acción</th></tr></thead><tbody>`;
         data.data.forEach(function(ins) {
             const esc = ins.escaneado ? '✅ Escaneado' : '⏳ Pendiente';
-            html += '<tr><td>' + ins.titulo + '</td><td>' + ins.dia + '</td><td>' + ins.hora + '</td><td><code>' + ins.codigo + '</code></td><td>' + esc + '</td><td><button type="button" class="btn-accion btn-eliminar" data-codigo="' + ins.codigo + '">Cancelar</button></td></tr>';
+            html += `<tr>
+                <td>${ins.titulo}</td>
+                <td>${ins.dia}</td>
+                <td>${ins.hora}</td>
+                <td><code>${ins.codigo}</code></td>
+                <td>${esc}</td>
+                <td><button type="button" class="btn-accion btn-eliminar" data-codigo="${ins.codigo}">Cancelar</button></td>
+            </tr>`;
         });
-        html += '</tbody></table>';
+        html += '</tbody></table></div>';
         container.innerHTML = html;
+
         container.querySelectorAll('[data-codigo]').forEach(function(btn) {
             btn.addEventListener('click', async function() {
                 if (!confirm('¿Cancelar esta inscripción?')) return;
@@ -406,6 +420,7 @@ async function cargarMisInscripciones(email, page) {
                 } catch (err) { alert('Error de conexión'); }
             });
         });
+
         const pag = document.getElementById('paginacion-mis-inscripciones');
         const totalPages = data.pagination.totalPages;
         if (totalPages > 1) {
@@ -427,7 +442,7 @@ async function cargarMisInscripciones(email, page) {
     }
 }
 
-// ========== ADMIN ==========
+// ========== ADMIN (CORREGIDO: eventos asignados directamente) ==========
 document.addEventListener('DOMContentLoaded', function() {
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
@@ -540,6 +555,8 @@ async function cargarAdminInscripciones(page) {
         document.getElementById('admin-inscripciones-tabla').innerHTML = '<p style="color:#f85149;">Error: ' + err.message + '</p>';
     }
 }
+
+// ===== renderAdminTabla con eventos directos =====
 function renderAdminTabla(data) {
     const container = document.getElementById('admin-inscripciones-tabla');
     if (data.data.length === 0) {
@@ -547,59 +564,64 @@ function renderAdminTabla(data) {
         document.getElementById('paginacion-admin').innerHTML = '';
         return;
     }
-    let html = '<table><thead><tr><th>Nombre</th><th>Email</th><th>Charla</th><th>Día</th><th>Hora</th><th>Código</th><th>Escaneado</th><th>Acciones</th></tr></thead><tbody>';
+    let html = `<div class="tabla-responsive"><table>
+        <thead><tr>
+            <th>Nombre</th><th>Email</th><th>Charla</th><th>Día</th><th>Hora</th>
+            <th>Código</th><th>Escaneado</th><th>Acciones</th>
+        </tr></thead><tbody>`;
     data.data.forEach(function(ins) {
         const esc = ins.escaneado ? '✅ Sí' : '⏳ No';
-        html += '<tr><td>' + ins.nombre + '</td><td>' + ins.email + '</td><td>' + ins.charla_titulo + '</td><td>' + ins.dia + '</td><td>' + ins.hora + '</td><td><code>' + ins.codigo + '</code></td><td>' + esc + '</td><td><button type="button" class="btn-accion" data-id="' + ins.id + '" data-esc="' + ins.escaneado + '">' + (ins.escaneado ? 'Marcar no escaneado' : 'Marcar escaneado') + '</button> <button type="button" class="btn-accion btn-eliminar" data-id="' + ins.id + '" data-eliminar>Eliminar</button></td></tr>';
+        html += `<tr>
+            <td>${ins.nombre}</td>
+            <td>${ins.email}</td>
+            <td>${ins.charla_titulo}</td>
+            <td>${ins.dia}</td>
+            <td>${ins.hora}</td>
+            <td><code>${ins.codigo}</code></td>
+            <td class="${ins.escaneado ? 'estado-escaneado' : 'estado-no-escaneado'}">${esc}</td>
+            <td>
+                <div class="acciones">
+                    <button type="button" class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-esc="${ins.escaneado}">
+                        ${ins.escaneado ? 'Desmarcar' : 'Marcar'}
+                    </button>
+                    <button type="button" class="btn-eliminar" data-id="${ins.id}">Eliminar</button>
+                </div>
+            </td>
+        </tr>`;
     });
-    html += '</tbody></table>';
+    html += '</tbody></table></div>';
     container.innerHTML = html;
-    container.querySelectorAll('[data-id]').forEach(function(btn) {
-        if (btn.dataset.eliminar) {
-            btn.addEventListener('click', async function() {
-                if (!confirm('¿Eliminar esta inscripción permanentemente?')) return;
-                const id = this.dataset.id;
-                try {
-                    const resp = await fetch(API_URL + '/admin/inscripciones/' + id, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': 'Bearer ' + adminToken }
-                    });
-                    if (resp.ok) {
-                        alert('Inscripción eliminada.');
-                        cargarAdminInscripciones(paginaAdmin);
-                    } else {
-                        const err = await resp.json();
-                        alert('Error: ' + err.error);
-                    }
-                } catch (err) { alert('Error de conexión'); }
-            });
-        } else {
-            btn.addEventListener('click', async function() {
-                const id = this.dataset.id;
-                const escActual = this.dataset.esc === 'true';
-                const nuevo = !escActual;
-                try {
-                    const resp = await fetch(API_URL + '/admin/inscripciones/' + id + '/escaneado', {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminToken },
-                        body: JSON.stringify({ escaneado: nuevo })
-                    });
-                    if (resp.ok) {
-                        cargarAdminInscripciones(paginaAdmin);
-                    } else {
-                        const err = await resp.json();
-                        alert('Error: ' + err.error);
-                    }
-                } catch (err) { alert('Error de conexión'); }
-            });
-        }
+
+    // Asignar eventos a los botones (igual que en Mis inscripciones)
+    container.querySelectorAll('.btn-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const escActual = this.dataset.esc === 'true';
+            const nuevo = !escActual;
+            console.log(`🔄 Click en toggle: id=${id}, actual=${escActual}, nuevo=${nuevo}`);
+            if (confirm(`¿${escActual ? 'Desmarcar' : 'Marcar'} esta inscripción?`)) {
+                toggleEscaneadoAdmin(id, nuevo);
+            }
+        });
     });
+
+    container.querySelectorAll('.btn-eliminar').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            console.log(`🗑️ Click en eliminar: id=${id}`);
+            if (confirm('¿Eliminar esta inscripción permanentemente?')) {
+                eliminarInscripcionAdmin(id);
+            }
+        });
+    });
+
+    // Paginación
     const pag = document.getElementById('paginacion-admin');
     const totalPages = data.pagination.totalPages;
     if (totalPages > 1) {
         let pagHtml = '';
         for (let i = 1; i <= totalPages; i++) {
-            pagHtml += '<button type="button" class="btn-secundario" data-page="' + i + '" style="' + (i === paginaAdmin ? 'background:#e8a838;color:#0d1117;' : '') + '">' + i + '</button>';
+            pagHtml += `<button type="button" class="btn-secundario" data-page="${i}" style="${i === paginaAdmin ? 'background:#e8a838;color:#0d1117;' : ''}">${i}</button>`;
         }
         pag.innerHTML = pagHtml;
         pag.querySelectorAll('[data-page]').forEach(function(btn) {
@@ -609,6 +631,62 @@ function renderAdminTabla(data) {
         });
     } else {
         pag.innerHTML = '';
+    }
+}
+
+// ===== Funciones de admin (con logs) =====
+async function toggleEscaneadoAdmin(id, nuevoEstado) {
+    console.log(`🔄 toggleEscaneadoAdmin: id=${id}, nuevoEstado=${nuevoEstado}`);
+    try {
+        const resp = await fetch(API_URL + '/admin/inscripciones/' + id + '/escaneado', {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + adminToken, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ escaneado: nuevoEstado })
+        });
+        if (!resp.ok) {
+            const errorText = await resp.text();
+            console.error('❌ Error en toggleEscaneadoAdmin:', resp.status, errorText);
+            if (resp.status === 401 || resp.status === 403) {
+                alert('Sesión expirada. Vuelve a iniciar sesión.');
+                document.getElementById('btn-logout').click();
+                return;
+            }
+            throw new Error(`Error ${resp.status}: ${errorText}`);
+        }
+        const data = await resp.json();
+        console.log('✅ toggleEscaneadoAdmin éxito:', data);
+        alert('✅ Estado de escaneo actualizado');
+        cargarAdminInscripciones(paginaAdmin);
+    } catch (err) {
+        console.error('❌ Error en toggleEscaneadoAdmin:', err.message);
+        alert('❌ Error al actualizar: ' + err.message);
+    }
+}
+
+async function eliminarInscripcionAdmin(id) {
+    console.log(`🗑️ eliminarInscripcionAdmin: id=${id}`);
+    try {
+        const resp = await fetch(API_URL + '/admin/inscripciones/' + id, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + adminToken }
+        });
+        if (!resp.ok) {
+            const errorText = await resp.text();
+            console.error('❌ Error en eliminarInscripcionAdmin:', resp.status, errorText);
+            if (resp.status === 401 || resp.status === 403) {
+                alert('Sesión expirada. Vuelve a iniciar sesión.');
+                document.getElementById('btn-logout').click();
+                return;
+            }
+            throw new Error(`Error ${resp.status}: ${errorText}`);
+        }
+        const data = await resp.json();
+        console.log('✅ eliminarInscripcionAdmin éxito:', data);
+        alert('✅ Inscripción eliminada');
+        cargarAdminInscripciones(paginaAdmin);
+    } catch (err) {
+        console.error('❌ Error en eliminarInscripcionAdmin:', err.message);
+        alert('❌ Error al eliminar: ' + err.message);
     }
 }
 
