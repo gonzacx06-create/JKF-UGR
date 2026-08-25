@@ -59,38 +59,22 @@ function actualizarContador() {
 setInterval(actualizarContador, 1000);
 actualizarContador();
 
-// ========== MENÚ HAMBURGUESA (CORREGIDO) ==========
+// ========== MENÚ HAMBURGUESA ==========
 document.addEventListener('DOMContentLoaded', function() {
     const menuBtn = document.getElementById('menuBtn');
     const sideMenu = document.getElementById('sideMenu');
     let menuOpen = false;
-
     if (menuBtn && sideMenu) {
         menuBtn.addEventListener('click', function() {
             menuOpen = !menuOpen;
-            if (menuOpen) {
-                sideMenu.style.display = '';
-                sideMenu.classList.add('open');
-            } else {
-                sideMenu.classList.remove('open');
-                sideMenu.style.display = 'none';
-            }
+            sideMenu.classList.toggle('open');
         });
-
         document.querySelectorAll('#sideMenu a').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const section = this.dataset.section;
                 cambiarSeccion(section);
-                // Cerrar menú forzadamente
-                if (sideMenu) {
-                    sideMenu.classList.remove('open');
-                    sideMenu.style.display = 'none';
-                    // Restaurar display después de la transición para futuras aperturas
-                    setTimeout(() => {
-                        sideMenu.style.display = '';
-                    }, 400);
-                }
+                sideMenu.classList.remove('open');
                 menuOpen = false;
             });
         });
@@ -158,7 +142,7 @@ function generarAvatares(ponenteStr) {
     return html;
 }
 
-// ========== CARGAR CHARLAS (incluyendo Sanatorio) ==========
+// ========== CARGAR CHARLAS (sin aula) ==========
 async function cargarCharlas() {
     const spinner = document.getElementById('loading-spinner');
     const container = document.getElementById('cronograma-cards');
@@ -178,7 +162,7 @@ async function cargarCharlas() {
         const normales = charlas.filter(ch => ch.dia !== 'Jueves 3 - Sanatorio');
         const sanatorio = charlas.filter(ch => ch.dia === 'Jueves 3 - Sanatorio');
 
-        // --- Generar tarjetas normales ---
+        // --- Generar tarjetas normales (sin aula) ---
         const grupos = {};
         normales.forEach(ch => {
             if (!grupos[ch.dia]) grupos[ch.dia] = [];
@@ -198,7 +182,6 @@ async function cargarCharlas() {
                 const total = ch.cupo_maximo || 40;
                 const disabled = disponibles <= 0 ? 'disabled' : '';
                 const tituloProf = 'Lic. en Kinesiología y Fisiatría';
-                const aula = 'Aula 3';
                 html += `
                     <div class="charla-card-horizontal" data-id="${ch.id}" data-dia="${ch.dia}" data-hora="${ch.hora}">
                         <div class="card-header">
@@ -212,7 +195,6 @@ async function cargarCharlas() {
                         <div class="charla-detalle">
                             <span>📅 ${ch.dia}</span>
                             <span>🕒 ${ch.hora}</span>
-                            <span>🏛️ ${aula}</span>
                         </div>
                         <div class="cupos-disponibles">👥 ${inscriptos} / ${total} inscriptos</div>
                         <button type="button" class="btn-inscribir-tarjeta" data-id="${ch.id}" ${disabled}>
@@ -235,13 +217,13 @@ async function cargarCharlas() {
                     const hora = card.dataset.hora;
                     const ponente = card.querySelector('.ponente-nombre').textContent;
                     const titulo = card.querySelector('.charla-titulo').textContent;
-                    const aula = card.querySelector('.charla-detalle span:last-child')?.textContent.replace('🏛️ ', '') || 'Aula 3';
+                    const aula = ''; // Ya no se usa el aula
                     mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
                 });
             });
         }
 
-        // --- Generar tarjetas del Sanatorio (con ubicación corregida) ---
+        // --- Generar tarjetas del Sanatorio (sin aula) ---
         if (sanatorio.length > 0) {
             let sanHtml = `<div class="carrusel-sanatorio">`;
             sanatorio.sort((a, b) => a.hora.localeCompare(b.hora));
@@ -321,7 +303,7 @@ function mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula) {
     const info = document.getElementById('modal-charla-info');
     info.innerHTML = `
         <strong>${titulo}</strong><br>
-        🎙️ ${ponente} · 📅 ${dia} · 🕒 ${hora} · 🏛️ ${aula}
+        🎙️ ${ponente} · 📅 ${dia} · 🕒 ${hora}
     `;
     document.getElementById('modal-nombre').value = '';
     document.getElementById('modal-email').value = '';
