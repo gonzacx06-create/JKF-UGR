@@ -1050,3 +1050,32 @@ h3 {
     text-align: center;
     padding: 10px;
 }
+
+/* ===== BANNER PARA PONENTES ESPECIALES ===== */
+.avatar-banner {
+    width: 100%;
+    height: 80px; /* Antes 120px, ahora 80px para que sea más compacto */
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    background: rgba(0,0,0,0.03);
+}
+.avatar-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.banner-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 500;
+    color: white;
+    background: #6ea8fe;
+    border-radius: 12px;
+    text-align: center;
+    padding: 10px;
+}
