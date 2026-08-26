@@ -490,7 +490,7 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
 .charla-card-horizontal {
     flex: 0 0 340px;
     max-width: 340px;
-    min-height: 400px; /* Altura reducida para que se adapte al contenido */
+    min-height: 400px;
     background: var(--card-bg);
     backdrop-filter: blur(8px);
     border-radius: 20px;
@@ -511,7 +511,7 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     display: flex;
     gap: 16px;
     align-items: center;
-    margin-bottom: 10px; /* Reducido */
+    margin-bottom: 10px;
 }
 .charla-card-horizontal .avatar-group {
     display: flex;
@@ -566,18 +566,16 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     font-weight: 500;
     font-style: italic;
 }
-/* Subtítulo eliminado, ya no se usa .ponente-titulo */
-
 .charla-card-horizontal .charla-titulo {
     font-weight: 500;
     font-size: 0.95rem;
-    margin: 6px 0 10px; /* Margen reducido */
+    margin: 6px 0 10px;
     color: var(--text);
     line-height: 1.4;
     flex: 1 1 auto;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    word-break: break-word; /* Para dividir palabras largas */
+    word-break: break-word;
     font-family: 'Fraunces', serif;
     font-weight: 400;
     font-style: italic;
@@ -647,7 +645,6 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     font-weight: 500;
     font-style: italic;
 }
-/* Subtítulo eliminado */
 
 /* ===== BANNER PARA PONENTES ESPECIALES ===== */
 .avatar-banner {
@@ -678,7 +675,7 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     padding: 10px;
 }
 
-/* ===== SANATORIO (Ponencias Destacadas) ===== */
+/* ===== SANATORIO ===== */
 .sanatorio-cards-container {
     display: flex;
     overflow-x: auto;
@@ -1018,7 +1015,7 @@ footer .footer-contact {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
 }
 
-/* ===== TABLAS RESPONSIVE (añadido) ===== */
+/* ===== TABLAS RESPONSIVE ===== */
 .tabla-responsive {
     overflow-x: auto;
     margin: 10px 0;
@@ -1063,7 +1060,7 @@ body.dark-mode .tabla-charlas code {
     background: rgba(255,255,255,0.06);
 }
 
-/* ===== SOMBRA SUTIL PARA TITULOS Y TEXTOS ===== */
+/* ===== SOMBRA SUTIL ===== */
 .hero-title,
 .bienvenida p,
 h2,

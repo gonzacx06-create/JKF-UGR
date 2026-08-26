@@ -37,7 +37,7 @@ db.serialize(() => {
     FOREIGN KEY (charla_id) REFERENCES charlas(id)
   )`);
 
-  // No se borran ni reinseran datos al iniciar
+  // NO se borran ni reinseran datos al iniciar
   console.log('✅ Base de datos lista (tablas creadas/verificadas)');
 });
 

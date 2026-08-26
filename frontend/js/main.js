@@ -284,7 +284,6 @@ async function cargarCharlas() {
         }
         if (container) container.innerHTML = html;
 
-        // Eventos para botones de inscripción
         if (container) {
             container.querySelectorAll('.btn-inscribir-tarjeta:not([disabled])').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -294,12 +293,12 @@ async function cargarCharlas() {
                     const hora = card.dataset.hora;
                     const ponente = card.querySelector('.ponente-nombre').textContent;
                     const titulo = card.querySelector('.charla-titulo').textContent;
-                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, '');
+                    const aula = '';
+                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
                 });
             });
         }
 
-        // Sanatorio
         if (sanatorio.length > 0) {
             let sanHtml = `<div class="carrusel-sanatorio">`;
             sanatorio.sort((a, b) => a.hora.localeCompare(b.hora));
@@ -334,14 +333,14 @@ async function cargarCharlas() {
                     const hora = card.dataset.hora;
                     const ponente = card.querySelector('.sanatorio-ponentes').textContent.replace('🎙️ ', '');
                     const titulo = card.querySelector('.sanatorio-titulo').textContent;
-                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, 'Sanatorio Santa Fe');
+                    const aula = 'Sanatorio Santa Fe';
+                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
                 });
             });
         }
 
         if (spinner) spinner.style.display = 'none';
 
-        // Select para inscripción rápida (si existe)
         if (select) {
             select.innerHTML = '<option value="">-- Elige --</option>';
             charlas.forEach(ch => {
