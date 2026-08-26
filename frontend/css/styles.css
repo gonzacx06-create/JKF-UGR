@@ -969,7 +969,7 @@ footer .footer-contact {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
 }
 
-/* ===== TABLAS RESPONSIVE ===== */
+/* ===== TABLAS RESPONSIVE (añadido) ===== */
 .tabla-responsive {
     overflow-x: auto;
     margin: 10px 0;
@@ -1012,4 +1012,12 @@ body.dark-mode .tabla-charlas td {
 }
 body.dark-mode .tabla-charlas code {
     background: rgba(255,255,255,0.06);
+}
+
+/* ===== SOMBRA SUTIL PARA TITULOS Y TEXTOS ===== */
+.hero-title,
+.bienvenida p,
+h2,
+h3 {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
