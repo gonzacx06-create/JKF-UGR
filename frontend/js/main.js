@@ -134,8 +134,21 @@ function normalizarNombreParaFoto(nombre) {
     return nombre.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
+// ===== AVATARES CON BANNER ESPECIAL =====
 function generarAvatares(ponenteStr) {
     if (!ponenteStr) return '<div class="avatar-group"><div class="avatar-item"><span class="iniciales" style="background:#6ea8fe;">?</span></div></div>';
+
+    // ========== CASO ESPECIAL: Los tres ponentes juntos (banner) ==========
+    const normalizado = ponenteStr.toLowerCase().trim().replace(/\s+/g, ' ');
+    if (normalizado.includes('valentina pescatore') && normalizado.includes('agustin elz') && normalizado.includes('constanza raimondi')) {
+        const nombreFoto = 'valentina-pescatore';
+        const fotoPath = `assets/ponentes/${nombreFoto}.png`;
+        return `<div class="avatar-banner">
+            <img src="${fotoPath}" alt="Valentina, Agustin y Constanza" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'banner-placeholder\\' style=\\'background:#6ea8fe; color:white; font-size:1.2rem;\\'>Valentina · Agustin · Constanza</span>';" />
+        </div>`;
+    }
+
+    // ========== CASO NORMAL ==========
     const nombres = ponenteStr.split(',').map(s => s.trim());
     const muchos = nombres.length > 2 ? 'many' : '';
     let html = `<div class="avatar-group ${muchos}">`;
@@ -152,7 +165,7 @@ function generarAvatares(ponenteStr) {
     return html;
 }
 
-// ========== CARGAR CHARLAS (sin aula) ==========
+// ========== CARGAR CHARLAS ==========
 async function cargarCharlas() {
     const spinner = document.getElementById('loading-spinner');
     const container = document.getElementById('cronograma-cards');
@@ -361,7 +374,7 @@ document.getElementById('modal-form-inscripcion').addEventListener('submit', asy
     }
 });
 
-// ========== MIS INSCRIPCIONES (CORREGIDO) ==========
+// ========== MIS INSCRIPCIONES ==========
 document.addEventListener('DOMContentLoaded', function() {
     const btnConsultar = document.getElementById('btn-consultar');
     if (btnConsultar) {
@@ -441,7 +454,7 @@ async function cargarMisInscripciones(email, page) {
     }
 }
 
-// ========== ADMIN (CORREGIDO) ==========
+// ========== ADMIN ==========
 document.addEventListener('DOMContentLoaded', function() {
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
@@ -595,7 +608,6 @@ function renderAdminTabla(data) {
             const id = this.dataset.id;
             const escActual = this.dataset.esc === 'true';
             const nuevo = !escActual;
-            console.log(`🔄 Click en toggle: id=${id}, actual=${escActual}, nuevo=${nuevo}`);
             if (confirm(`¿${escActual ? 'Desmarcar' : 'Marcar'} esta inscripción?`)) {
                 toggleEscaneadoAdmin(id, nuevo);
             }
@@ -605,7 +617,6 @@ function renderAdminTabla(data) {
     container.querySelectorAll('.btn-eliminar').forEach(function(btn) {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
-            console.log(`🗑️ Click en eliminar: id=${id}`);
             if (confirm('¿Eliminar esta inscripción permanentemente?')) {
                 eliminarInscripcionAdmin(id);
             }
@@ -631,7 +642,6 @@ function renderAdminTabla(data) {
 }
 
 async function toggleEscaneadoAdmin(id, nuevoEstado) {
-    console.log(`🔄 toggleEscaneadoAdmin: id=${id}, nuevoEstado=${nuevoEstado}`);
     try {
         const resp = await fetch(API_URL + '/admin/inscripciones/' + id + '/escaneado', {
             method: 'PUT',
@@ -639,48 +649,37 @@ async function toggleEscaneadoAdmin(id, nuevoEstado) {
             body: JSON.stringify({ escaneado: nuevoEstado })
         });
         if (!resp.ok) {
-            const errorText = await resp.text();
-            console.error('❌ Error en toggleEscaneadoAdmin:', resp.status, errorText);
             if (resp.status === 401 || resp.status === 403) {
                 alert('Sesión expirada. Vuelve a iniciar sesión.');
                 document.getElementById('btn-logout').click();
                 return;
             }
-            throw new Error(`Error ${resp.status}: ${errorText}`);
+            throw new Error('Error al actualizar');
         }
-        const data = await resp.json();
-        console.log('✅ toggleEscaneadoAdmin éxito:', data);
         alert('✅ Estado de escaneo actualizado');
         cargarAdminInscripciones(paginaAdmin);
     } catch (err) {
-        console.error('❌ Error en toggleEscaneadoAdmin:', err.message);
         alert('❌ Error al actualizar: ' + err.message);
     }
 }
 
 async function eliminarInscripcionAdmin(id) {
-    console.log(`🗑️ eliminarInscripcionAdmin: id=${id}`);
     try {
         const resp = await fetch(API_URL + '/admin/inscripciones/' + id, {
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + adminToken }
         });
         if (!resp.ok) {
-            const errorText = await resp.text();
-            console.error('❌ Error en eliminarInscripcionAdmin:', resp.status, errorText);
             if (resp.status === 401 || resp.status === 403) {
                 alert('Sesión expirada. Vuelve a iniciar sesión.');
                 document.getElementById('btn-logout').click();
                 return;
             }
-            throw new Error(`Error ${resp.status}: ${errorText}`);
+            throw new Error('Error al eliminar');
         }
-        const data = await resp.json();
-        console.log('✅ eliminarInscripcionAdmin éxito:', data);
         alert('✅ Inscripción eliminada');
         cargarAdminInscripciones(paginaAdmin);
     } catch (err) {
-        console.error('❌ Error en eliminarInscripcionAdmin:', err.message);
         alert('❌ Error al eliminar: ' + err.message);
     }
 }
