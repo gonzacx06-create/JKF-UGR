@@ -45,7 +45,6 @@ db.serialize(() => {
       const nuevasCharlas = [
         // ===== MIÉRCOLES 2 =====
         ['Abordaje Osteopático de la Pubalgia (Dolor de Cadera). Evaluación y Tratamiento.', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
-        // Agustin Elz ahora a las 18:00 con tres ponentes
         ['', 'Miércoles 2', '18:00 - 19:00', 'Valentina Pescatore, Agustin Elz, Constanza Raimondi', 40],
         ['Cuando la Postura no mejora: el papel de las vísceras en el Dolor y la Disfunción. Evaluación y Tratamiento Integrando Osteopatía Visceral y Posturoterapia.', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
         ['Mas allá del Salto Frontal: una evaluación integral para el retorno al deporte tras una reconstrucción del LCA.', 'Miércoles 2', '11:00 - 12:00', 'Ramiro Pioli', 40],
@@ -63,7 +62,8 @@ db.serialize(() => {
         // ===== JUEVES 3 (Universidad) =====
         ['Mecanismos Neurobiológicos del movimiento sobre la cognición: el cerebro como órgano de predicción y modelos internos.', 'Jueves 3', '08:00 - 09:00', 'Lucas Orlandi', 40],
         ['Taller de kinefilaxia. Gimnasia Postural.', 'Jueves 3', '09:00 - 10:00', 'Franco Riboldi', 40],
-        ['', 'Jueves 3', '10:00 - 11:00', 'Ulises Magallanes', 40],
+        // Título actualizado para Ulises Magallanes
+        ['Dolor crónico: ¿Y si lo estamos tratando mal? Una mirada crítica a lo que hacemos, lo que creemos y lo que dice la evidencia', 'Jueves 3', '10:00 - 11:00', 'Ulises Magallanes', 40],
         ['Respirar no alcanza: "Estrategias en la rehabilitación respiratoria".', 'Jueves 3', '10:30 - 11:30', 'Maria Magdalena Escobar Cello, Micaela Carrizo', 40],
         ['Caso Clínico: Retorno a la cancha de una lesión parcial de LCA.', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
         ['El Videofrenzel como herramienta en la rehabilitación vestibular. De la observación del nistagmo a la toma de decisiones clínicas.', 'Jueves 3', '12:00 - 13:00', 'Griselda Sosa', 40],
@@ -80,7 +80,7 @@ db.serialize(() => {
       const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
       nuevasCharlas.forEach(ch => stmt.run(ch));
       stmt.finalize(() => {
-        console.log('✅ Cronograma actualizado con la charla de Valentina, Agustin y Constanza a las 18hs');
+        console.log('✅ Cronograma actualizado con la charla de Valentina, Agustin y Constanza a las 18hs y título de Ulises Magallanes');
       });
     }
   });

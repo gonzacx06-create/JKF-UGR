@@ -631,6 +631,60 @@ body.dark-mode .cronograma-cards-container .carrusel::-webkit-scrollbar-thumb {
     box-shadow: none;
 }
 
+/* ===== NUEVO HEADER PARA BANNER (CASO ESPECIAL) ===== */
+.card-header-banner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 6px;
+}
+.card-header-banner .ponente-info-banner {
+    margin-top: 2px;
+    text-align: center;
+}
+.card-header-banner .ponente-info-banner .ponente-nombre {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary);
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-style: italic;
+}
+.card-header-banner .ponente-info-banner .ponente-titulo {
+    font-size: 0.8rem;
+    color: var(--text);
+    opacity: 0.7;
+}
+
+/* ===== BANNER PARA PONENTES ESPECIALES ===== */
+.avatar-banner {
+    width: 100%;
+    height: 120px;          /* Ajusta según tu imagen recortada */
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    background: rgba(0,0,0,0.03);
+}
+.avatar-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      /* Recorta la imagen para llenar el contenedor */
+    display: block;
+}
+.banner-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 500;
+    color: white;
+    background: #6ea8fe;
+    border-radius: 12px;
+    text-align: center;
+    padding: 10px;
+}
+
 /* ===== SANATORIO (Ponencias Destacadas) ===== */
 .sanatorio-cards-container {
     display: flex;
@@ -956,6 +1010,7 @@ footer .footer-contact {
     .modal-content { padding: 20px; }
     .sanatorio-card { flex: 0 0 340px; max-width: 340px; min-height: 160px; padding: 16px; }
     .sanatorio-card .sanatorio-titulo { font-size: 1rem; }
+    .avatar-banner { height: 90px; }  /* Ajuste para móviles */
 }
 @media (max-width: 600px) {
     .charla-card-horizontal { flex: 0 0 260px; max-width: 260px; min-height: 360px; padding: 12px; }
@@ -964,6 +1019,7 @@ footer .footer-contact {
     .charla-card-horizontal .ponente-nombre { font-size: 1rem; }
     .charla-card-horizontal .charla-titulo { font-size: 0.85rem; line-height: 1.3; }
     .sanatorio-card { flex: 0 0 280px; max-width: 280px; min-height: 140px; padding: 14px; }
+    .avatar-banner { height: 70px; }
 }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
@@ -1020,62 +1076,4 @@ body.dark-mode .tabla-charlas code {
 h2,
 h3 {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-/* ===== BANNER PARA PONENTES ESPECIALES (grupo de tres) ===== */
-.avatar-banner {
-    width: 100%;
-    height: 120px;
-    overflow: hidden;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    background: rgba(0,0,0,0.03);
-}
-.avatar-banner img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-.banner-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-weight: 500;
-    color: white;
-    background: #6ea8fe;
-    border-radius: 12px;
-    text-align: center;
-    padding: 10px;
-}
-
-/* ===== BANNER PARA PONENTES ESPECIALES ===== */
-.avatar-banner {
-    width: 100%;
-    height: 80px; /* Antes 120px, ahora 80px para que sea más compacto */
-    overflow: hidden;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    background: rgba(0,0,0,0.03);
-}
-.avatar-banner img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-.banner-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-weight: 500;
-    color: white;
-    background: #6ea8fe;
-    border-radius: 12px;
-    text-align: center;
-    padding: 10px;
 }

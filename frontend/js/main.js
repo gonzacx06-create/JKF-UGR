@@ -203,8 +203,26 @@ async function cargarCharlas() {
                 const total = ch.cupo_maximo || 40;
                 const disabled = disponibles <= 0 ? 'disabled' : '';
                 const tituloProf = 'Lic. en Kinesiología y Fisiatría';
-                html += `
-                    <div class="charla-card-horizontal" data-id="${ch.id}" data-dia="${ch.dia}" data-hora="${ch.hora}">
+
+                // Detectar caso especial para banner
+                const esBanner = ch.ponente && 
+                    ch.ponente.toLowerCase().includes('valentina pescatore') && 
+                    ch.ponente.toLowerCase().includes('agustin elz') && 
+                    ch.ponente.toLowerCase().includes('constanza raimondi');
+
+                let headerHtml;
+                if (esBanner) {
+                    headerHtml = `
+                        <div class="card-header-banner">
+                            ${generarAvatares(ch.ponente)}
+                            <div class="ponente-info-banner">
+                                <div class="ponente-nombre">${ch.ponente || 'Ponente'}</div>
+                                <div class="ponente-titulo">${tituloProf}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    headerHtml = `
                         <div class="card-header">
                             ${generarAvatares(ch.ponente)}
                             <div class="ponente-info">
@@ -212,6 +230,12 @@ async function cargarCharlas() {
                                 <div class="ponente-titulo">${tituloProf}</div>
                             </div>
                         </div>
+                    `;
+                }
+
+                html += `
+                    <div class="charla-card-horizontal" data-id="${ch.id}" data-dia="${ch.dia}" data-hora="${ch.hora}">
+                        ${headerHtml}
                         <div class="charla-titulo">${ch.titulo || 'Título no especificado'}</div>
                         <div class="charla-detalle">
                             <span>📅 ${ch.dia}</span>
