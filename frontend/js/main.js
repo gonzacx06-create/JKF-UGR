@@ -5,6 +5,31 @@ let paginaMisIns = 1;
 let currentEmailConsulta = '';
 let modalCharlaId = null;
 
+// ========== LISTA DE IMÁGENES DISPONIBLES (sin extensión) ==========
+const imagenesDisponibles = [
+    'ana-cristina-piacenza',
+    'angelina-tibaldo',
+    'antonella-baldesari',
+    'brenda-lorenz',
+    'camila-gasser',
+    'carlos-bonino',
+    'carlos-fumero',
+    'federico-schmidhalter',
+    'franco-riboldi',
+    'griselda-sosa',
+    'iara-pereyra',
+    'ignacio-guastavino',
+    'lucas-orlandi',
+    'm-victoria-carignan',
+    'mariela-perugini',
+    'pablo-seguro',
+    'ramiro-pioli',
+    'robertino-bottaniz',
+    'sofi-mandole',
+    'valentina-pescatore',
+    'vanesa-dupertuis'
+];
+
 // ========== TEMA OSCURO/CLARO ==========
 document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('themeToggle');
@@ -59,7 +84,7 @@ function actualizarContador() {
 setInterval(actualizarContador, 1000);
 actualizarContador();
 
-// ========== MENÚ HAMBURGUESA (CORREGIDO) ==========
+// ========== MENÚ HAMBURGUESA ==========
 document.addEventListener('DOMContentLoaded', function() {
     const menuBtn = document.getElementById('menuBtn');
     const sideMenu = document.getElementById('sideMenu');
@@ -134,21 +159,20 @@ function normalizarNombreParaFoto(nombre) {
     return nombre.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
-// ===== AVATARES CON BANNER ESPECIAL =====
+// ===== AVATARES CON FOTOS (si existen) o INICIALES =====
 function generarAvatares(ponenteStr) {
     if (!ponenteStr) return '<div class="avatar-group"><div class="avatar-item"><span class="iniciales" style="background:#6ea8fe;">?</span></div></div>';
 
-    // ========== CASO ESPECIAL: Los tres ponentes juntos (banner) ==========
+    // Caso especial: Valentina, Agustín y Constanza (banner)
     const normalizado = ponenteStr.toLowerCase().trim().replace(/\s+/g, ' ');
     if (normalizado.includes('valentina pescatore') && normalizado.includes('agustin elz') && normalizado.includes('constanza raimondi')) {
-        const nombreFoto = 'valentina-pescatore';
-        const fotoPath = `assets/ponentes/${nombreFoto}.png`;
         return `<div class="avatar-banner">
-            <img src="${fotoPath}" alt="Valentina, Agustin y Constanza" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'banner-placeholder\\' style=\\'background:#6ea8fe; color:white; font-size:1.2rem;\\'>Valentina · Agustin · Constanza</span>';" />
+            <img src="assets/ponentes/valentina-pescatore.png" alt="Valentina, Agustin y Constanza" 
+                 onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'banner-placeholder\\' style=\\'background:#6ea8fe; color:white; font-size:1.2rem;\\'>Valentina · Agustin · Constanza</span>';" />
         </div>`;
     }
 
-    // ========== CASO NORMAL ==========
+    // Para los demás ponentes (pueden ser varios separados por coma)
     const nombres = ponenteStr.split(',').map(s => s.trim());
     const muchos = nombres.length > 2 ? 'many' : '';
     let html = `<div class="avatar-group ${muchos}">`;
@@ -156,10 +180,20 @@ function generarAvatares(ponenteStr) {
         const iniciales = obtenerIniciales(nombre);
         const color = generarColor(nombre);
         const nombreFoto = normalizarNombreParaFoto(nombre);
-        const fotoPath = `assets/ponentes/${nombreFoto}.png`;
-        html += `<div class="avatar-item">
-            <img src="${fotoPath}" alt="${nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'iniciales\\' style=\\'background:${color};\\'>${iniciales}</span>';" />
-        </div>`;
+
+        // Verificar si la imagen existe en la lista de disponibles
+        if (imagenesDisponibles.includes(nombreFoto)) {
+            // Mostrar imagen circular
+            html += `<div class="avatar-item">
+                <img src="assets/ponentes/${nombreFoto}.png" alt="${nombre}" 
+                     onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'iniciales\\' style=\\'background:${color};\\'>${iniciales}</span>';" />
+            </div>`;
+        } else {
+            // Mostrar iniciales
+            html += `<div class="avatar-item">
+                <span class="iniciales" style="background:${color};">${iniciales}</span>
+            </div>`;
+        }
     });
     html += '</div>';
     return html;
@@ -167,6 +201,7 @@ function generarAvatares(ponenteStr) {
 
 // ========== CARGAR CHARLAS ==========
 async function cargarCharlas() {
+    console.log('Cargando charlas...');
     const spinner = document.getElementById('loading-spinner');
     const container = document.getElementById('cronograma-cards');
     const sanatorioContainer = document.getElementById('sanatorio-cards');
@@ -180,6 +215,7 @@ async function cargarCharlas() {
         const resp = await fetch(API_URL + '/charlas');
         if (!resp.ok) throw new Error('Error ' + resp.status + ': ' + resp.statusText);
         const charlas = await resp.json();
+        console.log('Charlas recibidas:', charlas.length);
 
         const normales = charlas.filter(ch => ch.dia !== 'Jueves 3 - Sanatorio');
         const sanatorio = charlas.filter(ch => ch.dia === 'Jueves 3 - Sanatorio');
@@ -203,7 +239,6 @@ async function cargarCharlas() {
                 const total = ch.cupo_maximo || 40;
                 const disabled = disponibles <= 0 ? 'disabled' : '';
 
-                // Detectar caso especial para banner
                 const esBanner = ch.ponente && 
                     ch.ponente.toLowerCase().includes('valentina pescatore') && 
                     ch.ponente.toLowerCase().includes('agustin elz') && 
@@ -216,7 +251,6 @@ async function cargarCharlas() {
                             ${generarAvatares(ch.ponente)}
                             <div class="ponente-info-banner">
                                 <div class="ponente-nombre">${ch.ponente || 'Ponente'}</div>
-                                <!-- Subtítulo eliminado -->
                             </div>
                         </div>
                     `;
@@ -226,7 +260,6 @@ async function cargarCharlas() {
                             ${generarAvatares(ch.ponente)}
                             <div class="ponente-info">
                                 <div class="ponente-nombre">${ch.ponente || 'Ponente'}</div>
-                                <!-- Subtítulo eliminado -->
                             </div>
                         </div>
                     `;
@@ -251,6 +284,7 @@ async function cargarCharlas() {
         }
         if (container) container.innerHTML = html;
 
+        // Eventos para botones de inscripción
         if (container) {
             container.querySelectorAll('.btn-inscribir-tarjeta:not([disabled])').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -260,12 +294,12 @@ async function cargarCharlas() {
                     const hora = card.dataset.hora;
                     const ponente = card.querySelector('.ponente-nombre').textContent;
                     const titulo = card.querySelector('.charla-titulo').textContent;
-                    const aula = '';
-                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
+                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, '');
                 });
             });
         }
 
+        // Sanatorio
         if (sanatorio.length > 0) {
             let sanHtml = `<div class="carrusel-sanatorio">`;
             sanatorio.sort((a, b) => a.hora.localeCompare(b.hora));
@@ -300,14 +334,14 @@ async function cargarCharlas() {
                     const hora = card.dataset.hora;
                     const ponente = card.querySelector('.sanatorio-ponentes').textContent.replace('🎙️ ', '');
                     const titulo = card.querySelector('.sanatorio-titulo').textContent;
-                    const aula = 'Sanatorio Santa Fe';
-                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, aula);
+                    mostrarModalInscripcion(charlaId, dia, hora, ponente, titulo, 'Sanatorio Santa Fe');
                 });
             });
         }
 
         if (spinner) spinner.style.display = 'none';
 
+        // Select para inscripción rápida (si existe)
         if (select) {
             select.innerHTML = '<option value="">-- Elige --</option>';
             charlas.forEach(ch => {
@@ -629,7 +663,6 @@ function renderAdminTabla(data) {
     html += '</tbody></table></div>';
     container.innerHTML = html;
 
-    // Listeners para el botón de marcar/desmarcar
     container.querySelectorAll('.btn-toggle').forEach(function(btn) {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
@@ -640,8 +673,6 @@ function renderAdminTabla(data) {
             }
         });
     });
-
-    // El listener para .btn-eliminar ya no es necesario porque se usa onclick
 
     const pag = document.getElementById('paginacion-admin');
     const totalPages = data.pagination.totalPages;
