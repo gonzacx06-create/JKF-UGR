@@ -202,7 +202,6 @@ async function cargarCharlas() {
                 const inscriptos = ch.inscritos || 0;
                 const total = ch.cupo_maximo || 40;
                 const disabled = disponibles <= 0 ? 'disabled' : '';
-                const tituloProf = 'Lic. en Kinesiología y Fisiatría';
 
                 // Detectar caso especial para banner
                 const esBanner = ch.ponente && 
@@ -217,7 +216,7 @@ async function cargarCharlas() {
                             ${generarAvatares(ch.ponente)}
                             <div class="ponente-info-banner">
                                 <div class="ponente-nombre">${ch.ponente || 'Ponente'}</div>
-                                <div class="ponente-titulo">${tituloProf}</div>
+                                <!-- Subtítulo eliminado -->
                             </div>
                         </div>
                     `;
@@ -227,7 +226,7 @@ async function cargarCharlas() {
                             ${generarAvatares(ch.ponente)}
                             <div class="ponente-info">
                                 <div class="ponente-nombre">${ch.ponente || 'Ponente'}</div>
-                                <div class="ponente-titulo">${tituloProf}</div>
+                                <!-- Subtítulo eliminado -->
                             </div>
                         </div>
                     `;
@@ -619,7 +618,10 @@ function renderAdminTabla(data) {
                     <button type="button" class="btn-toggle ${ins.escaneado ? 'escaneado' : ''}" data-id="${ins.id}" data-esc="${ins.escaneado}">
                         ${ins.escaneado ? 'Desmarcar' : 'Marcar'}
                     </button>
-                    <button type="button" class="btn-eliminar" data-id="${ins.id}">Eliminar</button>
+                    <button type="button" class="btn-eliminar" data-id="${ins.id}" 
+                            onclick="if(confirm('¿Eliminar esta inscripción permanentemente?')) eliminarInscripcionAdmin(${ins.id})">
+                        Eliminar
+                    </button>
                 </div>
             </td>
         </tr>`;
@@ -627,6 +629,7 @@ function renderAdminTabla(data) {
     html += '</tbody></table></div>';
     container.innerHTML = html;
 
+    // Listeners para el botón de marcar/desmarcar
     container.querySelectorAll('.btn-toggle').forEach(function(btn) {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
@@ -638,14 +641,7 @@ function renderAdminTabla(data) {
         });
     });
 
-    container.querySelectorAll('.btn-eliminar').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const id = this.dataset.id;
-            if (confirm('¿Eliminar esta inscripción permanentemente?')) {
-                eliminarInscripcionAdmin(id);
-            }
-        });
-    });
+    // El listener para .btn-eliminar ya no es necesario porque se usa onclick
 
     const pag = document.getElementById('paginacion-admin');
     const totalPages = data.pagination.totalPages;

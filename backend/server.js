@@ -22,6 +22,7 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const db = new sqlite3.Database('./jornadas.db');
 
 db.serialize(() => {
+  // Crear tablas si no existen (sin borrar datos existentes)
   db.run(`CREATE TABLE IF NOT EXISTS charlas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo TEXT, dia TEXT, hora TEXT, ponente TEXT,
@@ -36,54 +37,8 @@ db.serialize(() => {
     FOREIGN KEY (charla_id) REFERENCES charlas(id)
   )`);
 
-  db.run("DELETE FROM inscripciones");
-  db.run("UPDATE charlas SET inscritos = 0");
-
-  db.run("DELETE FROM charlas", (err) => {
-    if (err) console.error('Error al eliminar charlas:', err.message);
-    else {
-      const nuevasCharlas = [
-        // ===== MIÉRCOLES 2 =====
-        ['Abordaje Osteopático de la Pubalgia (Dolor de Cadera). Evaluación y Tratamiento.', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
-        ['', 'Miércoles 2', '18:00 - 19:00', 'Valentina Pescatore, Agustin Elz, Constanza Raimondi', 40],
-        ['Cuando la Postura no mejora: el papel de las vísceras en el Dolor y la Disfunción. Evaluación y Tratamiento Integrando Osteopatía Visceral y Posturoterapia.', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
-        ['Mas allá del Salto Frontal: una evaluación integral para el retorno al deporte tras una reconstrucción del LCA.', 'Miércoles 2', '11:00 - 12:00', 'Ramiro Pioli', 40],
-        ['Posicionamiento y Estrategias de autorregulación en recién nacidos.', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
-        ['El niño con ECNE. Historia de Evolución Natural e Intervención según la etapa de desarrollo.', 'Miércoles 2', '12:00 - 13:00', 'M. Victoria Carignan', 40],
-        ['Principios y Fundamentos de la Equinoterapia.', 'Miércoles 2', '13:00 - 14:00', 'Ana Cristina Piacenza', 40],
-        ['Vapeo y Daño Pulmonar: del Aerosol a la Insuficiencia Respiratoria. Rol del Kinesiólogo.', 'Miércoles 2', '13:00 - 14:00', 'Melissa Yobe, Martin Larramendi', 40],
-        ['Descubriendo el Suelo Pélvico.', 'Miércoles 2', '14:00 - 15:00', 'Antonella Baldesari', 40],
-        ['Eutonía, otra forma de brindar kinesiología.', 'Miércoles 2', '15:00 - 17:00', 'Carlos Fumero', 40],
-        ['Hablemos de ELA.', 'Miércoles 2', '16:00 - 17:00', 'Federico Schmidhalter', 40],
-        ['Quiropraxia: detección y análisis de la Subluxación Vertebral.', 'Miércoles 2', '17:00 - 18:00', 'Ignacio Guastavino', 40],
-        ['Enfermedad de Parkinson y su abordaje en el agua mediante el Método Ai Chi.', 'Miércoles 2', '18:00 - 19:00', 'Brenda Lorenz', 40],
-        ['Pilates aplicada al deporte.', 'Miércoles 2', '19:00 - 20:00', 'Vanesa Dupertuis', 40],
-
-        // ===== JUEVES 3 (Universidad) =====
-        ['Mecanismos Neurobiológicos del movimiento sobre la cognición: el cerebro como órgano de predicción y modelos internos.', 'Jueves 3', '08:00 - 09:00', 'Lucas Orlandi', 40],
-        ['Taller de kinefilaxia. Gimnasia Postural.', 'Jueves 3', '09:00 - 10:00', 'Franco Riboldi', 40],
-        // Título actualizado para Ulises Magallanes
-        ['Dolor crónico: ¿Y si lo estamos tratando mal? Una mirada crítica a lo que hacemos, lo que creemos y lo que dice la evidencia', 'Jueves 3', '10:00 - 11:00', 'Ulises Magallanes', 40],
-        ['Respirar no alcanza: "Estrategias en la rehabilitación respiratoria".', 'Jueves 3', '10:30 - 11:30', 'Maria Magdalena Escobar Cello, Micaela Carrizo', 40],
-        ['Caso Clínico: Retorno a la cancha de una lesión parcial de LCA.', 'Jueves 3', '11:00 - 12:00', 'Pablo Seguro', 40],
-        ['El Videofrenzel como herramienta en la rehabilitación vestibular. De la observación del nistagmo a la toma de decisiones clínicas.', 'Jueves 3', '12:00 - 13:00', 'Griselda Sosa', 40],
-        ['Abordaje Kinésico Oncológico. Charla a la carta...', 'Jueves 3', '12:00 - 13:00', 'Mariela Perugini', 40],
-        ['El alcance: una orquesta de articulaciones, músculos y sistema nervioso.', 'Jueves 3', '13:00 - 14:00', 'Carlos Bonino, Camila Gasser', 40],
-
-        // ===== JUEVES 3 - SANATORIO =====
-        ['Desafío ventilatorio en la UTI pediátrica: presentación de un caso.', 'Jueves 3 - Sanatorio', '15:30 - 16:30', 'Residentes SSF, Lic. Quintana Carla, Lic. Imoberdorf Emilio', 40],
-        ['Protocolo pop de cirugía cardiovascular en UCO sanatorio Santa Fe', 'Jueves 3 - Sanatorio', '16:30 - 17:30', 'Lic.Díaz Parodi Agustín, Lic.Kolmann Barbara, Lic.Ponce Angelica, Lic.Suarez Araceli', 40],
-        ['Evaluaciones de ingreso al programa de rehabilitación cardiopulmonar.', 'Jueves 3 - Sanatorio', '17:30 - 18:30', 'Dr. Luisina Gómez, Lic. Luisina Rey', 40],
-        ['Return to Play: Conversatorio con el staff del Club Atlético Colón', 'Jueves 3 - Sanatorio', '18:30 - 19:30', 'Dr. Francisco Vega, PF. Matías Bustos, Lic. Alejandro Enjuto, Lic. Juan Manuel Madoery', 40]
-      ];
-
-      const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
-      nuevasCharlas.forEach(ch => stmt.run(ch));
-      stmt.finalize(() => {
-        console.log('✅ Cronograma actualizado con la charla de Valentina, Agustin y Constanza a las 18hs y título de Ulises Magallanes');
-      });
-    }
-  });
+  // No se borran ni reinseran datos al iniciar
+  console.log('✅ Base de datos lista (tablas creadas/verificadas)');
 });
 
 // ========== ENDPOINTS PÚBLICOS ==========
@@ -309,7 +264,7 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
-// ===== GET /api/admin/inscripciones (con logs) =====
+// ===== GET /api/admin/inscripciones =====
 app.get('/api/admin/inscripciones', verificarToken, (req, res) => {
   const { email, charla_id, escaneado, page = 1, limit = 20 } = req.query;
   console.log(`📋 GET /admin/inscripciones?page=${page}&limit=${limit}&email=${email || 'none'}&charla_id=${charla_id || 'none'}&escaneado=${escaneado || 'none'}`);
@@ -352,7 +307,7 @@ app.get('/api/admin/inscripciones', verificarToken, (req, res) => {
   });
 });
 
-// ===== PUT /api/admin/inscripciones/:id/escaneado (con logs) =====
+// ===== PUT /api/admin/inscripciones/:id/escaneado =====
 app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, (req, res) => {
   const id = parseInt(req.params.id);
   const { escaneado } = req.body;
@@ -381,7 +336,7 @@ app.put('/api/admin/inscripciones/:id/escaneado', verificarToken, (req, res) => 
   );
 });
 
-// ===== DELETE /api/admin/inscripciones/:id (con logs) =====
+// ===== DELETE /api/admin/inscripciones/:id =====
 app.delete('/api/admin/inscripciones/:id', verificarToken, (req, res) => {
   const id = parseInt(req.params.id);
   console.log(`🗑️ DELETE /admin/inscripciones/${id}`);
@@ -426,7 +381,7 @@ app.delete('/api/admin/inscripciones/:id', verificarToken, (req, res) => {
   });
 });
 
-// ===== GET /api/admin/exportar-excel (con logs) =====
+// ===== GET /api/admin/exportar-excel =====
 app.get('/api/admin/exportar-excel', verificarToken, (req, res) => {
   console.log(`📊 GET /admin/exportar-excel`);
 
