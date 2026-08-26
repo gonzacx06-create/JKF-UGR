@@ -80,7 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 const section = this.dataset.section;
                 cambiarSeccion(section);
-                // Cerrar menú forzadamente
                 if (sideMenu) {
                     sideMenu.classList.remove('open');
                     sideMenu.style.display = 'none';
@@ -362,7 +361,7 @@ document.getElementById('modal-form-inscripcion').addEventListener('submit', asy
     }
 });
 
-// ========== MIS INSCRIPCIONES (CORREGIDO: tabla con estilos) ==========
+// ========== MIS INSCRIPCIONES (CORREGIDO) ==========
 document.addEventListener('DOMContentLoaded', function() {
     const btnConsultar = document.getElementById('btn-consultar');
     if (btnConsultar) {
@@ -442,7 +441,7 @@ async function cargarMisInscripciones(email, page) {
     }
 }
 
-// ========== ADMIN (CORREGIDO: eventos asignados directamente) ==========
+// ========== ADMIN (CORREGIDO) ==========
 document.addEventListener('DOMContentLoaded', function() {
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
@@ -556,7 +555,6 @@ async function cargarAdminInscripciones(page) {
     }
 }
 
-// ===== renderAdminTabla con eventos directos =====
 function renderAdminTabla(data) {
     const container = document.getElementById('admin-inscripciones-tabla');
     if (data.data.length === 0) {
@@ -592,7 +590,6 @@ function renderAdminTabla(data) {
     html += '</tbody></table></div>';
     container.innerHTML = html;
 
-    // Asignar eventos a los botones (igual que en Mis inscripciones)
     container.querySelectorAll('.btn-toggle').forEach(function(btn) {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
@@ -615,7 +612,6 @@ function renderAdminTabla(data) {
         });
     });
 
-    // Paginación
     const pag = document.getElementById('paginacion-admin');
     const totalPages = data.pagination.totalPages;
     if (totalPages > 1) {
@@ -634,7 +630,6 @@ function renderAdminTabla(data) {
     }
 }
 
-// ===== Funciones de admin (con logs) =====
 async function toggleEscaneadoAdmin(id, nuevoEstado) {
     console.log(`🔄 toggleEscaneadoAdmin: id=${id}, nuevoEstado=${nuevoEstado}`);
     try {

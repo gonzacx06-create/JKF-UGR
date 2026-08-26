@@ -45,7 +45,8 @@ db.serialize(() => {
       const nuevasCharlas = [
         // ===== MIÉRCOLES 2 =====
         ['Abordaje Osteopático de la Pubalgia (Dolor de Cadera). Evaluación y Tratamiento.', 'Miércoles 2', '08:00 - 09:00', 'Robertino Bottaniz', 40],
-        ['', 'Miércoles 2', '09:00 - 10:00', 'Agustin Elz', 40],
+        // Agustin Elz ahora a las 18:00 con tres ponentes
+        ['', 'Miércoles 2', '18:00 - 19:00', 'Valentina Pescatore, Agustin Elz, Constanza Raimondi', 40],
         ['Cuando la Postura no mejora: el papel de las vísceras en el Dolor y la Disfunción. Evaluación y Tratamiento Integrando Osteopatía Visceral y Posturoterapia.', 'Miércoles 2', '10:00 - 11:00', 'Angelina Tibaldo', 40],
         ['Mas allá del Salto Frontal: una evaluación integral para el retorno al deporte tras una reconstrucción del LCA.', 'Miércoles 2', '11:00 - 12:00', 'Ramiro Pioli', 40],
         ['Posicionamiento y Estrategias de autorregulación en recién nacidos.', 'Miércoles 2', '12:00 - 13:00', 'Sofi Mandole, Iara Pereyra', 40],
@@ -79,7 +80,7 @@ db.serialize(() => {
       const stmt = db.prepare("INSERT INTO charlas (titulo, dia, hora, ponente, cupo_maximo) VALUES (?, ?, ?, ?, ?)");
       nuevasCharlas.forEach(ch => stmt.run(ch));
       stmt.finalize(() => {
-        console.log('✅ Cronograma actualizado: Mariela Perugini movida a las 12:00');
+        console.log('✅ Cronograma actualizado con la charla de Valentina, Agustin y Constanza a las 18hs');
       });
     }
   });
