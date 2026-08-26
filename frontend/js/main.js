@@ -1,3 +1,4 @@
+// Archivo actualizado - 26 de agosto 2026
 const API_URL = window.location.origin + '/api';
 let adminToken = null;
 let paginaAdmin = 1;
